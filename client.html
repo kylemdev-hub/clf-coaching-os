@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>CLF — Training Log</title>
-<meta name="description" content="Log training sessions and daily check-ins for your CLF Protocol coaching program.">
+<meta name="description" content="Log training sessions, daily check-ins, and track strength trajectory for your CLF Protocol coaching program.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -65,7 +65,7 @@ main{padding:28px 20px 24px}
 h1{font-size:36px;line-height:1;letter-spacing:-.04em;font-weight:600;margin:8px 0 0}
 .title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .lede{color:var(--text-2);font-size:14px;margin:10px 0 0}
-.section-label{font-size:12px;font-weight:500;color:var(--text-3);margin:28px 0 10px;display:flex;justify-content:space-between;align-items:center}
+.section-label{font-size:12px;font-weight:500;color:var(--text-3);margin:28px 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 
 /* Stepper (week) */
 .stepper{display:flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px}
@@ -77,10 +77,17 @@ h1{font-size:36px;line-height:1;letter-spacing:-.04em;font-weight:600;margin:8px
 
 /* Segmented */
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:3px;margin-top:22px;padding:3px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
-.seg-btn{height:38px;border:0;border-radius:9px;background:transparent;color:var(--text-2);font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .2s var(--ease),color .2s var(--ease)}
+.seg-btn{height:38px;border:0;border-radius:9px;background:transparent;color:var(--text-2);font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 4px;transition:background .2s var(--ease),color .2s var(--ease)}
+.seg[data-many=true] .seg-btn{font-size:12.5px;gap:4px;padding:0 2px}
 .seg-btn[aria-selected=true]{background:var(--surface-3);color:var(--text);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 1px 2px rgba(0,0,0,.4)}
-.seg-tick{display:grid;place-items:center;width:15px;height:15px;border-radius:50%;background:var(--ok);color:#06140C}
+.seg-tick{display:grid;place-items:center;width:15px;height:15px;border-radius:50%;background:var(--ok);color:#06140C;flex:none}
+.seg[data-many=true] .seg-tick{width:13px;height:13px}
 .seg-tick svg.i{width:10px;height:10px;stroke-width:3}
+
+/* Mini mode toggle */
+.mode-switch{display:inline-flex;gap:2px;padding:2px;border-radius:8px;background:var(--surface);border:1px solid var(--line)}
+.mode-switch button{height:24px;padding:0 8px;border:0;border-radius:6px;background:transparent;color:var(--text-3);font-size:11.5px;font-weight:500}
+.mode-switch button[aria-pressed=true]{background:var(--surface-3);color:var(--text)}
 
 /* Progress */
 .progress{margin-top:20px}
@@ -180,21 +187,33 @@ h1{font-size:36px;line-height:1;letter-spacing:-.04em;font-weight:600;margin:8px
 .scale-legend{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-3);margin-top:7px}
 textarea.text-input{height:auto;min-height:84px;padding:11px 12px;resize:vertical;line-height:1.45;margin-top:0}
 
-/* Progress view */
+/* Progress view & Strength Trajectory */
 .stat-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .stat-big{font-size:38px;font-weight:500;letter-spacing:-.04em;line-height:1}
 .stat-big small{font-size:14px;color:var(--text-3);margin-left:4px;letter-spacing:0}
 .stat-side{text-align:right;font-size:12.5px;color:var(--text-3);line-height:1.6}
 .delta-up{color:var(--ok)} .delta-down{color:var(--bad)}
 .chart{margin-top:14px;height:150px}
+.chart.tall{height:168px}
 .chart svg{display:block;width:100%;height:100%}
-.lift{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:12px 0;border-top:1px solid var(--line)}
-.lift:first-of-type{border-top:0;padding-top:0}
-.lift-name{font-size:14px;font-weight:500}
-.lift-e1rm{font-size:15px;text-align:right}
+.lift-pills{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none;-ms-overflow-style:none}
+.lift-pills::-webkit-scrollbar{display:none}
+.lift-pill{height:30px;padding:0 11px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--text-2);font-size:12px;font-weight:500;white-space:nowrap;flex:none;transition:background .15s,color .15s,border-color .15s}
+.lift-pill:hover{color:var(--text)}
+.lift-pill[aria-selected=true]{background:var(--surface-3);border-color:var(--line-2);color:var(--text)}
+.traj-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.traj-kpi{display:flex;flex-direction:column;gap:2px}
+.traj-kpi span{font-size:11px;color:var(--text-3)}
+.traj-kpi b{font-size:13.5px;font-weight:500}
+.lift{width:100%;display:grid;grid-template-columns:1fr auto;gap:3px 12px;padding:12px 6px;margin:0 -6px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left;border-radius:8px;transition:background .15s}
+.lift:first-of-type{border-top:0}
+.lift:hover{background:rgba(255,255,255,.02)}
+.lift.is-sel .lift-name{color:var(--accent)}
+.lift-name{font-size:14px;font-weight:500;display:flex;align-items:center;gap:7px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lift-e1rm{font-size:14.5px;text-align:right}
 .lift-sub{font-size:12px;color:var(--text-3)}
-.lift-bars{display:flex;gap:3px;align-items:flex-end;height:22px;justify-content:flex-end}
-.lift-bars i{width:7px;border-radius:2px;background:var(--surface-3)}
+.lift-bars{display:flex;gap:3px;align-items:flex-end;height:20px;justify-content:flex-end}
+.lift-bars i{width:6px;border-radius:2px;background:var(--surface-3)}
 .lift-bars i.on{background:var(--text-2)}
 .lift-bars i.cur{background:var(--accent)}
 .grid-cal{display:grid;grid-template-columns:28px repeat(7,1fr);gap:5px;align-items:center}
@@ -204,9 +223,10 @@ textarea.text-input{height:auto;min-height:84px;padding:11px 12px;resize:vertica
 .grid-cal i.partial{background:rgba(237,176,74,.55)}
 .grid-cal i.future{background:transparent;border:1px dashed var(--line-2)}
 .grid-cal i.today{box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--text-2)}
-.legend{display:flex;gap:14px;margin-top:12px;font-size:11.5px;color:var(--text-3)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:11.5px;color:var(--text-3)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:9px;height:9px;border-radius:2px;display:inline-block}
+.legend i.line{width:14px;height:2px;border-radius:1px}
 .empty{padding:24px 0 8px;text-align:center;color:var(--text-3);font-size:13px}
 
 /* Rest timer dock */
@@ -270,8 +290,8 @@ dialog.sheet::backdrop{background:rgba(0,0,0,.62)}
     <div class="brand">
       <span class="mark" aria-hidden="true">CLF</span>
       <div style="min-width:0">
-        <div class="brand-name" id="client-name">Scott Nassif</div>
-        <div class="brand-sub" id="client-sub">Week 3 of 8</div>
+        <div class="brand-name" id="client-name">CLF Protocol</div>
+        <div class="brand-sub" id="client-sub">Loading…</div>
       </div>
     </div>
     <button class="chip" id="sync-chip" data-action="settings" aria-label="Sync settings"><span class="dot"></span><span id="sync-label">Demo data</span></button>
@@ -332,10 +352,10 @@ dialog.sheet::backdrop{background:rgba(0,0,0,.62)}
 'use strict';
 
 /* ------------------------------------------------------------------ *
- * Program defaults. When a sync URL is connected, the program, cues
- * and targets are loaded from the coach's Google Sheet instead.
+ * Client Presets (Scott & Emily). When a Sync URL is connected, the
+ * program, cues and targets load dynamically from Google Sheets.
  * ------------------------------------------------------------------ */
-const BASE_PROGRAM = [
+const SCOTT_PROGRAM = [
   { day:'Push', name:'Flat Bench Press', sets:4, reps:5, label:'5', rest:120, cue:'The "Air Brake" Method: Stop the bar 1–2 inches above the chest. Do not touch the chest; this prevents the humerus from rotating too far back and straining the labrum.' },
   { day:'Push', name:'Incline DB Press', sets:3, reps:8, label:'8', rest:90, cue:'Neutral Grip: Keep palms facing each other throughout. Tuck the elbows to a 45-degree angle. This keeps the rotator cuff in a protected, impingement-free track.' },
   { day:'Push', name:'DB Lateral Raises', sets:4, reps:15, label:'15', rest:60, cue:'Pinkies Up: Lead with the elbows. Stop when your arms are parallel to the floor. Any higher and you risk "pinching" the surgical sites in the AC joint.' },
@@ -354,7 +374,56 @@ const BASE_PROGRAM = [
   { day:'Legs', name:'DB Calf Raises', sets:4, reps:20, label:'20/leg', rest:60, cue:'Full Range: Stand on a flat floor or the edge of a plate. Hold dumbbells at your sides. Stretch at the bottom and squeeze hard at the top for a 1-second pause to ensure maximum fiber recruitment.' },
 ];
 
-const KEY = 'clf.client.v1';
+const EMILY_PROGRAM = [
+  { day:'Push', name:'Barbell Bench Press', sets:4, reps:6, label:'6', rest:120, cue:'Leg Drive & Arch: Set upper back tight on the pad, feet flat. Lower bar with control to lower sternum with elbows ~45° from torso, press back over shoulders.' },
+  { day:'Push', name:'Seated DB Shoulder Press', sets:3, reps:8, label:'8', rest:90, cue:'Scapular Plane: Set bench one notch below vertical (~75°). Lower dumbbells to ear level with vertical forearms and press overhead without flaring ribs.' },
+  { day:'Push', name:'Incline DB Bench Press', sets:3, reps:10, label:'10', rest:90, cue:'Upper Pec Stretch: 30° bench angle. Pause briefly in the bottom stretch before driving dumbbells up and slightly inward.' },
+  { day:'Push', name:'Cable Lateral Raises', sets:3, reps:15, label:'15', rest:60, cue:'Constant Tension: Set pulley at wrist height. Sweep outward leading with the elbow, stopping at shoulder level with zero torso swing.' },
+  { day:'Push', name:'Cable Tricep Pushdowns', sets:3, reps:12, label:'12', rest:60, cue:'Pinned Elbows: Keep upper arms glued to your sides. Lock out fully at the bottom and control the eccentric all the way up.' },
+  { day:'Pull', name:'Barbell Romanian Deadlift', sets:4, reps:6, label:'6', rest:150, cue:'Pure Hip Hinge: Unlock knees slightly and keep that angle fixed. Shave the bar down your thighs pushing hips straight back until hamstrings reach full stretch.' },
+  { day:'Pull', name:'Chest-Supported DB Row', sets:4, reps:8, label:'8', rest:90, cue:'Lat Sweep: Chest planted on 30–45° incline pad. Pull dumbbells back toward your hip crease, driving elbows past torso without shrugging.' },
+  { day:'Pull', name:'Lat Pulldown', sets:3, reps:10, label:'10', rest:90, cue:'Depress First: Initiate by pulling shoulder blades down, then drive elbows toward your pockets. Control the stretch overhead.' },
+  { day:'Pull', name:'Cable Face Pulls', sets:3, reps:15, label:'15', rest:60, cue:'External Rotation: Pull rope toward forehead while splitting handles apart so thumbs finish behind ears, squeezing rear delts and mid-traps.' },
+  { day:'Pull', name:'DB Bicep Curls', sets:3, reps:12, label:'12', rest:60, cue:'Strict Supination: Stand tall with ribs stacked. Curl without swinging hips and take a full 2-second lowering phase on every rep.' },
+  { day:'Legs', name:'Barbell Back Squat', sets:4, reps:5, label:'5', rest:150, cue:'Brace & Drive: 360° breath into your belt line before each rep. Sit down between your hips, knees tracking mid-foot, drive chest and hips up together.' },
+  { day:'Legs', name:'Barbell Hip Thrust', sets:4, reps:8, label:'8', rest:120, cue:'Posterior Tilt Lockout: Upper back on bench edge, shins vertical at top. Tuck chin, keep ribs down, and hold 1 full second at glute lockout.' },
+  { day:'Legs', name:'DB Bulgarian Split Squat', sets:3, reps:10, label:'10/leg', rest:90, cue:'Controlled Depth: Slight forward torso lean for glute and quad balance. Drop back knee straight toward the floor and drive through the front foot.' },
+  { day:'Legs', name:'Seated Leg Curl', sets:3, reps:12, label:'12', rest:75, cue:'Pelvic Stability: Keep hips pressed into the pad throughout. Squeeze heels hard at peak contraction and resist the weight on the way back.' },
+  { day:'Legs', name:'Standing Calf Raises', sets:3, reps:15, label:'15', rest:60, cue:'Paused Stretch: Pause 1 second in the deep stretch at the bottom so the Achilles doesn\'t bounce the load, then drive all the way onto the big toe.' },
+  { day:'Upper', name:'Barbell Overhead Press', sets:4, reps:6, label:'6', rest:120, cue:'Stacked Column: Squeeze glutes and quads tight so lower back stays neutral. Press bar close past your chin and lock out directly over mid-foot.' },
+  { day:'Upper', name:'Assisted or BW Pull-Ups', sets:4, reps:8, label:'8', rest:120, bw:true, cue:'Full Range Pull: Start from an active hang, drive chest toward the bar by pulling elbows down and in. Use just enough assistance for crisp reps.' },
+  { day:'Upper', name:'Flat DB Bench Press', sets:3, reps:10, label:'10', rest:90, cue:'Controlled Stretch: Lower dumbbells into a full chest stretch with shoulder blades tucked. Press smoothly without clanging weights at the top.' },
+  { day:'Upper', name:'Seated Cable Row', sets:3, reps:10, label:'10', rest:90, cue:'Neutral Spine: Let shoulder blades protract slightly for a stretch at the start, then row handle to lower ribs while keeping torso vertical.' },
+  { day:'Upper', name:'Overhead Cable Tricep Ext.', sets:3, reps:12, label:'12', rest:60, cue:'Long-Head Stretch: Split stance with elbows pointed forward and up. Let hands sink deep behind the head before extending.' },
+  { day:'Lower', name:'Trap Bar or Conv. Deadlift', sets:4, reps:5, label:'5', rest:150, cue:'Pull the Slack: Wedge hips in, pack lats tight, feel tension against the plates before driving the floor away cleanly.' },
+  { day:'Lower', name:'Front Squat or Hack Squat', sets:3, reps:8, label:'8', rest:120, cue:'Quad Bias: Keep torso tall and let knees travel smoothly over toes at the bottom. Control the 3-second descent and drive straight up.' },
+  { day:'Lower', name:'DB Romanian Deadlift', sets:3, reps:10, label:'10', rest:90, cue:'Constant Tension: Keep dumbbells grazing the front of thighs and shins. Stop just below mid-shin as soon as hips stop moving back.' },
+  { day:'Lower', name:'DB Walking Lunges', sets:3, reps:12, label:'12/leg', rest:90, cue:'Steady Cadence: Stride heel-to-midfoot with torso tall, kiss back knee near the floor, and push through the front heel into the next rep.' },
+  { day:'Lower', name:'Hanging Knee Raises', sets:3, reps:12, label:'12', rest:60, bw:true, cue:'Pelvic Curl: Curl pelvis upward toward ribs at the top rather than swinging legs; lower slowly with zero momentum.' },
+];
+
+const PRESETS = {
+  scott: {
+    key: 'clf.client.v1',
+    profile: { name: 'Scott Nassif', phase: 'Phase 3', startDate: '2026-10-27', weeks: 8, jointLabel: 'Shoulder comfort' },
+    targets: { weight: 205, calories: 3400, protein: 200, water: 128, steps: 10000, sleep: 7.5 },
+    program: SCOTT_PROGRAM,
+  },
+  emily: {
+    key: 'clf.client.v1.emily',
+    profile: { name: 'Emily', phase: 'Lean Hypertrophy', startDate: '2026-11-16', weeks: 8, jointLabel: 'Joint comfort' },
+    targets: { weight: 128, calories: 2100, protein: 125, water: 90, steps: 8500, sleep: 7.5 },
+    program: EMILY_PROGRAM,
+  },
+};
+
+const qp = new URLSearchParams(location.search);
+const hpInit = new URLSearchParams(location.hash.slice(1));
+const defaultSlug = document.documentElement.dataset.client || (/emily/i.test(location.pathname) ? 'emily' : 'scott');
+const clientSlug = ((qp.get('client') || hpInit.get('client') || (/emily/i.test(hpInit.get('name') || '') ? 'emily' : defaultSlug))).toLowerCase();
+const ACTIVE_PRESET = PRESETS[clientSlug] || PRESETS.scott;
+const BASE_PROGRAM = ACTIVE_PRESET.program;
+const KEY = ACTIVE_PRESET.key;
 const DAY_MS = 86400000;
 
 /* ---------- helpers ---------- */
@@ -367,13 +436,15 @@ const today = () => ymd(new Date());
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const num = v => (v === '' || v == null || isNaN(+v)) ? null : +v;
-const fmt = (v, d = 0) => v == null ? '—' : Number(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmt = (v, d = 0) => v == null || isNaN(v) ? '—' : Number(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const fw = v => v == null ? '—' : fmt(v, v % 1 ? 1 : 0);
 const e1rm = (w, r) => (w > 0 && r > 0) ? w * (1 + r / 30) : null;
 const clock = s => { s = Math.max(0, Math.ceil(s)); return `${Math.floor(s / 60)}:${z(s % 60)}`; };
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const shortDate = s => parseYmd(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 const longDate = s => parseYmd(s).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 const relTime = ts => { const m = Math.round((Date.now() - ts) / 60000); if (m < 1) return 'just now'; if (m < 60) return `${m}m ago`; const h = Math.round(m / 60); if (h < 24) return `${h}h ago`; return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
+const shortLift = s => String(s || '').replace(/\s*\(.*?\)\s*/g, '').replace(/^Barbell\s+/i, '').replace(/^Trap Bar or Conv\.\s+/i, '');
 
 const ICONS = {
   check: '<path d="M20 6 9 17l-5-5"/>',
@@ -388,11 +459,11 @@ const icon = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS
 /* ---------- state ---------- */
 let S;
 try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
-if (!S || S.v !== 1) S = { v: 1, settings: { name: 'Scott Nassif', url: '', token: '' }, demo: false, program: null, profile: null, targets: null, sessions: {}, checkins: {}, queue: [], lastSync: null, syncError: null };
+if (!S || S.v !== 1) S = { v: 1, settings: { name: ACTIVE_PRESET.profile.name, url: '', token: '' }, demo: false, program: null, profile: null, targets: null, sessions: {}, checkins: {}, queue: [], lastSync: null, syncError: null };
 
 let PROGRAM = S.program || BASE_PROGRAM;
-let PROFILE = Object.assign({ name: 'Scott Nassif', phase: 'Phase 3', startDate: '2026-10-27', weeks: 8 }, S.profile || {});
-let T = Object.assign({ weight: 205, calories: 3400, protein: 200, water: 128, steps: 10000, sleep: 7.5 }, S.targets || {});
+let PROFILE = Object.assign({}, ACTIVE_PRESET.profile, S.profile || {});
+let T = Object.assign({}, ACTIVE_PRESET.targets, S.targets || {});
 const days = () => [...new Set(PROGRAM.map(p => p.day))];
 const dayIndex = s => Math.round((parseYmd(s) - parseYmd(PROFILE.startDate)) / DAY_MS);
 const weekOf = s => clamp(Math.floor(dayIndex(s) / 7) + 1, 1, PROFILE.weeks);
@@ -400,7 +471,7 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch
 
 function clearDemo() { S.sessions = {}; S.checkins = {}; S.queue = []; S.demo = false; }
 
-/* Link from coach: client.html#url=…&token=…&name=… */
+/* Link from coach: client.html?client=emily#url=…&token=…&name=… */
 (function readLink() {
   const hp = new URLSearchParams(location.hash.slice(1));
   if (!hp.get('url')) return;
@@ -413,43 +484,82 @@ function clearDemo() { S.sessions = {}; S.checkins = {}; S.queue = []; S.demo = 
 })();
 
 function seedDemo() {
-  const base = { 'Flat Bench Press':135, 'Incline DB Press':50, 'DB Lateral Raises':15, 'Diamond Push-ups':0, 'Rear Delt Row (Chest Supported)':40, 'Barbell Deadlift':225, 'DB Seal Rows (Chest Supported)':55, 'Weighted Pull-Ups (Neutral Grip)':0, 'Barbell Shrugs':185, 'DB Hammer Curls':30, 'Incline DB Curls':25, 'Barbell Back Squat':185, 'DB Goblet Squat':65, 'Barbell Stiff-Legged Deadlift':165, 'DB Lunges':35, 'DB Calf Raises':45 };
-  const amrap = { 'Diamond Push-ups':[15, 13, 12], 'Weighted Pull-Ups (Neutral Grip)':[8, 7, 6] };
-  const bump = (w, k) => w >= 50 ? 5 * k : w > 0 ? 2.5 * k : 0;
-  [[1,'Push'],[1,'Pull'],[1,'Legs'],[2,'Push'],[2,'Pull'],[2,'Legs'],[3,'Push']].forEach(([wk, day], n) => {
-    const ex = {};
-    BASE_PROGRAM.filter(p => p.day === day).forEach(p => {
-      const w = base[p.name] + bump(base[p.name], wk - 1);
-      ex[p.name] = { note: '', sets: Array.from({ length: p.sets }, (_, i) => ({ w, r: amrap[p.name] ? amrap[p.name][i] - (wk - 1) * -1 : p.reps, rpe: i === p.sets - 1 ? 8 : '', done: true })) };
+  if (ACTIVE_PRESET === PRESETS.emily) {
+    const base = {
+      'Barbell Bench Press':85, 'Seated DB Shoulder Press':25, 'Incline DB Bench Press':27.5, 'Cable Lateral Raises':10, 'Cable Tricep Pushdowns':35,
+      'Barbell Romanian Deadlift':125, 'Chest-Supported DB Row':32.5, 'Lat Pulldown':85, 'Cable Face Pulls':35, 'DB Bicep Curls':17.5,
+      'Barbell Back Squat':115, 'Barbell Hip Thrust':155, 'DB Bulgarian Split Squat':25, 'Seated Leg Curl':75, 'Standing Calf Raises':90,
+      'Barbell Overhead Press':55, 'Assisted or BW Pull-Ups':0, 'Flat DB Bench Press':30, 'Seated Cable Row':80, 'Overhead Cable Tricep Ext.':30,
+      'Trap Bar or Conv. Deadlift':145, 'Front Squat or Hack Squat':95, 'DB Romanian Deadlift':35, 'DB Walking Lunges':22.5, 'Hanging Knee Raises':0,
+    };
+    const bump = (w, k) => w >= 90 ? 5 * k : w > 0 ? 2.5 * k : 0;
+    const dOrder = ['Push','Pull','Legs','Upper','Lower'];
+    [[1,'Push'],[1,'Pull'],[1,'Legs'],[1,'Upper'],[1,'Lower'],[2,'Push'],[2,'Pull'],[2,'Legs'],[2,'Upper'],[2,'Lower'],[3,'Push'],[3,'Pull'],[3,'Legs']].forEach(([wk, day]) => {
+      const ex = {};
+      BASE_PROGRAM.filter(p => p.day === day).forEach(p => {
+        const w = base[p.name] + bump(base[p.name], wk - 1);
+        ex[p.name] = { note: '', sets: Array.from({ length: p.sets }, (_, i) => ({ w, r: p.reps, rpe: i === p.sets - 1 ? 8 : '', done: true })) };
+      });
+      S.sessions[`${wk}:${day}`] = { ex, finishedAt: parseYmd(addDays(PROFILE.startDate, (wk - 1) * 7 + dOrder.indexOf(day))).getTime() + 17 * 3600000, dirty: false };
     });
-    S.sessions[`${wk}:${day}`] = { ex, finishedAt: parseYmd(addDays(PROFILE.startDate, (wk - 1) * 7 + ['Push','Pull','Legs'].indexOf(day) * 2)).getTime() + 18 * 3600000, dirty: false };
-  });
-  const rows = [
-    [198.4,3320,215,365,110,132,10450,7.8,9,8,'Bench felt solid. No pinch at the bottom.'],
-    [198.6,3350,210,370,112,128,10820,7.6,9,8,'Seal rows good. Kept scaps tight on pull-ups.'],
-    [198.8,3290,205,355,115,130,11200,8.0,9,9,'Walk and band work.'],
-    [199.0,3380,220,380,108,136,10150,7.5,8,8,'Wider grip on squats, AC joint felt fine.'],
-    [199.1,3340,212,368,112,128,10600,7.7,9,8,'Recovered well.'],
-    [199.3,3450,195,390,120,116,8900,7.0,9,7,'Dinner out. Over on calories, light on water.'],
-    [199.2,3310,218,360,110,134,10500,8.2,9,9,'Meal prepped for the week.'],
-    [199.5,3360,222,375,108,132,10900,7.9,9,9,'+5 on bench and incline. Shoulders fine.'],
-    [199.7,3390,216,382,110,130,10300,7.6,9,8,'Deadlift 230×5, moved well.'],
-    [199.8,3330,210,365,112,128,11400,8.0,9,9,'Rest day, long walk.'],
-    [200.1,3380,225,378,107,135,10250,7.8,9,8,'Squat 190×5.'],
-    [200.0,3350,214,370,111,130,10700,7.7,9,8,'Upper back feeling fuller.'],
-    [200.3,3370,218,374,110,128,10100,8.1,9,9,'Hit everything.'],
-    [200.4,3340,220,365,110,132,10650,8.0,9,9,'End of week 2. Shoulders 9/10.'],
-    [200.6,3360,224,375,108,134,10800,7.9,9,9,'Bench 145×5 with the air brake. Felt great.'],
-  ];
-  rows.forEach((r, i) => {
-    S.checkins[addDays(PROFILE.startDate, i)] = { weight:r[0], calories:r[1], protein:r[2], carbs:r[3], fats:r[4], water:r[5], steps:r[6], sleep:r[7], shoulder:r[8], readiness:r[9], notes:r[10], saved:true, dirty:false };
-  });
+    const rows = [
+      [124.8,2040,128,225,68,94,8850,7.8,9,8,'Bench 85×6 moved crisp.'],
+      [125.0,2060,130,230,68,92,9100,7.7,9,8,'RDLs felt strong in hamstrings.'],
+      [124.9,2020,126,220,69,96,8600,8.0,9,9,'Squat 115×5 and hip thrusts 155×8.'],
+      [125.1,2080,132,235,68,92,8900,7.6,9,8,'Active recovery walk before Upper.'],
+      [125.2,2050,129,228,68,90,9400,7.9,9,9,'Deadlift 145×5 felt smooth.'],
+      [125.4,2120,124,240,72,88,8200,7.5,9,8,'Date night dinner, slightly over calories.'],
+      [125.1,2030,131,224,67,95,9050,8.1,9,9,'Meal prepped for Week 2.'],
+      [125.3,2070,132,232,68,92,8750,7.8,9,9,'Bench up to 87.5×6.'],
+      [125.4,2050,128,228,69,94,9200,7.7,9,8,'RDL 130×6, grip solid.'],
+      [125.3,2060,130,230,68,91,8650,7.9,9,9,'Back squat 120×5 & hip thrust 160×8.'],
+      [125.5,2040,127,226,68,93,8950,7.6,9,8,'OHP 57.5×6 locked out clean.'],
+      [125.6,2080,134,234,68,96,9300,8.0,9,9,'Deadlift 150×5 moved fast.'],
+      [125.5,2050,129,228,68,92,8800,8.1,9,9,'Rest day walk + mobility.'],
+      [125.7,2060,131,230,68,94,9100,7.9,9,9,'Up ~0.7 lb in 2 weeks — right on lean gain pace.'],
+    ];
+    rows.forEach((r, i) => {
+      S.checkins[addDays(PROFILE.startDate, i)] = { weight:r[0], calories:r[1], protein:r[2], carbs:r[3], fats:r[4], water:r[5], steps:r[6], sleep:r[7], shoulder:r[8], readiness:r[9], notes:r[10], saved:true, dirty:false };
+    });
+  } else {
+    const base = { 'Flat Bench Press':135, 'Incline DB Press':50, 'DB Lateral Raises':15, 'Diamond Push-ups':0, 'Rear Delt Row (Chest Supported)':40, 'Barbell Deadlift':225, 'DB Seal Rows (Chest Supported)':55, 'Weighted Pull-Ups (Neutral Grip)':0, 'Barbell Shrugs':185, 'DB Hammer Curls':30, 'Incline DB Curls':25, 'Barbell Back Squat':185, 'DB Goblet Squat':65, 'Barbell Stiff-Legged Deadlift':165, 'DB Lunges':35, 'DB Calf Raises':45 };
+    const amrap = { 'Diamond Push-ups':[15, 13, 12], 'Weighted Pull-Ups (Neutral Grip)':[8, 7, 6] };
+    const bump = (w, k) => w >= 50 ? 5 * k : w > 0 ? 2.5 * k : 0;
+    [[1,'Push'],[1,'Pull'],[1,'Legs'],[2,'Push'],[2,'Pull'],[2,'Legs'],[3,'Push']].forEach(([wk, day]) => {
+      const ex = {};
+      BASE_PROGRAM.filter(p => p.day === day).forEach(p => {
+        const w = base[p.name] + bump(base[p.name], wk - 1);
+        ex[p.name] = { note: '', sets: Array.from({ length: p.sets }, (_, i) => ({ w, r: amrap[p.name] ? amrap[p.name][i] - (wk - 1) * -1 : p.reps, rpe: i === p.sets - 1 ? 8 : '', done: true })) };
+      });
+      S.sessions[`${wk}:${day}`] = { ex, finishedAt: parseYmd(addDays(PROFILE.startDate, (wk - 1) * 7 + ['Push','Pull','Legs'].indexOf(day) * 2)).getTime() + 18 * 3600000, dirty: false };
+    });
+    const rows = [
+      [198.4,3320,215,365,110,132,10450,7.8,9,8,'Bench felt solid. No pinch at the bottom.'],
+      [198.6,3350,210,370,112,128,10820,7.6,9,8,'Seal rows good. Kept scaps tight on pull-ups.'],
+      [198.8,3290,205,355,115,130,11200,8.0,9,9,'Walk and band work.'],
+      [199.0,3380,220,380,108,136,10150,7.5,8,8,'Wider grip on squats, AC joint felt fine.'],
+      [199.1,3340,212,368,112,128,10600,7.7,9,8,'Recovered well.'],
+      [199.3,3450,195,390,120,116,8900,7.0,9,7,'Dinner out. Over on calories, light on water.'],
+      [199.2,3310,218,360,110,134,10500,8.2,9,9,'Meal prepped for the week.'],
+      [199.5,3360,222,375,108,132,10900,7.9,9,9,'+5 on bench and incline. Shoulders fine.'],
+      [199.7,3390,216,382,110,130,10300,7.6,9,8,'Deadlift 230×5, moved well.'],
+      [199.8,3330,210,365,112,128,11400,8.0,9,9,'Rest day, long walk.'],
+      [200.1,3380,225,378,107,135,10250,7.8,9,8,'Squat 190×5.'],
+      [200.0,3350,214,370,111,130,10700,7.7,9,8,'Upper back feeling fuller.'],
+      [200.3,3370,218,374,110,128,10100,8.1,9,9,'Hit everything.'],
+      [200.4,3340,220,365,110,132,10650,8.0,9,9,'End of week 2. Shoulders 9/10.'],
+      [200.6,3360,224,375,108,134,10800,7.9,9,9,'Bench 145×5 with the air brake. Felt great.'],
+    ];
+    rows.forEach((r, i) => {
+      S.checkins[addDays(PROFILE.startDate, i)] = { weight:r[0], calories:r[1], protein:r[2], carbs:r[3], fats:r[4], water:r[5], steps:r[6], sleep:r[7], shoulder:r[8], readiness:r[9], notes:r[10], saved:true, dirty:false };
+    });
+  }
   S.demo = true;
   save();
 }
 if (!S.settings.url && !S.demo && !Object.keys(S.sessions).length && !Object.keys(S.checkins).length) seedDemo();
 
-/* ---------- training model ---------- */
+/* ---------- training & trajectory model ---------- */
 function ensureSession(wk, day) {
   const k = `${wk}:${day}`;
   const sess = S.sessions[k] || (S.sessions[k] = { ex: {}, finishedAt: null, dirty: false });
@@ -482,6 +592,73 @@ function sessionState(wk, day) {
 }
 const defaultDay = wk => days().find(d => sessionState(wk, d) !== 'done') || days()[0];
 
+function compoundTier(n) {
+  if (/shrug|curl|tricep|lateral|face pull|calf|lunge|goblet|leg curl/i.test(n)) return 0;
+  if (/barbell|trap bar|hip thrust|stiff-legged|romanian|front squat|hack squat/i.test(n)) return 3;
+  if (/press|squat|deadlift|thrust|seal row|chest-supported.*row|pendlay/i.test(n)) return 2;
+  return 0;
+}
+function keyLiftNames() {
+  const primary = days().flatMap(d => PROGRAM.filter(p => p.day === d && !p.bw).slice(0, 1).map(p => p.name));
+  const rest = PROGRAM.filter(p => !p.bw && !primary.includes(p.name) && compoundTier(p.name) > 0)
+    .sort((a, b) => compoundTier(b.name) - compoundTier(a.name))
+    .map(p => p.name);
+  return [...new Set([...primary, ...rest])].slice(0, 6);
+}
+
+function ols(pts) {
+  const n = pts.length;
+  if (n < 2) return null;
+  const mx = pts.reduce((a, p) => a + p.wk, 0) / n;
+  const my = pts.reduce((a, p) => a + p.v, 0) / n;
+  let numSum = 0, denSum = 0;
+  pts.forEach(p => { numSum += (p.wk - mx) * (p.v - my); denSum += (p.wk - mx) * (p.wk - mx); });
+  if (!denSum) return null;
+  const slope = numSum / denSum;
+  const intercept = my - slope * mx;
+  return { slope, intercept, at: w => intercept + slope * w };
+}
+
+function buildLiftStats() {
+  const names = keyLiftNames();
+  const lifts = names.map(name => {
+    const p = PROGRAM.find(x => x.name === name) || { day: days()[0], reps: 5 };
+    const pts = [];
+    const weeks = Array.from({ length: PROFILE.weeks }, (_, i) => {
+      const wk = i + 1;
+      const s = S.sessions[`${wk}:${p.day}`];
+      const t = s && s.ex[name] && topSet(s.ex[name].sets);
+      const w = t ? num(t.w) : null;
+      const r = t ? (num(t.r) || p.reps || 5) : null;
+      const est = w > 0 ? e1rm(w, r) : null;
+      if (w > 0) pts.push({ wk, w, r, e1rm: est });
+      return w > 0 ? { w, r, e1rm: est } : null;
+    });
+    const regE = ols(pts.map(x => ({ wk: x.wk, v: x.e1rm })));
+    const regW = ols(pts.map(x => ({ wk: x.wk, v: x.w })));
+    const best = pts.length ? Math.max(...pts.map(x => x.e1rm)) : null;
+    return {
+      name, short: shortLift(name), pts, weeks, best,
+      first: pts.length ? pts[0] : null,
+      last: pts.length ? pts[pts.length - 1] : null,
+      regE, regW,
+    };
+  });
+
+  // Composite Compound Strength Index (% e1RM change vs each lift's starting baseline)
+  const idxPts = [];
+  for (let wk = 1; wk <= PROFILE.weeks; wk++) {
+    const rels = lifts.map(l => {
+      if (!l.first || !l.first.e1rm) return null;
+      const cur = l.pts.find(x => x.wk === wk);
+      return cur ? ((cur.e1rm - l.first.e1rm) / l.first.e1rm) * 100 : null;
+    }).filter(v => v != null);
+    if (rels.length) idxPts.push({ wk, v: rels.reduce((a, b) => a + b, 0) / rels.length, n: rels.length });
+  }
+  const idxReg = ols(idxPts);
+  return { lifts, idx: { pts: idxPts, reg: idxReg, last: idxPts[idxPts.length - 1] || null } };
+}
+
 /* ---------- check-in model ---------- */
 const FIELDS = [
   { group:'Body', key:'weight', label:'Morning weight', unit:'lb', step:0.2, dec:1, kind:'weight' },
@@ -498,18 +675,29 @@ const hits = c => c ? [num(c.calories) != null && num(c.calories) <= T.calories,
 const hasData = c => c && ['weight','calories','protein','water','steps'].some(k => num(c[k]) != null);
 
 /* ---------- UI state ---------- */
-const UI = { tab: 'train', week: weekOf(today()), day: null, open: null, date: clamp(dayIndex(today()), 0, PROFILE.weeks * 7 - 1) === dayIndex(today()) ? today() : addDays(PROFILE.startDate, clamp(dayIndex(today()), 0, PROFILE.weeks * 7 - 1)), timer: null };
+const UI = {
+  tab: 'train',
+  week: weekOf(today()),
+  day: null,
+  open: null,
+  date: clamp(dayIndex(today()), 0, PROFILE.weeks * 7 - 1) === dayIndex(today()) ? today() : addDays(PROFILE.startDate, clamp(dayIndex(today()), 0, PROFILE.weeks * 7 - 1)),
+  timer: null,
+  lift: null,
+  liftMode: 'e1rm',
+};
 UI.day = defaultDay(UI.week);
 
 /* ---------- render ---------- */
 function render() {
-  $('#client-name').textContent = S.settings.name || PROFILE.name;
+  const dispName = S.settings.name || PROFILE.name;
+  $('#client-name').textContent = dispName;
+  document.title = `${dispName} — CLF Protocol`;
   $('#client-sub').textContent = `${PROFILE.phase ? PROFILE.phase + ' · ' : ''}Week ${weekOf(today())} of ${PROFILE.weeks}`;
   renderChip();
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-current', b.dataset.tab === UI.tab ? 'page' : 'false'));
   const v = $('#view');
   v.innerHTML = UI.tab === 'train' ? viewTrain() : UI.tab === 'checkin' ? viewCheckin() : viewProgress();
-  if (UI.tab === 'progress') drawWeightChart();
+  if (UI.tab === 'progress') { drawWeightChart(); drawLiftChart(); }
 }
 
 function renderChip() {
@@ -536,6 +724,7 @@ function viewTrain() {
   const mins = Math.max(5, Math.round(list.reduce((a, p) => a + p.sets * (p.rest + 45), 0) / 60 / 5) * 5);
   const wStart = addDays(PROFILE.startDate, (wk - 1) * 7);
   const eyebrow = wk === weekOf(today()) ? longDate(today()) : `Week ${wk} · ${shortDate(wStart)} – ${shortDate(addDays(wStart, 6))}`;
+  const dList = days();
   return `<section class="view">
     <div class="eyebrow">${eyebrow}</div>
     <div class="title-row">
@@ -547,8 +736,8 @@ function viewTrain() {
       </div>
     </div>
     <p class="lede">${list.length} exercises · ${total} sets · about ${mins} min</p>
-    <div class="seg" role="tablist" aria-label="Training day">
-      ${days().map(d => `<button class="seg-btn" role="tab" aria-selected="${d === day}" data-action="day" data-day="${esc(d)}">${esc(d)}${sessionState(wk, d) === 'done' ? `<span class="seg-tick">${icon('check')}</span>` : ''}</button>`).join('')}
+    <div class="seg" data-many="${dList.length >= 5}" role="tablist" aria-label="Training day">
+      ${dList.map(d => `<button class="seg-btn" role="tab" aria-selected="${d === day}" data-action="day" data-day="${esc(d)}">${esc(d)}${sessionState(wk, d) === 'done' ? `<span class="seg-tick">${icon('check')}</span>` : ''}</button>`).join('')}
     </div>
     <div class="progress">
       <div class="progress-meta"><span>${done} of ${total} sets</span><span class="mono">${pct}%</span></div>
@@ -574,7 +763,7 @@ function exCard(p, i, sess, wk) {
   const doneN = e.sets.filter(s => s.done).length;
   const complete = doneN === e.sets.length;
   const last = lastPerf(p.name, wk);
-  const lastTxt = last ? `Last ${last.w ? fmt(last.w, last.w % 1 ? 1 : 0) + ' lb' : 'BW'} × ${last.r ?? '—'}` : 'First time';
+  const lastTxt = last ? `Last ${last.w ? fw(last.w) + ' lb' : 'BW'} × ${last.r ?? '—'}` : 'First time';
   const top = topSet(e.sets);
   const est = top ? e1rm(num(top.w), num(top.r)) : null;
   const n = esc(p.name);
@@ -591,7 +780,7 @@ function exCard(p, i, sess, wk) {
         <div class="set-head"><span></span><span>${p.bw ? '+lb' : 'lb'}</span><span>Reps</span><span>RPE</span><span></span></div>
         ${e.sets.map((s, j) => `<div class="set${s.done ? ' is-done' : ''}">
           <span class="set-n mono">${j + 1}</span>
-          <input class="num-input" inputmode="decimal" aria-label="Set ${j + 1} weight" data-name="${n}" data-set="${j}" data-field="w" value="${esc(s.w)}" placeholder="${last && last.w ? fmt(last.w, last.w % 1 ? 1 : 0) : (p.bw ? 'BW' : '—')}">
+          <input class="num-input" inputmode="decimal" aria-label="Set ${j + 1} weight" data-name="${n}" data-set="${j}" data-field="w" value="${esc(s.w)}" placeholder="${last && last.w ? fw(last.w) : (p.bw ? 'BW' : '—')}">
           <input class="num-input" inputmode="numeric" aria-label="Set ${j + 1} reps" data-name="${n}" data-set="${j}" data-field="r" value="${esc(s.r)}" placeholder="${p.reps ?? '—'}">
           <input class="num-input" inputmode="decimal" aria-label="Set ${j + 1} RPE" data-name="${n}" data-set="${j}" data-field="rpe" value="${esc(s.rpe)}" placeholder="—">
           <button class="set-check" data-action="check" data-name="${n}" data-set="${j}" aria-label="${s.done ? 'Undo' : 'Complete'} set ${j + 1}" aria-pressed="${s.done}">${icon('check')}</button>
@@ -634,6 +823,7 @@ function viewCheckin() {
   const h = hits(c);
   const groups = [...new Set(FIELDS.map(f => f.group))];
   const minD = PROFILE.startDate, maxD = today() < addDays(PROFILE.startDate, PROFILE.weeks * 7 - 1) ? today() : addDays(PROFILE.startDate, PROFILE.weeks * 7 - 1);
+  const jointLabel = PROFILE.jointLabel || 'Joint comfort';
   const scale = (key, label, lo, hi) => {
     const v = num(c[key]);
     return `<div class="metric">
@@ -675,7 +865,7 @@ function viewCheckin() {
     </div>`).join('')}
     <div class="section-label">Recovery</div>
     <div class="card">
-      ${scale('shoulder', 'Shoulder comfort', 'Painful', 'No symptoms')}
+      ${scale('shoulder', jointLabel, 'Achy / painful', 'Feeling great')}
       ${scale('readiness', 'Readiness', 'Drained', 'Ready to train')}
     </div>
     <div class="section-label">Notes</div>
@@ -693,18 +883,46 @@ function viewProgress() {
   const delta = avg7 != null && startW != null ? avg7 - startW : null;
   const toGoal = avg7 != null ? T.weight - avg7 : null;
 
-  const keyNames = days().flatMap(d => PROGRAM.filter(p => p.day === d && !p.bw).slice(0, 2).map(p => p.name));
-  const lifts = keyNames.map(name => {
-    const p = PROGRAM.find(x => x.name === name);
-    const weeks = Array.from({ length: PROFILE.weeks }, (_, i) => {
-      const s = S.sessions[`${i + 1}:${p.day}`]; const t = s && s.ex[name] && topSet(s.ex[name].sets); return t ? num(t.w) : null;
-    });
-    let best = null;
-    Object.values(S.sessions).forEach(s => { const t = s.ex[name] && topSet(s.ex[name].sets); const v = t && e1rm(num(t.w), num(t.r)); if (v && (!best || v > best)) best = v; });
-    const logged = weeks.filter(x => x != null);
-    return { name, weeks, best, first: logged[0], last: logged[logged.length - 1] };
-  });
-  const maxW = Math.max(1, ...lifts.flatMap(l => l.weeks.filter(Boolean)));
+  const st = buildLiftStats();
+  const lifts = st.lifts;
+  if (!UI.lift || (UI.lift !== 'ALL' && !lifts.some(l => l.name === UI.lift))) {
+    const firstLogged = lifts.find(l => l.pts.length >= 2) || lifts.find(l => l.pts.length) || lifts[0];
+    UI.lift = firstLogged ? firstLogged.name : 'ALL';
+  }
+  const selLift = UI.lift === 'ALL' ? null : lifts.find(l => l.name === UI.lift);
+  const isE1 = UI.liftMode === 'e1rm';
+
+  let bigVal = '—', bigUnit = '', subCap = '', side1 = '', side2 = '', kpiStart = '—', kpiPace = '—', kpiProj = '—';
+  if (UI.lift === 'ALL') {
+    const cur = st.idx.last ? st.idx.last.v : null;
+    const slope = st.idx.reg ? st.idx.reg.slope : null;
+    const proj = st.idx.reg ? st.idx.reg.at(PROFILE.weeks) : null;
+    subCap = 'Compound strength index (vs Week 1)';
+    bigVal = cur == null ? '—' : `${cur >= 0 ? '+' : '−'}${fmt(Math.abs(cur), 1)}`;
+    bigUnit = cur == null ? '' : '%';
+    side1 = slope != null ? `<div class="${slope >= 0 ? 'delta-up' : 'delta-down'} mono">${slope >= 0 ? '+' : '−'}${fmt(Math.abs(slope), 1)}% / wk</div>` : '<div>Log 2+ weeks for pace</div>';
+    side2 = proj != null ? `W${PROFILE.weeks} trajectory: ${proj >= 0 ? '+' : '−'}${fmt(Math.abs(proj), 1)}%` : 'Across tracked compounds';
+    kpiStart = '0.0%';
+    kpiPace = slope != null ? `${slope >= 0 ? '+' : '−'}${fmt(Math.abs(slope), 1)}%/wk` : '—';
+    kpiProj = proj != null ? `${proj >= 0 ? '+' : '−'}${fmt(Math.abs(proj), 1)}%` : '—';
+  } else if (selLift) {
+    const reg = isE1 ? selLift.regE : selLift.regW;
+    const curV = selLift.last ? (isE1 ? selLift.last.e1rm : selLift.last.w) : null;
+    const startV = selLift.first ? (isE1 ? selLift.first.e1rm : selLift.first.w) : null;
+    const gain = curV != null && startV != null && selLift.pts.length >= 2 ? curV - startV : null;
+    const slope = reg ? reg.slope : null;
+    const proj = reg ? Math.max(0, reg.at(PROFILE.weeks)) : null;
+    subCap = selLift.last ? `${isE1 ? 'Current est. 1RM' : 'Working weight'} · ${fw(selLift.last.w)} lb × ${selLift.last.r}` : (isE1 ? 'Estimated 1RM' : 'Working weight');
+    bigVal = curV != null ? fmt(curV, isE1 ? 0 : (curV % 1 ? 1 : 0)) : '—';
+    bigUnit = curV != null ? 'lb' : '';
+    side1 = gain != null ? `<div class="${gain >= 0 ? 'delta-up' : 'delta-down'} mono">${gain >= 0 ? '+' : '−'}${fmt(Math.abs(gain), 1)} lb since W${selLift.first.wk}</div>` : '<div>Log 2+ weeks for pace</div>';
+    side2 = proj != null ? `W${PROFILE.weeks} trajectory: ${fmt(proj, 0)} lb` : 'Linear strength projection';
+    kpiStart = startV != null ? `${fmt(startV, isE1 ? 0 : (startV % 1 ? 1 : 0))} lb` : '—';
+    kpiPace = slope != null ? `${slope >= 0 ? '+' : '−'}${fmt(Math.abs(slope), 1)} lb/wk` : '—';
+    kpiProj = proj != null ? `${fmt(proj, 0)} lb` : '—';
+  }
+
+  const maxW = Math.max(1, ...lifts.flatMap(l => l.weeks.filter(Boolean).map(x => x.w)));
   const curWk = weekOf(today());
 
   const cal = Array.from({ length: PROFILE.weeks }, (_, w) => `<span class="mono">W${w + 1}</span>` + Array.from({ length: 7 }, (_, d) => {
@@ -718,7 +936,48 @@ function viewProgress() {
   return `<section class="view">
     <div class="eyebrow">${PROFILE.phase || 'Current phase'} · Day ${clamp(dayIndex(today()) + 1, 1, PROFILE.weeks * 7)} of ${PROFILE.weeks * 7}</div>
     <h1>Progress</h1>
-    <p class="lede">${loggedDays ? `${loggedDays} days logged · ${onT} on target` : 'Your trends show up here once you start logging.'}</p>
+    <p class="lede">${loggedDays ? `${loggedDays} days logged · ${onT} on target` : 'Your strength and bodyweight trends appear as you log.'}</p>
+
+    <div class="section-label">
+      <span>Strength trajectory</span>
+      ${UI.lift !== 'ALL' ? `<div class="mode-switch" role="group" aria-label="Strength metric">
+        <button type="button" data-action="lift-mode" data-mode="e1rm" aria-pressed="${isE1}">Est. 1RM</button>
+        <button type="button" data-action="lift-mode" data-mode="weight" aria-pressed="${!isE1}">Working lb</button>
+      </div>` : '<span>Composite %</span>'}
+    </div>
+    <div class="card">
+      <div class="lift-pills" role="tablist" aria-label="Select lift">
+        <button type="button" class="lift-pill" role="tab" aria-selected="${UI.lift === 'ALL'}" data-action="pick-lift" data-name="ALL">All compounds</button>
+        ${lifts.map(l => `<button type="button" class="lift-pill" role="tab" aria-selected="${UI.lift === l.name}" data-action="pick-lift" data-name="${esc(l.name)}">${esc(l.short)}</button>`).join('')}
+      </div>
+      <div class="stat-row">
+        <div><div class="card-meta" style="margin-bottom:6px">${esc(subCap)}</div><div class="stat-big mono">${bigVal}${bigUnit ? `<small>${bigUnit}</small>` : ''}</div></div>
+        <div class="stat-side">${side1}<div>${side2}</div></div>
+      </div>
+      <div class="chart tall" id="lchart"></div>
+      <div class="legend">
+        <span><i class="line" style="background:var(--accent)"></i>Logged</span>
+        <span><i class="line" style="background:repeating-linear-gradient(90deg,#FF5A1F 0 4px,transparent 4px 7px)"></i>Trajectory to W${PROFILE.weeks}</span>
+      </div>
+      <div class="traj-kpis">
+        <div class="traj-kpi"><span>Baseline</span><b class="mono">${kpiStart}</b></div>
+        <div class="traj-kpi"><span>Weekly velocity</span><b class="mono ${kpiPace.startsWith('+') ? 'delta-up' : ''}">${kpiPace}</b></div>
+        <div class="traj-kpi"><span>Proj. Week ${PROFILE.weeks}</span><b class="mono">${kpiProj}</b></div>
+      </div>
+    </div>
+
+    <div class="section-label"><span>Compound lifts</span><span>Tap a lift to inspect curve</span></div>
+    <div class="card">
+      ${lifts.map(l => {
+        const slope = l.regW ? l.regW.slope : null;
+        return `<button type="button" class="lift${UI.lift === l.name ? ' is-sel' : ''}" data-action="pick-lift" data-name="${esc(l.name)}">
+          <div class="lift-name">${esc(l.name)}</div>
+          <div class="lift-e1rm mono">${l.best ? fmt(l.best) : '—'}<span class="lift-sub"> e1RM</span></div>
+          <div class="lift-sub mono">${l.first ? `${fw(l.first.w)} → ${fw(l.last.w)} lb${slope != null ? ` · <span class="${slope >= 0 ? 'delta-up' : 'delta-down'}">${slope >= 0 ? '+' : '−'}${fmt(Math.abs(slope), 1)}/wk</span>` : ''}` : 'Not logged yet'}</div>
+          <div class="lift-bars">${l.weeks.map((x, i) => `<i class="${x ? (i + 1 === curWk ? 'cur' : 'on') : ''}" style="height:${x ? 6 + (x.w / maxW) * 14 : 3}px"></i>`).join('')}</div>
+        </button>`;
+      }).join('')}
+    </div>
 
     <div class="section-label">Bodyweight</div>
     <div class="card">
@@ -732,16 +991,6 @@ function viewProgress() {
       <div class="chart" id="wchart"></div>
     </div>
 
-    <div class="section-label"><span>Key lifts</span><span>Working weight by week</span></div>
-    <div class="card">
-      ${lifts.map(l => `<div class="lift">
-        <div class="lift-name">${esc(l.name)}</div>
-        <div class="lift-e1rm mono">${l.best ? fmt(l.best) : '—'}<span class="lift-sub"> e1RM</span></div>
-        <div class="lift-sub mono">${l.first != null ? `${fmt(l.first, l.first % 1 ? 1 : 0)} → ${fmt(l.last, l.last % 1 ? 1 : 0)} lb` : 'Not logged yet'}</div>
-        <div class="lift-bars">${l.weeks.map((w, i) => `<i class="${w != null ? (i + 1 === curWk ? 'cur' : 'on') : ''}" style="height:${w != null ? 6 + (w / maxW) * 16 : 3}px"></i>`).join('')}</div>
-      </div>`).join('')}
-    </div>
-
     <div class="section-label"><span>Consistency</span><span>Calories · protein · water · steps</span></div>
     <div class="card">
       <div class="grid-cal">${cal}</div>
@@ -750,9 +999,58 @@ function viewProgress() {
   </section>`;
 }
 
+function drawLiftChart() {
+  const el = $('#lchart'); if (!el) return;
+  const W = el.clientWidth || 320, H = el.clientHeight || 168, P = { t: 16, r: 14, b: 22, l: 38 };
+  const st = buildLiftStats();
+  const isAll = UI.lift === 'ALL';
+  const isE1 = UI.liftMode === 'e1rm';
+  let pts = [], reg = null, unit = 'lb';
+  if (isAll) {
+    pts = st.idx.pts.map(p => ({ wk: p.wk, v: p.v }));
+    reg = st.idx.reg;
+    unit = '%';
+  } else {
+    const l = st.lifts.find(x => x.name === UI.lift);
+    if (l) {
+      pts = l.pts.map(p => ({ wk: p.wk, v: isE1 ? p.e1rm : p.w }));
+      reg = isE1 ? l.regE : l.regW;
+    }
+  }
+  if (!pts.length) { el.innerHTML = `<div class="empty">Complete sets on this lift to see your strength trajectory.</div>`; return; }
+
+  const weeks = PROFILE.weeks;
+  const projEnd = reg ? (isAll ? reg.at(weeks) : Math.max(0, reg.at(weeks))) : null;
+  const allVals = pts.map(p => p.v).concat(projEnd != null ? [projEnd, reg.at(pts[0].wk)] : []);
+  const minV = Math.min(...allVals), maxV = Math.max(...allVals);
+  const padV = Math.max(isAll ? 2 : 5, (maxV - minV) * 0.22);
+  const lo = isAll ? Math.floor(minV - padV) : Math.max(0, Math.floor((minV - padV) / 5) * 5);
+  const hi = Math.ceil((maxV + padV) / (isAll ? 2 : 5)) * (isAll ? 2 : 5) || (lo + 10);
+
+  const x = wk => P.l + ((wk - 1) / Math.max(1, weeks - 1)) * (W - P.l - P.r);
+  const y = v => P.t + (1 - (v - lo) / Math.max(1, hi - lo)) * (H - P.t - P.b);
+  const ticks = [lo, Math.round((lo + hi) / 2), hi];
+  const last = pts[pts.length - 1];
+  const linePath = pts.map((p, k) => `${k ? 'L' : 'M'}${x(p.wk).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ');
+  const areaPath = pts.length >= 2 ? `${linePath} L${x(last.wk).toFixed(1)},${(H - P.b).toFixed(1)} L${x(pts[0].wk).toFixed(1)},${(H - P.b).toFixed(1)} Z` : '';
+
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Strength trajectory">
+    <defs><linearGradient id="lfill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FF5A1F" stop-opacity=".16"/><stop offset="1" stop-color="#FF5A1F" stop-opacity="0"/></linearGradient></defs>
+    ${ticks.map(t => `<line x1="${P.l}" x2="${W - P.r}" y1="${y(t)}" y2="${y(t)}" stroke="rgba(255,255,255,.06)"/><text x="${P.l - 7}" y="${y(t) + 3.5}" text-anchor="end" font-size="10" fill="#6A6A6E" font-family="Geist Mono, ui-monospace, monospace">${isAll && t > 0 ? '+' + t + '%' : isAll ? t + '%' : t}</text>`).join('')}
+    ${Array.from({ length: weeks }, (_, w) => `<text x="${x(w + 1)}" y="${H - 4}" text-anchor="middle" font-size="10" fill="#6A6A6E" font-family="Geist Mono, ui-monospace, monospace">W${w + 1}</text>`).join('')}
+    ${areaPath ? `<path d="${areaPath}" fill="url(#lfill)"/>` : ''}
+    ${reg ? `<line x1="${x(pts[0].wk).toFixed(1)}" y1="${y(reg.at(pts[0].wk)).toFixed(1)}" x2="${x(last.wk).toFixed(1)}" y2="${y(reg.at(last.wk)).toFixed(1)}" stroke="rgba(255,255,255,.22)" stroke-width="1.25" stroke-dasharray="2 3"/>` : ''}
+    ${reg && last.wk < weeks ? `<line x1="${x(last.wk).toFixed(1)}" y1="${y(last.v).toFixed(1)}" x2="${x(weeks).toFixed(1)}" y2="${y(projEnd).toFixed(1)}" stroke="#FF5A1F" stroke-opacity=".75" stroke-width="1.75" stroke-dasharray="4 4"/>
+      <circle cx="${x(weeks).toFixed(1)}" cy="${y(projEnd).toFixed(1)}" r="3.8" fill="#141416" stroke="#FF5A1F" stroke-width="1.8"/>
+      <text x="${x(weeks) - 6}" y="${Math.max(12, y(projEnd) - 8)}" text-anchor="end" font-size="10" fill="#A3A3A0" font-family="Geist Mono, ui-monospace, monospace">${isAll ? (projEnd >= 0 ? '+' : '') + fmt(projEnd, 1) + '%' : fmt(projEnd, 0) + ' ' + unit}</text>` : ''}
+    ${pts.length >= 2 ? `<path d="${linePath}" fill="none" stroke="#FF5A1F" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>` : ''}
+    ${pts.map((p, k) => `<circle cx="${x(p.wk).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="${k === pts.length - 1 ? 4.2 : 2.8}" fill="#FF5A1F" stroke="#141416" stroke-width="${k === pts.length - 1 ? 2 : 1.2}"/>`).join('')}
+  </svg>`;
+}
+
 function drawWeightChart() {
   const el = $('#wchart'); if (!el) return;
-  const W = el.clientWidth, H = el.clientHeight || 150, P = { t: 10, r: 6, b: 20, l: 34 };
+  const W = el.clientWidth || 320, H = el.clientHeight || 150, P = { t: 10, r: 6, b: 20, l: 34 };
   const total = PROFILE.weeks * 7;
   const pts = Object.keys(S.checkins).sort().map(d => ({ i: dayIndex(d), v: num(S.checkins[d].weight) })).filter(p => p.v != null && p.i >= 0 && p.i < total);
   if (!pts.length) { el.innerHTML = `<div class="empty">Log your morning weight to see the trend.</div>`; return; }
@@ -760,7 +1058,7 @@ function drawWeightChart() {
   const lo = Math.floor(Math.min(...vals) - 1), hi = Math.ceil(Math.max(...vals) + 0.5);
   const x = i => P.l + (i / (total - 1)) * (W - P.l - P.r);
   const y = v => P.t + (1 - (v - lo) / (hi - lo)) * (H - P.t - P.b);
-  const avg = pts.map((p, k) => { const win = pts.filter(q => q.i <= p.i && q.i > p.i - 7); return { i: p.i, v: win.reduce((a, q) => a + q.v, 0) / win.length }; });
+  const avg = pts.map(p => { const win = pts.filter(q => q.i <= p.i && q.i > p.i - 7); return { i: p.i, v: win.reduce((a, q) => a + q.v, 0) / win.length }; });
   const path = avg.map((p, k) => `${k ? 'L' : 'M'}${x(p.i).toFixed(1)},${y(p.v).toFixed(1)}`).join('');
   const ticks = [lo, Math.round((lo + hi) / 2), hi];
   const last = avg[avg.length - 1];
@@ -929,24 +1227,28 @@ function labelFrom(target) {
 function applyRemote(d) {
   if (d.profile) {
     const p = d.profile;
+    const hasSh = /shoulder|labrum|cuff|ac joint/i.test(p.injuries || '');
     PROFILE = Object.assign({}, PROFILE, {
       name: p.name || PROFILE.name,
       phase: p.program ? (String(p.program).split(/[—–-]/).pop().trim() || PROFILE.phase) : PROFILE.phase,
       startDate: p.startDate || PROFILE.startDate,
       weeks: p.weeks || PROFILE.weeks,
+      jointLabel: hasSh ? 'Shoulder comfort' : 'Joint comfort',
     });
     S.profile = PROFILE;
-    if (p.name && (!S.settings.name || S.settings.name === 'Scott Nassif')) S.settings.name = p.name;
+    if (p.name && (!S.settings.name || S.settings.name === ACTIVE_PRESET.profile.name)) S.settings.name = p.name;
   }
   if (d.targets) { Object.keys(T).forEach(k => { if (d.targets[k] != null) T[k] = d.targets[k]; }); S.targets = T; }
   const tr = d.training || [];
   const w1 = tr.filter(r => r.week === 1 && r.exercise);
   if (w1.length) {
+    const allKnown = [...SCOTT_PROGRAM, ...EMILY_PROGRAM];
     PROGRAM = w1.map(r => {
-      const old = BASE_PROGRAM.find(b => b.name === r.exercise) || {};
-      return { day: r.day, name: r.exercise, sets: r.sets || old.sets || 3, reps: r.reps || null, label: labelFrom(r.target) || old.label || String(r.reps || ''), rest: old.rest || 90, bw: old.bw || /push-?up|pull-?up|chin-?up|dip/i.test(r.exercise), cue: r.cue || old.cue || '' };
+      const old = allKnown.find(b => b.name === r.exercise) || {};
+      return { day: r.day, name: r.exercise, sets: r.sets || old.sets || 3, reps: r.reps || null, label: labelFrom(r.target) || old.label || String(r.reps || ''), rest: old.rest || (/squat|deadlift|thrust/i.test(r.exercise) ? 150 : /press|row|pull/i.test(r.exercise) ? 90 : 60), bw: old.bw || /push-?up|pull-?up|chin-?up|dip|knee raise/i.test(r.exercise), cue: r.cue || old.cue || '' };
     });
     S.program = PROGRAM;
+    if (!days().includes(UI.day)) UI.day = defaultDay(UI.week);
   }
   const groups = {};
   tr.forEach(r => { if (r.week && r.day) (groups[`${r.week}:${r.day}`] = groups[`${r.week}:${r.day}`] || []).push(r); });
@@ -960,7 +1262,7 @@ function applyRemote(d) {
       if (prevLocal && prevLocal.sets.some(s => s.done)) { ex[r.exercise] = prevLocal; return; }
       const n = (PROGRAM.find(p => p.name === r.exercise) || {}).sets || r.sets || 3;
       const has = r.weight != null;
-      ex[r.exercise] = { note: r.note || '', sets: Array.from({ length: n }, () => ({ w: has ? r.weight : '', r: r.actualReps ?? '', rpe: r.rpe ?? '', done: !!r.done && has })) };
+      ex[r.exercise] = { note: r.note || '', sets: Array.from({ length: n }, () => ({ w: has ? r.weight : '', r: r.actualReps ?? r.reps ?? '', rpe: r.rpe ?? '', done: !!r.done && has })) };
     });
     S.sessions[k] = { ex: Object.assign({}, local ? local.ex : {}, ex), finishedAt: rows.every(r => r.done) ? ((local && local.finishedAt) || Date.now()) : ((local && local.finishedAt) || null), dirty: false };
   });
@@ -981,7 +1283,10 @@ function openSettings() {
   const st = $('#sync-status');
   st.dataset.tone = S.syncError ? 'bad' : S.lastSync ? 'ok' : '';
   st.textContent = S.syncError ? `Last attempt failed: ${S.syncError}` : S.lastSync ? `Last synced ${relTime(S.lastSync)}${S.queue.length ? ` · ${S.queue.length} waiting` : ''}` : S.queue.length ? `${S.queue.length} item${S.queue.length > 1 ? 's' : ''} saved on this phone` : '';
-  $('#demo-note').innerHTML = S.demo ? `<div class="demo-note">You're looking at sample data. It's cleared as soon as you connect a sync URL.</div>` : '';
+  const otherSlug = ACTIVE_PRESET === PRESETS.emily ? 'scott' : 'emily';
+  const otherLabel = otherSlug === 'emily' ? 'Emily' : 'Scott Nassif';
+  const swUrl = new URL(location.href); swUrl.searchParams.set('client', otherSlug); swUrl.hash = '';
+  $('#demo-note').innerHTML = `${S.demo ? `<div class="demo-note">You're looking at sample data. It's cleared as soon as you connect a sync URL.</div>` : ''}<div class="demo-note" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span>Profile: <strong>${esc(PROFILE.name)}</strong></span><a href="${esc(swUrl.toString())}" style="color:var(--accent);font-weight:500;text-decoration:none">Switch to ${otherLabel} →</a></div>`;
   $('#settings').showModal();
 }
 async function testConnection() {
@@ -1006,7 +1311,7 @@ function exportCSV() {
   const q = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
   const sets = [['Week','Day','Exercise','Set','Weight (lb)','Reps','RPE','Completed','Note']];
   Object.entries(S.sessions).sort().forEach(([k, s]) => { const [w, d] = k.split(':'); Object.entries(s.ex).forEach(([name, e]) => e.sets.forEach((x, i) => { if (x.done || x.w !== '') sets.push([w, d, name, i + 1, x.w, x.r, x.rpe, x.done ? 'Yes' : 'No', i === 0 ? e.note : '']); })); });
-  const daily = [['Date','Weight (lb)','Calories','Protein (g)','Carbs (g)','Fat (g)','Water (oz)','Steps','Sleep (h)','Shoulder','Readiness','Notes']];
+  const daily = [['Date','Weight (lb)','Calories','Protein (g)','Carbs (g)','Fat (g)','Water (oz)','Steps','Sleep (h)','Joint / Shoulder','Readiness','Notes']];
   Object.keys(S.checkins).sort().forEach(d => { const c = S.checkins[d]; if (hasData(c) || c.notes) daily.push([d, c.weight, c.calories, c.protein, c.carbs, c.fats, c.water, c.steps, c.sleep, c.shoulder, c.readiness, c.notes]); });
   const dl = (name, rows) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([rows.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv' })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); };
   const slug = (S.settings.name || 'client').toLowerCase().replace(/\W+/g, '-');
@@ -1027,6 +1332,8 @@ document.addEventListener('click', e => {
   else if (a === 'step') stepField(t.dataset.key, +t.dataset.dir);
   else if (a === 'scale') { setCheckin(t.dataset.key, +t.dataset.val); render(); }
   else if (a === 'save-checkin') saveCheckin();
+  else if (a === 'pick-lift') { UI.lift = t.dataset.name; render(); }
+  else if (a === 'lift-mode') { UI.liftMode = t.dataset.mode; render(); }
   else if (a === 'settings') openSettings();
   else if (a === 'save-settings') saveSettings();
   else if (a === 'test') testConnection();
@@ -1050,7 +1357,7 @@ document.addEventListener('input', e => {
     updateMetric(k);
   }
 });
-window.addEventListener('resize', () => { if (UI.tab === 'progress') drawWeightChart(); });
+window.addEventListener('resize', () => { if (UI.tab === 'progress') { drawWeightChart(); drawLiftChart(); } });
 window.addEventListener('online', flush);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { renderChip(); flush(); } });
 setInterval(renderChip, 30000);
