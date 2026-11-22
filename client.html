@@ -284,8 +284,22 @@ textarea.text-input{height:auto;min-height:76px;padding:10px 12px;resize:vertica
 .dock-track{height:3px;background:rgba(255,255,255,.06)}
 .dock-track i{display:block;height:100%;background:var(--accent);transition:width .25s linear}
 
-.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(520px,100%);z-index:40;display:grid;grid-template-columns:repeat(3,1fr);
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(520px,100%);z-index:40;display:grid;grid-template-columns:repeat(4,1fr);
   padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:rgba(5,7,7,.84);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+.chat-list{display:flex;flex-direction:column;gap:10px;min-height:240px;max-height:58vh;overflow-y:auto;padding:4px 2px 12px}
+.msg{max-width:82%;padding:11px 14px;border-radius:14px;font-size:14px;line-height:1.48}
+.msg.coach{align-self:flex-start;background:var(--surface-2);border:1px solid var(--line-2);border-bottom-left-radius:4px}
+.msg.client{align-self:flex-end;background:var(--accent-tint);border:1px solid var(--accent-line);color:var(--text);border-bottom-right-radius:4px}
+.msg-meta{font-size:11px;color:var(--text-3);margin-top:4px}
+.chat-form{display:flex;gap:8px;margin-top:12px}
+.chat-form input{flex:1;height:44px;border-radius:11px;border:1px solid var(--line-2);background:var(--bg);padding:0 13px;font-size:14.5px;outline:none}
+.chat-form input:focus{border-color:var(--accent-line)}
+.photo-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.photo-slot{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.photo-slot img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;background:var(--bg)}
+.photo-cap{padding:8px 10px;font-size:11.5px;color:var(--text-2);display:flex;justify-content:space-between}
+.photo-upload-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.photo-upload-row select{height:36px;border-radius:9px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:13px}
 @media (min-width:560px){.tabbar{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
 .tab{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;color:var(--text-3);font-size:11.5px;font-weight:500;border-radius:10px}
 .tab svg.i{width:21px;height:21px}
@@ -384,6 +398,7 @@ const ICONS = {
   x: '<path d="M18 6L6 18M6 6l12 12"/>',
   copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
   heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
+  chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
 };
 const ic = k => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[k] || ''}</svg>`;
 
@@ -458,6 +473,10 @@ const S = {
   checkins: {}, // key: ymd -> row
   measurements: [], // sorted asc by date
   notes: [],
+  messages: [],
+  photos: [],
+  photoUrls: {},
+  photoPose: 'Front',
   tab: 'train',
   week: 1,
   day: '',
@@ -547,12 +566,14 @@ async function loadClientBundle(clientRow) {
   S.syncState = 'syncing';
   render();
   try {
-    const [exRes, setRes, chkRes, measRes, noteRes] = await Promise.all([
+    const [exRes, setRes, chkRes, measRes, noteRes, msgRes, phRes] = await Promise.all([
       sb.from('program_exercises').select('*').eq('client_id', clientRow.id).order('day_order').order('exercise_order'),
       sb.from('workout_sets').select('*').eq('client_id', clientRow.id),
       sb.from('checkins').select('*').eq('client_id', clientRow.id).order('date'),
       sb.from('measurements').select('*').eq('client_id', clientRow.id).order('date'),
       sb.from('coach_notes').select('*').eq('client_id', clientRow.id).order('created_at', { ascending: false }).limit(10),
+      sb.from('messages').select('*').eq('client_id', clientRow.id).order('created_at'),
+      sb.from('progress_photos').select('*').eq('client_id', clientRow.id).order('date'),
     ]);
     S.exercises = exRes.data || [];
     S.setsMap = {};
@@ -561,6 +582,15 @@ async function loadClientBundle(clientRow) {
     (chkRes.data || []).forEach(r => { S.checkins[r.date] = r; });
     S.measurements = measRes.data || [];
     S.notes = noteRes.data || [];
+    S.messages = msgRes.error ? [] : (msgRes.data || []);
+    S.photos = phRes.error ? [] : (phRes.data || []);
+    S.photoUrls = {};
+    if (S.photos.length) {
+      await Promise.all(S.photos.map(async p => {
+        const { data } = await sb.storage.from('progress-photos').createSignedUrl(p.storage_path, 3600);
+        if (data?.signedUrl) S.photoUrls[p.id] = data.signedUrl;
+      }));
+    }
     const ds = daysList();
     S.day = ds[0] || '';
     S.openEx = null;
@@ -569,6 +599,42 @@ async function loadClientBundle(clientRow) {
     S.syncState = 'error';
     toast('Sync error: ' + err.message);
   }
+  render();
+}
+
+async function uploadProgressPhoto(file, pose) {
+  if (!file || !S.client) return;
+  if (S.mode === 'demo') { toast('Sign in to upload private progress photos'); return; }
+  S.syncState = 'syncing'; updateChip();
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const path = `${S.client.id}/${Date.now()}_${pose.toLowerCase()}.${ext}`;
+  const { error: upErr } = await sb.storage.from('progress-photos').upload(path, file, { upsert: false });
+  if (upErr) { S.syncState = 'error'; updateChip(); toast('Upload failed: ' + upErr.message); return; }
+  const { data: row, error: insErr } = await sb.from('progress_photos').insert({
+    client_id: S.client.id, date: S.checkDate, pose, storage_path: path
+  }).select().single();
+  if (insErr) { S.syncState = 'error'; updateChip(); toast('Save failed: ' + insErr.message); return; }
+  const { data: signed } = await sb.storage.from('progress-photos').createSignedUrl(path, 3600);
+  S.photos.push(row);
+  if (signed?.signedUrl) S.photoUrls[row.id] = signed.signedUrl;
+  S.syncState = 'ok'; updateChip();
+  toast(`${pose} progress photo uploaded!`);
+  render();
+}
+
+async function sendChat(body) {
+  const txt = body.trim();
+  if (!txt || !S.client) return;
+  const sender = S.isCoach ? 'coach' : 'client';
+  if (S.mode === 'demo') {
+    S.messages.push({ id: 'd-' + Date.now(), sender_role: sender, body: txt, created_at: new Date().toISOString() });
+    render(); return;
+  }
+  const { data, error } = await sb.from('messages').insert({
+    client_id: S.client.id, coach_id: S.client.coach_id, sender_role: sender, body: txt
+  }).select().single();
+  if (error) { toast('Send failed: ' + error.message); return; }
+  S.messages.push(data);
   render();
 }
 
@@ -1030,11 +1096,23 @@ function viewCheckin() {
           <div class="meas-field"><label>Hips (in)</label><input class="num-input" name="hips_in" type="number" step="0.1" value="${curMeas.hips_in ?? ''}" placeholder="—"></div>
           <div class="meas-field"><label>Arms (in)</label><input class="num-input" name="arms_in" type="number" step="0.1" value="${curMeas.arms_in ?? ''}" placeholder="—"></div>
           <div class="meas-field"><label>Thighs (in)</label><input class="num-input" name="thighs_in" type="number" step="0.1" value="${curMeas.thighs_in ?? ''}" placeholder="—"></div>
-          <div class="meas-field"><label>Check-in photo link</label><input class="text-input" style="margin:0;height:44px" name="photo_url" type="url" value="${esc(curMeas.photo_url || '')}" placeholder="Drive / iCloud link"></div>
+          <div class="meas-field"><label>External photo link (optional)</label><input class="text-input" style="margin:0;height:44px" name="photo_url" type="url" value="${esc(curMeas.photo_url || '')}" placeholder="Drive / iCloud link"></div>
         </div>
         <input class="text-input" name="notes" placeholder="Measurement notes…" value="${esc(curMeas.notes || '')}">
         <button type="submit" class="btn btn-primary btn-block" style="margin-top:12px">Save measurements</button>
-      </form>` : `<div class="card-meta">${S.measurements.length ? `Last logged ${S.measurements[S.measurements.length - 1].date} · Waist ${S.measurements[S.measurements.length - 1].waist_in ?? '—'}"` : 'Track weekly waist, chest, hips, arms & check-in photos.'}</div>`}
+      </form>` : `<div class="card-meta">${S.measurements.length ? `Last logged ${S.measurements[S.measurements.length - 1].date} · Waist ${S.measurements[S.measurements.length - 1].waist_in ?? '—'}"` : 'Track weekly waist, chest, hips, arms & private check-in photos.'}</div>`}
+      <div class="photo-upload-row">
+        <select id="photo-pose" aria-label="Photo pose">
+          <option value="Front" ${S.photoPose === 'Front' ? 'selected' : ''}>Front pose</option>
+          <option value="Side" ${S.photoPose === 'Side' ? 'selected' : ''}>Side pose</option>
+          <option value="Back" ${S.photoPose === 'Back' ? 'selected' : ''}>Back pose</option>
+        </select>
+        <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+          Upload Private Photo
+          <input type="file" id="photo-file" accept="image/*" style="display:none">
+        </label>
+        <span class="card-meta" style="margin-left:auto">${S.photos.length} uploaded</span>
+      </div>
     </div>
   </div>`;
 }
@@ -1049,6 +1127,8 @@ function viewProgress() {
   const base = pts[0];
   const proj = reg ? reg.at(c.weeks || 8) : last?.v;
   const gain = last && base ? last.v - base.v : null;
+  const posePhotos = S.photos.filter(p => p.pose === S.photoPose);
+  const firstPh = posePhotos[0], lastPh = posePhotos.length > 1 ? posePhotos[posePhotos.length - 1] : null;
 
   return `<div class="view">
     <div class="eyebrow">${esc(c.phase)} · Week ${S.week} of ${c.weeks || 8}</div>
@@ -1086,6 +1166,25 @@ function viewProgress() {
       <div class="chart">${renderWeightChart()}</div>
     </div>
 
+    ${S.photos.length ? `<div class="section-label">
+      <span>Progress photos (private)</span>
+      <div class="mode-switch">
+        ${['Front','Side','Back'].map(ps => `<button data-act="pose" data-v="${ps}" aria-pressed="${S.photoPose === ps}">${ps}</button>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      ${firstPh ? `<div class="photo-compare">
+        <div class="photo-slot">
+          ${S.photoUrls[firstPh.id] ? `<img src="${esc(S.photoUrls[firstPh.id])}" alt="Baseline ${esc(S.photoPose)}">` : '<div class="empty">Loading…</div>'}
+          <div class="photo-cap"><span>Baseline</span><span class="num">${esc(firstPh.date)}</span></div>
+        </div>
+        <div class="photo-slot">
+          ${lastPh && S.photoUrls[lastPh.id] ? `<img src="${esc(S.photoUrls[lastPh.id])}" alt="Latest ${esc(S.photoPose)}">` : '<div class="empty" style="padding:60px 12px">Upload another photo in Check-in to compare side-by-side</div>'}
+          <div class="photo-cap"><span>Latest</span><span class="num">${lastPh ? esc(lastPh.date) : '—'}</span></div>
+        </div>
+      </div>` : `<div class="empty">No ${esc(S.photoPose)} photos uploaded yet.</div>`}
+    </div>` : ''}
+
     ${S.measurements.length ? `<div class="section-label"><span>Body measurements</span><span>${S.measurements.length} entries</span></div>
     <div class="card">
       ${S.measurements.slice(-4).reverse().map(m => `<div class="lift" style="cursor:default">
@@ -1096,6 +1195,26 @@ function viewProgress() {
         <div class="lift-e1rm num" style="font-size:12.5px;color:var(--text-2)">W ${m.waist_in ?? '—'}" · C ${m.chest_in ?? '—'}" · A ${m.arms_in ?? '—'}"</div>
       </div>`).join('')}
     </div>` : ''}
+  </div>`;
+}
+
+function viewChat() {
+  return `<div class="view">
+    <div class="eyebrow">Direct 1-on-1 Coaching</div>
+    <h1>Coach Chat</h1>
+    <p class="lede">Message Kyle directly about form, swaps, soreness, or nutrition.</p>
+    <div class="card" style="margin-top:16px">
+      <div class="chat-list" id="chat-list">
+        ${S.messages.length ? S.messages.map(m => `<div class="msg ${m.sender_role === 'coach' ? 'coach' : 'client'}">
+          <div>${esc(m.body)}</div>
+          <div class="msg-meta">${m.sender_role === 'coach' ? 'Coach Kyle' : 'You'} · ${new Date(m.created_at).toLocaleString([], { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' })}</div>
+        </div>`).join('') : '<div class="empty">No messages yet. Say hey to Kyle below!</div>'}
+      </div>
+      <form class="chat-form" id="chat-form">
+        <input name="body" required placeholder="Type a message to your coach…" autocomplete="off">
+        <button type="submit" class="btn btn-primary btn-sm" style="height:44px;padding:0 18px">Send</button>
+      </form>
+    </div>
   </div>`;
 }
 
@@ -1155,6 +1274,7 @@ function render() {
         <button data-act="tab" data-v="train" aria-current="${S.tab === 'train' ? 'page' : 'false'}">${ic('train')}Train</button>
         <button data-act="tab" data-v="checkin" aria-current="${S.tab === 'checkin' ? 'page' : 'false'}">${ic('check')}Check-in</button>
         <button data-act="tab" data-v="progress" aria-current="${S.tab === 'progress' ? 'page' : 'false'}">${ic('prog')}Progress</button>
+        <button data-act="tab" data-v="chat" aria-current="${S.tab === 'chat' ? 'page' : 'false'}">${ic('chat')}Chat</button>
       </nav>
       <button class="chip" id="sync-chip" data-act="open-sheet" data-state="${S.mode === 'demo' ? 'pending' : S.syncState}">
         <span class="dot"></span><span>${S.mode === 'demo' ? 'Demo' : S.syncState === 'syncing' ? 'Saving…' : 'Synced'}</span>
@@ -1165,16 +1285,19 @@ function render() {
       <select id="coach-switch">${S.allClients.map(cl => `<option value="${cl.id}" ${cl.id === c.id ? 'selected' : ''}>${esc(cl.full_name)}</option>`).join('')}</select>
       <a href="coach.html">Coach Dashboard →</a>
     </div>` : ''}
-    <main>${S.tab === 'train' ? viewTrain() : S.tab === 'checkin' ? viewCheckin() : viewProgress()}</main>
+    <main>${S.tab === 'train' ? viewTrain() : S.tab === 'checkin' ? viewCheckin() : S.tab === 'chat' ? viewChat() : viewProgress()}</main>
     <div id="dock-host"></div>
     <nav class="tabbar">
       <button class="tab" data-act="tab" data-v="train" aria-current="${S.tab === 'train' ? 'page' : 'false'}">${ic('train')}Train</button>
       <button class="tab" data-act="tab" data-v="checkin" aria-current="${S.tab === 'checkin' ? 'page' : 'false'}">${ic('check')}Check-in</button>
       <button class="tab" data-act="tab" data-v="progress" aria-current="${S.tab === 'progress' ? 'page' : 'false'}">${ic('prog')}Progress</button>
+      <button class="tab" data-act="tab" data-v="chat" aria-current="${S.tab === 'chat' ? 'page' : 'false'}">${ic('chat')}Chat</button>
     </nav>
     ${renderSettingsSheet()}
   `;
   renderDock();
+  const cl = document.getElementById('chat-list');
+  if (cl) cl.scrollTop = cl.scrollHeight;
 }
 
 /* ------------------------------------------------------------------ *
@@ -1227,6 +1350,7 @@ document.addEventListener('click', async e => {
   else if (act === 'toggle-meas') { S.showMeasForm = !S.showMeasForm; render(); }
   else if (act === 'lsel') { S.liftSel = v; render(); }
   else if (act === 'lmode') { S.liftMode = v; render(); }
+  else if (act === 'pose') { S.photoPose = v; render(); }
   else if (act === 'open-sheet') { document.getElementById('settings-sheet')?.showModal(); }
   else if (act === 'close-sheet') { document.getElementById('settings-sheet')?.close(); }
   else if (act === 'copy-val') {
@@ -1243,6 +1367,11 @@ document.addEventListener('change', async e => {
   if (e.target.id === 'coach-switch') {
     const cl = S.allClients.find(x => x.id === e.target.value);
     if (cl) await loadClientBundle(cl);
+  }
+  if (e.target.id === 'photo-pose') { S.photoPose = e.target.value; }
+  if (e.target.id === 'photo-file' && e.target.files?.[0]) {
+    await uploadProgressPhoto(e.target.files[0], S.photoPose);
+    e.target.value = '';
   }
   if (e.target.dataset.setIn) {
     const k = e.target.dataset.setIn, ex = e.target.dataset.ex, n = Number(e.target.dataset.n);
@@ -1277,6 +1406,12 @@ document.addEventListener('submit', async e => {
   if (e.target.id === 'meas-form') {
     e.preventDefault();
     await saveMeasurement(e.target);
+  }
+  if (e.target.id === 'chat-form') {
+    e.preventDefault();
+    const inp = e.target.elements.body;
+    await sendChat(inp.value);
+    inp.value = '';
   }
   if (e.target.dataset.cadd) {
     e.preventDefault();
