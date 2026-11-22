@@ -167,6 +167,14 @@ dialog.modal::backdrop{background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(4
 .field input:focus,.field textarea:focus{border-color:var(--accent-line)}
 .modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:16px 24px 20px;border-top:1px solid var(--line)}
 
+.card{transition:border-color .2s var(--ease),transform .22s var(--ease),box-shadow .2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.048),0 8px 26px rgba(0,0,0,.38)}
+.card:hover{border-color:rgba(255,255,255,.11)}
+.btn{transition:transform .18s var(--ease),background .15s,border-color .15s,filter .15s,box-shadow .2s}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:scale(.98)}
+.btn-accent{box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 4px 16px rgba(45,212,191,.2)}
+.btn-accent:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 22px rgba(45,212,191,.28)}
+.nav-btn,.client-btn{transition:background .15s,color .15s}
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,8px);opacity:0;pointer-events:none;background:var(--text);color:var(--bg);font-size:13px;font-weight:500;padding:10px 14px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .2s,transform .2s var(--ease);z-index:60}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
@@ -604,7 +612,7 @@ function viewClient(c) {
     const subj = isMo ? `Phase Gate Review — Ready for ${nextPhaseLabel(c.phase)}!` : `Your 8-Week CLF Protocol — Renewal Options`;
     const body = isMo
       ? `Hey ${first},\n\nYou're wrapping up ${c.phase}! I'm doing your Phase Gate Review this week to build ${nextPhaseLabel(c.phase)}. Reply with any lifts you loved, joints to watch, or schedule changes.\n\n— Kyle`
-      : `Hey ${first},\n\nYou're wrapping up your 8-week ${c.phase} protocol! To keep your momentum going with updated programming and coaching, you can:\n\n1. Switch to the $50/month Ongoing Membership (continuous phase-gate updates & weekly coaching)\n2. Renew another 8-Week Intensive ($100): https://buy.stripe.com/9B63cvct3fQS0TReVDaR200?prefilled_email=${encodeURIComponent(c.email)}\n\nLet me know which option you'd like!\n\n— Kyle`;
+      : `Hey ${first},\n\nYou're wrapping up your 8-week ${c.phase} protocol! To keep your momentum going with updated programming and coaching, you can:\n\n1. Switch to the $50/month Ongoing Membership (continuous phase-gate updates & weekly coaching): https://buy.stripe.com/aFa28r1Opawy9qn5l3aR201?prefilled_email=${encodeURIComponent(c.email)}\n2. Renew another 8-Week Intensive ($100): https://buy.stripe.com/9B63cvct3fQS0TReVDaR200?prefilled_email=${encodeURIComponent(c.email)}\n\nLet me know which option you'd like!\n\n— Kyle`;
     return `mailto:${encodeURIComponent(c.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
   })() : '';
 
