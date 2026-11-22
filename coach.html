@@ -233,7 +233,9 @@ const S = {
   user: null,
   clients: [],
   intakes: [],
-  data: {}, // clientId -> { exercises, sets, checkins, measurements, notes }
+  templates: [],
+  photoUrls: {},
+  data: {}, // clientId -> { exercises, sets, checkins, measurements, notes, messages, photos }
   view: 'overview', // 'overview' | 'intake' | 'client'
   selId: null,
   tab: 'overview', // overview | program | training | nutrition | measurements
@@ -290,29 +292,43 @@ function loadDemo() {
 
 async function fetchAll() {
   if (S.mode === 'demo') return;
-  const [{ data: clients, error }, intakeRes] = await Promise.all([
+  const [{ data: clients, error }, intakeRes, tplRes] = await Promise.all([
     sb.from('clients').select('*').eq('coach_id', S.user.id).eq('active', true).order('created_at'),
     sb.from('intake_submissions').select('*').order('created_at', { ascending: false }),
+    sb.from('program_templates').select('*').eq('coach_id', S.user.id).order('created_at', { ascending: false }),
   ]);
   if (error) { toast('Load error: ' + error.message); return; }
   S.clients = clients || [];
   S.intakes = intakeRes.error ? [] : (intakeRes.data || []);
+  S.templates = tplRes.error ? [] : (tplRes.data || []);
   const ids = S.clients.map(c => c.id);
   if (!ids.length) { S.data = {}; render(); return; }
-  const [exRes, setRes, chkRes, measRes, noteRes] = await Promise.all([
+  const [exRes, setRes, chkRes, measRes, noteRes, msgRes, phRes] = await Promise.all([
     sb.from('program_exercises').select('*').in('client_id', ids).order('day_order').order('exercise_order'),
     sb.from('workout_sets').select('*').in('client_id', ids),
     sb.from('checkins').select('*').in('client_id', ids).order('date'),
     sb.from('measurements').select('*').in('client_id', ids).order('date'),
     sb.from('coach_notes').select('*').in('client_id', ids).order('created_at', { ascending: false }),
+    sb.from('messages').select('*').in('client_id', ids).order('created_at'),
+    sb.from('progress_photos').select('*').in('client_id', ids).order('date'),
   ]);
   S.data = {};
-  ids.forEach(id => { S.data[id] = { exercises: [], sets: [], checkins: [], measurements: [], notes: [] }; });
+  ids.forEach(id => { S.data[id] = { exercises: [], sets: [], checkins: [], measurements: [], notes: [], messages: [], photos: [] }; });
   (exRes.data || []).forEach(r => S.data[r.client_id]?.exercises.push(r));
   (setRes.data || []).forEach(r => S.data[r.client_id]?.sets.push(r));
   (chkRes.data || []).forEach(r => S.data[r.client_id]?.checkins.push(r));
   (measRes.data || []).forEach(r => S.data[r.client_id]?.measurements.push(r));
   (noteRes.data || []).forEach(r => S.data[r.client_id]?.notes.push(r));
+  (msgRes.error ? [] : (msgRes.data || [])).forEach(r => S.data[r.client_id]?.messages.push(r));
+  const allPhotos = phRes.error ? [] : (phRes.data || []);
+  allPhotos.forEach(r => S.data[r.client_id]?.photos.push(r));
+  S.photoUrls = {};
+  if (allPhotos.length) {
+    await Promise.all(allPhotos.slice(-24).map(async p => {
+      const { data } = await sb.storage.from('progress-photos').createSignedUrl(p.storage_path, 3600);
+      if (data?.signedUrl) S.photoUrls[p.id] = data.signedUrl;
+    }));
+  }
   render();
 }
 
@@ -512,8 +528,19 @@ function viewClient(c) {
       </div>
     `;
   } else if (S.tab === 'program') {
+    const cloneOpts = [
+      ...S.templates.map(t => `<option value="tpl:${t.id}">Template: ${esc(t.name)} (${(t.exercises || []).length} ex)</option>`),
+      ...S.clients.filter(x => x.id !== c.id && (S.data[x.id]?.exercises?.length || 0) > 0).map(x => `<option value="cli:${x.id}">Clone ${esc(x.full_name)} (${S.data[x.id].exercises.length} ex)</option>`),
+    ];
     body = `<div class="card" style="margin-top:20px">
-      <div class="card-head"><span class="card-title">Program Builder (${d.exercises.length} exercises)</span><span class="card-sub">Changes sync instantly to ${esc(c.full_name)}'s app</span></div>
+      <div class="card-head">
+        <div><span class="card-title">Program Builder (${d.exercises.length} exercises)</span><div class="card-sub">Changes sync instantly to ${esc(c.full_name)}'s app</div></div>
+        <div class="actions">
+          ${cloneOpts.length ? `<select id="tpl-pick" style="height:30px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:12.5px">${cloneOpts.join('')}</select>
+          <button class="btn btn-sm" data-act="apply-tpl">Apply Template</button>` : ''}
+          ${d.exercises.length ? `<button class="btn btn-sm" data-act="save-tpl">Save as Template</button>` : ''}
+        </div>
+      </div>
       <div class="table-wrap"><table>
         <thead><tr><th>Day</th><th>Exercise</th><th>Sets × Reps</th><th>Rest</th><th>Coaching Cue</th><th>Video</th><th class="r"></th></tr></thead>
         <tbody>
@@ -585,7 +612,17 @@ function viewClient(c) {
       </table></div>
     </div>`;
   } else if (S.tab === 'measurements') {
-    body = `<div class="card" style="margin-top:20px">
+    const photos = d.photos || [];
+    body = `${photos.length ? `<div class="card card-pad" style="margin-top:20px">
+      <div class="card-title" style="margin-bottom:12px">Private Progress Photos (${photos.length})</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px">
+        ${photos.map(p => `<div style="background:var(--surface-2);border:1px solid var(--line);border-radius:12px;overflow:hidden">
+          ${S.photoUrls[p.id] ? `<a href="${esc(S.photoUrls[p.id])}" target="_blank"><img src="${esc(S.photoUrls[p.id])}" alt="${esc(p.pose)}" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"></a>` : '<div style="padding:40px 10px;text-align:center;color:var(--text-3);font-size:12px">Private photo</div>'}
+          <div style="padding:8px 10px;font-size:12px;display:flex;justify-content:space-between;color:var(--text-2)"><span>${esc(p.pose)}</span><span class="n">${esc(p.date)}</span></div>
+        </div>`).join('')}
+      </div>
+    </div>` : ''}
+    <div class="card" style="margin-top:20px">
       <div class="card-head"><span class="card-title">Body measurements &amp; check-in photos</span></div>
       <div class="table-wrap"><table>
         <thead><tr><th>Date</th><th class="r">Waist</th><th class="r">Chest</th><th class="r">Hips</th><th class="r">Arms</th><th class="r">Thighs</th><th>Photos</th><th>Notes</th></tr></thead>
@@ -602,6 +639,21 @@ function viewClient(c) {
           </tr>`).join('') : '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-3)">No measurements logged yet.</td></tr>'}
         </tbody>
       </table></div>
+    </div>`;
+  } else if (S.tab === 'messages') {
+    const msgs = d.messages || [];
+    body = `<div class="card card-pad" style="margin-top:20px">
+      <div class="card-title" style="margin-bottom:14px">Direct Chat with ${esc(c.full_name)}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto;padding-bottom:12px">
+        ${msgs.length ? msgs.map(m => `<div style="max-width:75%;padding:10px 14px;border-radius:12px;font-size:13.5px;align-self:${m.sender_role === 'coach' ? 'flex-end' : 'flex-start'};background:${m.sender_role === 'coach' ? 'var(--accent-tint)' : 'var(--surface-2)'};border:1px solid ${m.sender_role === 'coach' ? 'var(--accent-line)' : 'var(--line-2)'}">
+          <div>${esc(m.body)}</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:4px">${m.sender_role === 'coach' ? 'You' : esc(c.full_name)} · ${new Date(m.created_at).toLocaleString([], { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' })}</div>
+        </div>`).join('') : '<div style="padding:28px 0;text-align:center;color:var(--text-3)">No messages yet. Start the conversation below.</div>'}
+      </div>
+      <form id="coach-chat-form" style="display:flex;gap:8px;margin-top:12px">
+        <input name="body" required placeholder="Message ${esc(c.full_name)}…" style="flex:1;height:40px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);padding:0 12px;font-size:13.5px;outline:none">
+        <button type="submit" class="btn btn-accent">Send</button>
+      </form>
     </div>`;
   }
 
@@ -654,7 +706,7 @@ function viewClient(c) {
     </div>
     ${cycleBanner}
     <div class="tabs">
-      ${[['overview','Overview'],['program','Program Builder'],['training','Training Log'],['nutrition','Nutrition & Health'],['measurements','Measurements']].map(([k, l]) =>
+      ${[['overview','Overview'],['program','Program Builder'],['training','Training Log'],['nutrition','Nutrition & Health'],['measurements','Measurements & Photos'],['messages',`Messages${(d.messages?.length || 0) ? ` (${d.messages.length})` : ''}`]].map(([k, l]) =>
         `<button class="tab" data-act="tab" data-v="${k}" aria-selected="${S.tab === k}">${l}</button>`).join('')}
     </div>
     ${body}
@@ -922,6 +974,41 @@ document.addEventListener('click', async e => {
     if (S.data[S.selId]) S.data[S.selId].notes = S.data[S.selId].notes.filter(x => x.id !== id);
     toast('Note removed'); render();
   }
+  else if (act === 'save-tpl') {
+    const c = S.clients.find(x => x.id === S.selId);
+    const exs = S.data[S.selId]?.exercises || [];
+    if (!c || !exs.length) return;
+    const name = prompt('Template name:', `${c.phase} — ${c.split}`);
+    if (!name) return;
+    const clean = exs.map(({ day_name, day_order, exercise_order, name: n, sets, target_reps, rep_label, rest_sec, is_bodyweight, cue, video_url }) => ({
+      day_name, day_order, exercise_order, name: n, sets, target_reps, rep_label, rest_sec, is_bodyweight, cue, video_url
+    }));
+    if (S.mode === 'demo') { S.templates.unshift({ id: 'd-' + Date.now(), name, split: c.split, exercises: clean }); toast('Template saved (demo)'); render(); return; }
+    const { error } = await sb.from('program_templates').insert({ coach_id: S.user.id, name: name.trim(), split: c.split, exercises: clean });
+    if (error) toast('Save failed: ' + error.message);
+    else { toast(`Saved template "${name}"`); await fetchAll(); }
+  }
+  else if (act === 'apply-tpl') {
+    const pick = document.getElementById('tpl-pick')?.value;
+    if (!pick || !S.selId) return;
+    let source = [];
+    if (pick.startsWith('tpl:')) source = S.templates.find(t => t.id === pick.slice(4))?.exercises || [];
+    else if (pick.startsWith('cli:')) source = S.data[pick.slice(4)]?.exercises || [];
+    if (!source.length) return;
+    const rows = source.map(e => ({
+      client_id: S.selId, day_name: e.day_name, day_order: e.day_order, exercise_order: e.exercise_order,
+      name: e.name, sets: e.sets, target_reps: e.target_reps, rep_label: e.rep_label,
+      rest_sec: e.rest_sec, is_bodyweight: !!e.is_bodyweight, cue: e.cue || '', video_url: e.video_url || '',
+    }));
+    if (S.mode === 'demo') {
+      S.data[S.selId].exercises = rows.map((r, i) => ({ id: 'd-' + Date.now() + '-' + i, ...r }));
+      toast(`Applied ${rows.length} exercises (demo)`); render(); return;
+    }
+    await sb.from('program_exercises').delete().eq('client_id', S.selId);
+    const { error } = await sb.from('program_exercises').insert(rows);
+    if (error) toast('Apply failed: ' + error.message);
+    else { toast(`Applied ${rows.length} exercises!`); await fetchAll(); }
+  }
   else if (act === 'signout') {
     if (S.mode !== 'demo' && sb) await sb.auth.signOut();
     S.mode = 'auth'; S.user = null; S.view = 'overview'; S.selId = null; S.authMsg = ''; render();
@@ -936,6 +1023,18 @@ document.addEventListener('submit', async e => {
     const { data, error } = await sb.auth.signInWithPassword({ email: email.trim(), password });
     if (error) { S.authMsg = error.message; S.authTone = 'bad'; render(); }
     else { S.user = data.user; S.mode = 'app'; await fetchAll(); }
+  }
+  if (e.target.id === 'coach-chat-form') {
+    e.preventDefault();
+    const body = e.target.elements.body.value.trim();
+    if (!body || !S.selId) return;
+    if (S.mode === 'demo') {
+      S.data[S.selId].messages = (S.data[S.selId].messages || []).concat({ id: 'd-' + Date.now(), sender_role: 'coach', body, created_at: new Date().toISOString() });
+      render(); return;
+    }
+    const { error } = await sb.from('messages').insert({ client_id: S.selId, coach_id: S.user.id, sender_role: 'coach', body });
+    if (error) toast('Send failed: ' + error.message);
+    else await fetchAll();
   }
   if (e.target.id === 'note-form') {
     e.preventDefault();
