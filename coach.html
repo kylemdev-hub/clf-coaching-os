@@ -597,6 +597,7 @@ function viewClient(c) {
         </div>
       </div>
       <div class="actions">
+        ${c.email ? `<a class="btn" href="${buildInviteMailto(c.full_name, c.email)}">Email App Invite</a>` : ''}
         <button class="btn" data-act="edit-client" data-id="${c.id}">${ic('edit')}Edit profile</button>
         <a class="btn btn-accent" href="client.html?client=${esc(c.slug)}">${ic('ext')}Open as client</a>
       </div>
@@ -641,6 +642,27 @@ function renderClientModal() {
   </dialog>`;
 }
 
+function buildInviteMailto(name, email) {
+  const first = String(name || 'there').split(/\s+/)[0];
+  const appUrl = location.href.replace(/coach\.html.*$/i, 'client.html');
+  const subj = 'Your CLF Protocol Training App is Live';
+  const body = `Hey ${first},\n\nYour custom CLF Protocol app is ready — it has your full training split, coaching cues, form videos, daily check-ins, and strength trajectory tracker.\n\nHow to get in (30 seconds):\n1. Open this link on your phone: ${appUrl}\n2. Tap "Email Magic Link", enter this email (${email}), and tap the link in your inbox — your program loads automatically.\n3. Pin it to your Home Screen (iPhone Safari: Share -> Add to Home Screen).\n\nLet me know once you're logged in!\n\n— Kyle\nClash Lab Fitness LLC`;
+  return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+}
+
+function buildIntakeMailto(row) {
+  const first = row.first_name || row.last_name || 'there';
+  if (row.status === 'approved') return { label: 'Email App Invite', href: buildInviteMailto(`${row.first_name} ${row.last_name}`, row.email) };
+  if (row.medical_clearance_required) {
+    const subj = 'Clash Lab Fitness — Medical Clearance Next Steps';
+    const body = `Hey ${first},\n\nThanks for submitting your Clash Lab Fitness onboarding packet! Because one or more answers on your PAR-Q+ health screening was marked "Yes", our protocol requires a brief medical clearance note from your physician before we issue your 8-week training split and meal plan.\n\nNext steps:\n1. Share your PAR-Q+ answers with your doctor.\n2. Ask for a brief note clearing you for "unsupervised, vigorous physical activity and resistance training."\n3. Reply to this email with a photo or PDF of the note.\n\n(If you're unable to obtain clearance, a full $100 refund will be issued immediately.)\n\n— Kyle\nClash Lab Fitness LLC`;
+    return { label: 'Email Clearance Steps', href: `mailto:${encodeURIComponent(row.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}` };
+  }
+  const subj = 'Clash Lab Fitness — Application Received + 3-Day Food Log';
+  const body = `Hey ${first},\n\nGot your Clash Lab Fitness intake, PAR-Q+ screening, and signed waiver — everything looks great!\n\nBefore I build your custom 8-week training split and nutrition targets, please reply with your 3-Day Food Log (everything you eat and drink for 3 typical days, including rough portions and daily water intake).\n\nOnce I have your 3-day log, I'll deliver your full CLF Protocol app access within 3–5 business days.\n\n— Kyle\nClash Lab Fitness LLC`;
+  return { label: 'Email 3-Day Food Log', href: `mailto:${encodeURIComponent(row.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}` };
+}
+
 function viewIntake() {
   const PARQ_LABELS = {
     q1: 'Heart condition / high blood pressure',
@@ -673,6 +695,7 @@ function viewIntake() {
       const fullName = `${inRow.first_name || ''} ${inRow.last_name || ''}`.trim() || 'Applicant';
       const pq = inRow.parq_answers || {};
       const yesQs = Object.entries(PARQ_LABELS).filter(([k]) => pq[k] === 'yes').map(([, l]) => l);
+      const mailBtn = inRow.email ? buildIntakeMailto(inRow) : null;
       const badge = inRow.status === 'approved' ? '<span class="tag ok">Onboarded</span>'
         : inRow.status === 'declined' ? '<span class="tag">Declined</span>'
         : inRow.medical_clearance_required ? '<span class="tag bad">Medical Clearance Required</span>'
@@ -690,6 +713,7 @@ function viewIntake() {
             </div>
           </div>
           <div class="actions">
+            ${mailBtn ? `<a class="btn btn-sm" href="${mailBtn.href}">${esc(mailBtn.label)}</a>` : ''}
             ${inRow.status !== 'approved' ? `<button class="btn btn-accent btn-sm" data-act="approve-intake" data-id="${inRow.id}">${ic('plus')}Approve &amp; Onboard</button>` : ''}
             ${inRow.status !== 'declined' && inRow.status !== 'approved' ? `<button class="btn btn-ghost btn-sm danger" data-act="decline-intake" data-id="${inRow.id}">Decline</button>` : ''}
           </div>
