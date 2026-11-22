@@ -504,6 +504,7 @@ function nextTargetHint(ex, wk) {
  * ------------------------------------------------------------------ */
 async function loadClientBundle(clientRow) {
   S.client = clientRow;
+  S.mode = 'app';
   S.week = currentWeek(clientRow);
   S.syncState = 'syncing';
   render();
@@ -535,14 +536,22 @@ async function loadClientBundle(clientRow) {
 
 async function initAuth() {
   if (!sb) { S.mode = 'auth'; S.authMsg = 'Supabase SDK failed to load.'; S.authTone = 'bad'; render(); return; }
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) { S.mode = 'auth'; render(); return; }
-  await onSignedIn(session.user);
+  render();
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { S.mode = 'auth'; render(); return; }
+    await onSignedIn(session.user);
+  } catch (err) {
+    S.mode = 'auth';
+    S.authMsg = 'Session error: ' + (err?.message || err);
+    S.authTone = 'bad';
+    render();
+  }
 }
 
 async function onSignedIn(user) {
   S.user = user;
-  S.mode = 'app';
+  S.mode = 'loading';
   S.syncState = 'syncing';
   render();
 
@@ -1085,7 +1094,7 @@ function renderSettingsSheet() {
 
 function render() {
   const root = document.getElementById('root');
-  if (S.mode === 'loading') {
+  if (S.mode === 'loading' || (S.mode !== 'auth' && !S.client)) {
     root.innerHTML = `<div class="auth-wrap" style="text-align:center;color:var(--text-3)">Loading CLF Protocol…</div>`;
     return;
   }
