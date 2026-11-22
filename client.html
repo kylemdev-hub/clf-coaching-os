@@ -304,6 +304,27 @@ dialog.sheet::backdrop{background:rgba(0,0,0,.65);-webkit-backdrop-filter:blur(4
 .sheet-divider{height:1px;background:var(--line);margin:16px 0 10px}
 .sheet-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
 
+.top-nav{display:none;gap:4px;padding:3px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.top-nav button{height:32px;padding:0 14px;border:0;border-radius:7px;background:transparent;color:var(--text-2);font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:7px;transition:all .15s}
+.top-nav button svg.i{width:15px;height:15px}
+.top-nav button:hover{color:var(--text)}
+.top-nav button[aria-current=page]{background:var(--surface-3);color:var(--accent)}
+
+@media (min-width:860px){
+  .app{max-width:100%;border:0;padding-bottom:56px}
+  .auth-card{max-width:430px;width:100%;margin:0 auto}
+  .top{padding:14px 36px}
+  .top-nav{display:inline-flex}
+  .coach-bar{padding:10px 36px}
+  main{max-width:1040px;margin:0 auto;padding:32px 36px 56px}
+  .tabbar{display:none}
+  .ex-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+  .ex.is-open{grid-column:1 / -1}
+  .dock{left:auto;right:28px;bottom:24px;transform:none;width:340px;padding:0}
+  dialog.sheet{margin:auto;max-width:520px}
+  .sheet-inner{border-radius:18px;border-bottom:1px solid var(--line-2);padding-bottom:22px}
+  .grabber{display:none}
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -1112,6 +1133,11 @@ function render() {
           <div class="brand-sub">${esc(c.phase)} · Week ${S.week} of ${c.weeks || 8}</div>
         </div>
       </div>
+      <nav class="top-nav" aria-label="Primary">
+        <button data-act="tab" data-v="train" aria-current="${S.tab === 'train' ? 'page' : 'false'}">${ic('train')}Train</button>
+        <button data-act="tab" data-v="checkin" aria-current="${S.tab === 'checkin' ? 'page' : 'false'}">${ic('check')}Check-in</button>
+        <button data-act="tab" data-v="progress" aria-current="${S.tab === 'progress' ? 'page' : 'false'}">${ic('prog')}Progress</button>
+      </nav>
       <button class="chip" id="sync-chip" data-act="open-sheet" data-state="${S.mode === 'demo' ? 'pending' : S.syncState}">
         <span class="dot"></span><span>${S.mode === 'demo' ? 'Demo' : S.syncState === 'syncing' ? 'Saving…' : 'Synced'}</span>
       </button>
