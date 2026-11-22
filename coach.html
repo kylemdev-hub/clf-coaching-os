@@ -238,6 +238,17 @@ function currentWeek(c) {
   return Math.max(1, Math.min(c.weeks || 8, Math.floor((new Date() - parseYmd(c.start_date)) / DAY_MS / 7) + 1));
 }
 
+function daysRemaining(c) {
+  if (!c?.start_date) return null;
+  const end = parseYmd(c.start_date).getTime() + (c.weeks || 8) * 7 * DAY_MS;
+  return Math.ceil((end - Date.now()) / DAY_MS);
+}
+
+function nextPhaseLabel(phase) {
+  const m = String(phase || 'Phase 1').match(/^(.*?)(\d+)\s*$/);
+  return m ? `${m[1]}${Number(m[2]) + 1}` : `${phase || 'Phase'} 2`;
+}
+
 function loadDemo() {
   const today = new Date(), s21 = ymd(new Date(today - 21 * DAY_MS));
   S.mode = 'demo';
@@ -586,13 +597,44 @@ function viewClient(c) {
     </div>`;
   }
 
+  const dLeft = daysRemaining(c);
+  const isMo = c.plan_type === 'monthly';
+  const renewMailto = c.email ? (() => {
+    const first = String(c.full_name || 'there').split(/\s+/)[0];
+    const subj = isMo ? `Phase Gate Review — Ready for ${nextPhaseLabel(c.phase)}!` : `Your 8-Week CLF Protocol — Renewal Options`;
+    const body = isMo
+      ? `Hey ${first},\n\nYou're wrapping up ${c.phase}! I'm doing your Phase Gate Review this week to build ${nextPhaseLabel(c.phase)}. Reply with any lifts you loved, joints to watch, or schedule changes.\n\n— Kyle`
+      : `Hey ${first},\n\nYou're wrapping up your 8-week ${c.phase} protocol! To keep your momentum going with updated programming and coaching, you can:\n\n1. Switch to the $50/month Ongoing Membership (continuous phase-gate updates & weekly coaching)\n2. Renew another 8-Week Intensive ($100): https://buy.stripe.com/9B63cvct3fQS0TReVDaR200?prefilled_email=${encodeURIComponent(c.email)}\n\nLet me know which option you'd like!\n\n— Kyle`;
+    return `mailto:${encodeURIComponent(c.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+  })() : '';
+
+  const cycleBanner = dLeft != null && dLeft <= 10 ? `<div class="card card-pad" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border-color:${isMo ? 'var(--accent-line)' : dLeft <= 0 ? 'rgba(242,112,106,.4)' : 'rgba(242,184,75,.38)'}">
+    <div>
+      <strong style="color:${isMo ? 'var(--accent)' : dLeft <= 0 ? 'var(--bad)' : 'var(--warn)'}">
+        ${isMo ? `Phase Gate Review Ready (${dLeft <= 0 ? 'Week ' + c.weeks + ' complete' : dLeft + ' days left'})`
+          : dLeft <= 0 ? `8-Week Protocol Expired (${Math.abs(dLeft)}d ago)` : `8-Week Protocol Expiring in ${dLeft} days`}
+      </strong>
+      <div style="font-size:12.5px;color:var(--text-2);margin-top:2px">
+        ${isMo ? 'Monthly member ($50/mo) — roll into a fresh 8-week phase while keeping all historical PRs & check-ins.' : 'One-time $100 plan — send renewal offer ($100 next 8 weeks or $50/mo membership) or pause coaching.'}
+      </div>
+    </div>
+    <div class="actions">
+      ${renewMailto ? `<a class="btn btn-sm" href="${renewMailto}">${isMo ? 'Email Phase Gate Note' : 'Email Renewal Offer'}</a>` : ''}
+      <button class="btn btn-accent btn-sm" data-act="next-phase" data-id="${c.id}">Start ${esc(nextPhaseLabel(c.phase))} →</button>
+    </div>
+  </div>` : '';
+
   return `<div class="view">
     <div class="page-head">
       <div class="who">
         <span class="avatar lg" style="background:var(--accent-tint);color:var(--accent)">${initials(c.full_name)}</span>
         <div>
           <div class="crumb"><button data-act="overview">Clients</button> / ${esc(c.full_name)}</div>
-          <h1>${esc(c.full_name)}</h1>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <h1>${esc(c.full_name)}</h1>
+            <span class="tag ${isMo ? 'accent' : ''}">${isMo ? 'Monthly · $50/mo' : '8-Week · $100'}</span>
+            ${dLeft != null ? `<span class="tag ${dLeft <= 0 ? 'bad' : dLeft <= 10 ? 'warn' : ''}">${dLeft <= 0 ? 'Cycle ended' : dLeft + 'd left'}</span>` : ''}
+          </div>
           <div class="meta">${esc(c.phase)} · Week ${a.wk} of ${c.weeks} · ${esc(c.split)} ${c.email ? `· ${esc(c.email)}` : ''}</div>
         </div>
       </div>
@@ -602,6 +644,7 @@ function viewClient(c) {
         <a class="btn btn-accent" href="client.html?client=${esc(c.slug)}">${ic('ext')}Open as client</a>
       </div>
     </div>
+    ${cycleBanner}
     <div class="tabs">
       ${[['overview','Overview'],['program','Program Builder'],['training','Training Log'],['nutrition','Nutrition & Health'],['measurements','Measurements']].map(([k, l]) =>
         `<button class="tab" data-act="tab" data-v="${k}" aria-selected="${S.tab === k}">${l}</button>`).join('')}
@@ -611,7 +654,7 @@ function viewClient(c) {
 }
 
 function renderClientModal() {
-  const c = S.editClient || { full_name:'', email:'', phase:'Phase 1', split:'Push / Pull / Legs', start_date: ymd(new Date()), weeks: 8, joint_label:'Joint comfort', targets:{ weight:180, calories:2500, protein:180, water:100, steps:10000, sleep:7.5 }, program_notes:'' };
+  const c = S.editClient || { full_name:'', email:'', plan_type:'8_week', phase:'Phase 1', split:'Push / Pull / Legs', start_date: ymd(new Date()), weeks: 8, joint_label:'Joint comfort', targets:{ weight:180, calories:2500, protein:180, water:100, steps:10000, sleep:7.5 }, program_notes:'' };
   const T = c.targets || {};
   return `<dialog class="modal" id="client-modal">
     <form id="client-form">
@@ -621,6 +664,7 @@ function renderClientModal() {
         <div class="modal-grid">
           <label class="field"><span>Full name</span><input name="full_name" required value="${esc(c.full_name)}" placeholder="e.g. Jordan Lee"></label>
           <label class="field"><span>Client email (for login)</span><input name="email" type="email" value="${esc(c.email || '')}" placeholder="client@example.com"></label>
+          <label class="field"><span>Plan</span><select name="plan_type" style="width:100%;height:38px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:13.5px"><option value="8_week" ${c.plan_type !== 'monthly' ? 'selected' : ''}>8-Week Intensive ($100)</option><option value="monthly" ${c.plan_type === 'monthly' ? 'selected' : ''}>Monthly Membership ($50/mo)</option></select></label>
           <label class="field"><span>Phase / Program</span><input name="phase" value="${esc(c.phase)}"></label>
           <label class="field"><span>Split</span><input name="split" value="${esc(c.split)}"></label>
           <label class="field"><span>Start date</span><input name="start_date" type="date" value="${esc(c.start_date)}"></label>
@@ -811,6 +855,7 @@ document.addEventListener('click', async e => {
     const notes = `Equipment: ${(row.equipment || []).join(', ')}. Days/wk: ${row.days_per_week || '—'}. Injuries: ${row.injuries || 'None'}. Baseline: ${row.age || '?'}yo, ${row.height || '?'}, ${row.current_weight || '?'} lb → ${row.goal_weight || '?'} lb.`;
     const payload = {
       coach_id: S.user?.id, slug, full_name: fullName, email: row.email || null,
+      plan_type: row.selected_plan === 'monthly' ? 'monthly' : '8_week',
       phase: 'Phase 1', split: splitGuess, start_date: ymd(new Date()), weeks: 8,
       targets: { weight: row.goal_weight || null, calories: 2200, protein: 160, water: 100, steps: 10000, sleep: 7.5 },
       program_notes: notes,
@@ -828,6 +873,21 @@ document.addEventListener('click', async e => {
     toast(`${fullName} added to roster!`);
     await fetchAll();
     S.view = 'client'; S.selId = created.id; S.tab = 'program'; render();
+  }
+  else if (act === 'next-phase') {
+    const c = S.clients.find(x => x.id === btn.dataset.id);
+    if (!c) return;
+    const nextPhase = nextPhaseLabel(c.phase);
+    const todayStr = ymd(new Date());
+    if (S.mode === 'demo') {
+      c.phase = nextPhase; c.start_date = todayStr;
+      toast(`Rolled into ${nextPhase} (demo)`); render(); return;
+    }
+    const { error } = await sb.from('clients').update({
+      phase: nextPhase, start_date: todayStr, renewal_notified_at: null, expired_notified_at: null, updated_at: new Date().toISOString()
+    }).eq('id', c.id);
+    if (error) toast('Phase update failed: ' + error.message);
+    else { toast(`${c.full_name} rolled into ${nextPhase}!`); await fetchAll(); }
   }
   else if (act === 'decline-intake') {
     const id = btn.dataset.id;
@@ -911,6 +971,7 @@ document.addEventListener('submit', async e => {
     const slug = f.full_name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'client-' + Date.now();
     const payload = {
       full_name: f.full_name.trim(), email: f.email.trim() || null,
+      plan_type: f.plan_type === 'monthly' ? 'monthly' : '8_week',
       phase: f.phase.trim() || 'Phase 1', split: f.split.trim() || 'Full Body',
       start_date: f.start_date || ymd(new Date()), weeks: Number(f.weeks) || 8,
       targets: { weight: Number(f.weight) || null, calories: Number(f.calories) || null, protein: Number(f.protein) || null, water: Number(f.water) || null, steps: Number(f.steps) || null, sleep: Number(f.sleep) || null },
