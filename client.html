@@ -84,8 +84,9 @@ svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-widt
 
 /* Layout */
 main{padding:24px 20px 24px}
-.view{animation:enter .3s var(--ease) both}
-@keyframes enter{from{opacity:0;transform:translateY(6px)}}
+.view{opacity:1}
+.view.view-enter{animation:enter .18s var(--ease) both}
+@keyframes enter{from{opacity:.85;transform:translateY(3px)}to{opacity:1;transform:none}}
 .eyebrow{font-size:12.5px;color:var(--text-3);font-weight:500}
 h1{font-size:34px;line-height:1.04;letter-spacing:-.04em;font-weight:600;margin:6px 0 0}
 .title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
@@ -1250,7 +1251,7 @@ function renderSettingsSheet() {
   </dialog>`;
 }
 
-function render() {
+function render(isTabSwitch = false) {
   const root = document.getElementById('root');
   if (S.mode === 'loading' || (S.mode !== 'auth' && !S.client)) {
     root.innerHTML = `<div class="auth-wrap" style="text-align:center;color:var(--text-3)">Loading CLF Protocol…</div>`;
@@ -1261,41 +1262,53 @@ function render() {
     return;
   }
   const c = S.client;
-  root.innerHTML = `
-    <header class="top">
-      <div class="brand">
-        <span class="mark">CLF</span>
-        <div style="min-width:0">
-          <div class="brand-name">${esc(c.full_name)}</div>
-          <div class="brand-sub">${esc(c.phase)} · Week ${S.week} of ${c.weeks || 8}</div>
+  const mainHtml = S.tab === 'train' ? viewTrain() : S.tab === 'checkin' ? viewCheckin() : S.tab === 'chat' ? viewChat() : viewProgress();
+  const existingMain = document.getElementById('main-slot');
+  if (existingMain && root.dataset.cid === String(c.id)) {
+    existingMain.innerHTML = mainHtml;
+    if (isTabSwitch) existingMain.firstElementChild?.classList.add('view-enter');
+    document.querySelectorAll('[data-act="tab"]').forEach(b => b.setAttribute('aria-current', b.dataset.v === S.tab ? 'page' : 'false'));
+    const sub = document.getElementById('hdr-sub');
+    if (sub) sub.textContent = `${c.phase} · Week ${S.week} of ${c.weeks || 8}`;
+    updateChip();
+  } else {
+    root.dataset.cid = String(c.id);
+    root.innerHTML = `
+      <header class="top">
+        <div class="brand">
+          <span class="mark">CLF</span>
+          <div style="min-width:0">
+            <div class="brand-name">${esc(c.full_name)}</div>
+            <div class="brand-sub" id="hdr-sub">${esc(c.phase)} · Week ${S.week} of ${c.weeks || 8}</div>
+          </div>
         </div>
-      </div>
-      <nav class="top-nav" aria-label="Primary">
-        <button data-act="tab" data-v="train" aria-current="${S.tab === 'train' ? 'page' : 'false'}">${ic('train')}Train</button>
-        <button data-act="tab" data-v="checkin" aria-current="${S.tab === 'checkin' ? 'page' : 'false'}">${ic('check')}Check-in</button>
-        <button data-act="tab" data-v="progress" aria-current="${S.tab === 'progress' ? 'page' : 'false'}">${ic('prog')}Progress</button>
-        <button data-act="tab" data-v="chat" aria-current="${S.tab === 'chat' ? 'page' : 'false'}">${ic('chat')}Chat</button>
+        <nav class="top-nav" aria-label="Primary">
+          <button data-act="tab" data-v="train" aria-current="${S.tab === 'train' ? 'page' : 'false'}">${ic('train')}Train</button>
+          <button data-act="tab" data-v="checkin" aria-current="${S.tab === 'checkin' ? 'page' : 'false'}">${ic('check')}Check-in</button>
+          <button data-act="tab" data-v="progress" aria-current="${S.tab === 'progress' ? 'page' : 'false'}">${ic('prog')}Progress</button>
+          <button data-act="tab" data-v="chat" aria-current="${S.tab === 'chat' ? 'page' : 'false'}">${ic('chat')}Chat</button>
+        </nav>
+        <button class="chip" id="sync-chip" data-act="open-sheet" data-state="${S.mode === 'demo' ? 'pending' : S.syncState}">
+          <span class="dot"></span><span>${S.mode === 'demo' ? 'Demo' : S.syncState === 'syncing' ? 'Saving…' : 'Synced'}</span>
+        </button>
+      </header>
+      ${S.isCoach && S.allClients.length > 1 ? `<div class="coach-bar">
+        <span>Viewing:</span>
+        <select id="coach-switch">${S.allClients.map(cl => `<option value="${cl.id}" ${cl.id === c.id ? 'selected' : ''}>${esc(cl.full_name)}</option>`).join('')}</select>
+        <a href="coach.html">Coach Dashboard →</a>
+      </div>` : ''}
+      <main id="main-slot">${mainHtml}</main>
+      <div id="dock-host"></div>
+      <nav class="tabbar">
+        <button class="tab" data-act="tab" data-v="train" aria-current="${S.tab === 'train' ? 'page' : 'false'}">${ic('train')}Train</button>
+        <button class="tab" data-act="tab" data-v="checkin" aria-current="${S.tab === 'checkin' ? 'page' : 'false'}">${ic('check')}Check-in</button>
+        <button class="tab" data-act="tab" data-v="progress" aria-current="${S.tab === 'progress' ? 'page' : 'false'}">${ic('prog')}Progress</button>
+        <button class="tab" data-act="tab" data-v="chat" aria-current="${S.tab === 'chat' ? 'page' : 'false'}">${ic('chat')}Chat</button>
       </nav>
-      <button class="chip" id="sync-chip" data-act="open-sheet" data-state="${S.mode === 'demo' ? 'pending' : S.syncState}">
-        <span class="dot"></span><span>${S.mode === 'demo' ? 'Demo' : S.syncState === 'syncing' ? 'Saving…' : 'Synced'}</span>
-      </button>
-    </header>
-    ${S.isCoach && S.allClients.length > 1 ? `<div class="coach-bar">
-      <span>Viewing:</span>
-      <select id="coach-switch">${S.allClients.map(cl => `<option value="${cl.id}" ${cl.id === c.id ? 'selected' : ''}>${esc(cl.full_name)}</option>`).join('')}</select>
-      <a href="coach.html">Coach Dashboard →</a>
-    </div>` : ''}
-    <main>${S.tab === 'train' ? viewTrain() : S.tab === 'checkin' ? viewCheckin() : S.tab === 'chat' ? viewChat() : viewProgress()}</main>
-    <div id="dock-host"></div>
-    <nav class="tabbar">
-      <button class="tab" data-act="tab" data-v="train" aria-current="${S.tab === 'train' ? 'page' : 'false'}">${ic('train')}Train</button>
-      <button class="tab" data-act="tab" data-v="checkin" aria-current="${S.tab === 'checkin' ? 'page' : 'false'}">${ic('check')}Check-in</button>
-      <button class="tab" data-act="tab" data-v="progress" aria-current="${S.tab === 'progress' ? 'page' : 'false'}">${ic('prog')}Progress</button>
-      <button class="tab" data-act="tab" data-v="chat" aria-current="${S.tab === 'chat' ? 'page' : 'false'}">${ic('chat')}Chat</button>
-    </nav>
-    ${renderSettingsSheet()}
-  `;
-  renderDock();
+      ${renderSettingsSheet()}
+    `;
+    renderDock();
+  }
   const cl = document.getElementById('chat-list');
   if (cl) cl.scrollTop = cl.scrollHeight;
 }
@@ -1316,7 +1329,7 @@ document.addEventListener('click', async e => {
     S.week = 3; S.day = 'Full Body A'; S.openEx = d.exercises[0].name;
     render();
   }
-  else if (act === 'tab') { S.tab = v; render(); window.scrollTo(0, 0); }
+  else if (act === 'tab') { S.tab = v; render(true); window.scrollTo(0, 0); }
   else if (act === 'day') { S.day = v; S.openEx = null; render(); }
   else if (act === 'wk-prev') { S.week = Math.max(1, S.week - 1); render(); }
   else if (act === 'wk-next') { S.week = Math.min(S.client.weeks || 8, S.week + 1); render(); }
