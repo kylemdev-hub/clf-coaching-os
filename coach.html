@@ -224,8 +224,10 @@ const S = {
   authMsg: '', authTone: '',
   user: null,
   clients: [],
+  intakes: [],
   data: {}, // clientId -> { exercises, sets, checkins, measurements, notes }
-  selId: null, // null = Overview
+  view: 'overview', // 'overview' | 'intake' | 'client'
+  selId: null,
   tab: 'overview', // overview | program | training | nutrition | measurements
   liftSel: 'all',
   editClient: null,
@@ -244,6 +246,9 @@ function loadDemo() {
     { id:'d-emily', slug:'emily', full_name:'Emily', email:'', phase:'Lean Hypertrophy', split:'Push / Pull / Legs / Upper / Lower', start_date:s21, weeks:8, targets:{ weight:128, calories:2100, protein:125, water:90, steps:8500, sleep:7.5 }, program_notes:'5-day compound lean hypertrophy split.', health_sync_token:'demo_emily_token' },
     { id:'d-charles', slug:'charles', full_name:'Charles Bennett', email:'', phase:'Phase 1', split:'Full Body A / B / C', start_date:s21, weeks:8, targets:{ weight:180, calories:2500, protein:200, water:100, steps:10000, sleep:7.5 }, program_notes:'3-day Full Body banded & bodyweight resistance protocol.', health_sync_token:'demo_charles_token' },
   ];
+  S.intakes = [
+    { id:'d-in1', status:'pending', first_name:'Jordan', last_name:'Lee', email:'jordan@example.com', age:31, height:'5\'10"', current_weight:196, goal_weight:180, injuries:'Mild right knee patellar tendonitis on deep lunges', typical_eating:'3 meals + 1 protein shake, ~80 oz water', equipment:['Full Gym','Dumbbells Only'], days_per_week:4, parq_answers:{q1:'no',q2:'no',q3:'no',q4:'no',q5:'no',q6:'no',q7:'no'}, medical_clearance_required:false, parq_signature:'Jordan Lee', waiver_agreed:true, waiver_signature:'Jordan Lee', signed_at:new Date().toISOString(), created_at:new Date().toISOString() },
+  ];
   S.clients.forEach(c => {
     const baseW = c.slug === 'emily' ? 125.2 : c.slug === 'scott' ? 198.4 : 193.5;
     const chks = Array.from({ length: 10 }, (_, i) => ({
@@ -260,15 +265,19 @@ function loadDemo() {
       notes: [{ id: 'n-' + c.id, message: 'Strong week — keep tempo crisp on top sets.', pinned: true, created_at: new Date().toISOString() }],
     };
   });
-  S.selId = null;
+  S.view = 'overview'; S.selId = null;
   render();
 }
 
 async function fetchAll() {
   if (S.mode === 'demo') return;
-  const { data: clients, error } = await sb.from('clients').select('*').eq('coach_id', S.user.id).eq('active', true).order('created_at');
+  const [{ data: clients, error }, intakeRes] = await Promise.all([
+    sb.from('clients').select('*').eq('coach_id', S.user.id).eq('active', true).order('created_at'),
+    sb.from('intake_submissions').select('*').order('created_at', { ascending: false }),
+  ]);
   if (error) { toast('Load error: ' + error.message); return; }
   S.clients = clients || [];
+  S.intakes = intakeRes.error ? [] : (intakeRes.data || []);
   const ids = S.clients.map(c => c.id);
   if (!ids.length) { S.data = {}; render(); return; }
   const [exRes, setRes, chkRes, measRes, noteRes] = await Promise.all([
@@ -632,6 +641,84 @@ function renderClientModal() {
   </dialog>`;
 }
 
+function viewIntake() {
+  const PARQ_LABELS = {
+    q1: 'Heart condition / high blood pressure',
+    q2: 'Chest pain at rest or during activity',
+    q3: 'Dizziness / loss of consciousness (12 mo)',
+    q4: 'Other chronic medical condition',
+    q5: 'Prescribed meds for chronic condition',
+    q6: 'Bone, joint, or soft tissue issue',
+    q7: 'Doctor advised supervised activity only',
+  };
+  const applyUrl = location.href.replace(/coach\.html.*$/i, 'apply.html');
+  return `<div class="view">
+    <div class="page-head">
+      <div>
+        <div class="crumb">Client Onboarding</div>
+        <h1>Intake &amp; Applications</h1>
+        <div class="meta">${S.intakes.length} total submissions · Review PAR-Q+ screening, waiver signatures, and onboard in 1 click</div>
+      </div>
+      <div class="actions">
+        <button class="btn" data-act="refresh">${ic('refresh')}Refresh</button>
+        <button class="btn btn-accent" data-act="copy-apply" data-url="${esc(applyUrl)}">${ic('copy')}Copy Application Link</button>
+      </div>
+    </div>
+
+    ${!S.intakes.length ? `<div class="card card-pad" style="margin-top:20px;text-align:center;padding:42px 24px">
+      <div style="font-size:16px;font-weight:600;margin-bottom:6px">No applications yet</div>
+      <div style="color:var(--text-2);font-size:13.5px;max-width:440px;margin:0 auto 16px">Share your branded Clash Lab Fitness onboarding link (<code style="color:var(--accent)">apply.html</code>) with prospective clients. Submissions will appear here automatically.</div>
+      <button class="btn btn-accent" data-act="copy-apply" data-url="${esc(applyUrl)}">${ic('copy')}Copy Application Link</button>
+    </div>` : S.intakes.map(inRow => {
+      const fullName = `${inRow.first_name || ''} ${inRow.last_name || ''}`.trim() || 'Applicant';
+      const pq = inRow.parq_answers || {};
+      const yesQs = Object.entries(PARQ_LABELS).filter(([k]) => pq[k] === 'yes').map(([, l]) => l);
+      const badge = inRow.status === 'approved' ? '<span class="tag ok">Onboarded</span>'
+        : inRow.status === 'declined' ? '<span class="tag">Declined</span>'
+        : inRow.medical_clearance_required ? '<span class="tag bad">Medical Clearance Required</span>'
+        : '<span class="tag accent">Ready to Review</span>';
+      return `<div class="card card-pad" style="margin-top:14px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <strong style="font-size:16px">${esc(fullName)}</strong>
+              ${badge}
+              <span class="tag">${inRow.days_per_week ?? '—'} days/wk</span>
+            </div>
+            <div style="font-size:12.5px;color:var(--text-2);margin-top:4px">
+              ${esc(inRow.email)} · Age ${inRow.age ?? '—'} · ${esc(inRow.height || '—')} · ${inRow.current_weight ?? '—'} lb → Goal ${inRow.goal_weight ?? '—'} lb · Submitted ${new Date(inRow.created_at).toLocaleDateString()}
+            </div>
+          </div>
+          <div class="actions">
+            ${inRow.status !== 'approved' ? `<button class="btn btn-accent btn-sm" data-act="approve-intake" data-id="${inRow.id}">${ic('plus')}Approve &amp; Onboard</button>` : ''}
+            ${inRow.status !== 'declined' && inRow.status !== 'approved' ? `<button class="btn btn-ghost btn-sm danger" data-act="decline-intake" data-id="${inRow.id}">Decline</button>` : ''}
+          </div>
+        </div>
+
+        <div class="grid g-1-1" style="margin-top:14px">
+          <div style="padding:12px 14px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line-soft);font-size:13px">
+            <div style="font-size:11.5px;color:var(--text-3);margin-bottom:4px;font-weight:600">INJURIES / CHECK-ENGINE LIGHTS</div>
+            <div style="color:var(--text)">${esc(inRow.injuries || 'None listed')}</div>
+            <div style="font-size:11.5px;color:var(--text-3);margin:10px 0 4px;font-weight:600">TYPICAL DAY OF EATING</div>
+            <div style="color:var(--text-2)">${esc(inRow.typical_eating || '—')}</div>
+          </div>
+          <div style="padding:12px 14px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line-soft);font-size:13px">
+            <div style="font-size:11.5px;color:var(--text-3);margin-bottom:4px;font-weight:600">EQUIPMENT &amp; COMPLIANCE</div>
+            <div style="color:var(--text)">Equipment: ${esc((inRow.equipment || []).join(', ') || '—')}</div>
+            <div style="margin-top:6px;color:${yesQs.length ? 'var(--bad)' : 'var(--ok)'}">
+              ${yesQs.length ? `PAR-Q+ Flags: ${esc(yesQs.join('; '))}` : 'PAR-Q+: All 7 questions answered No (Cleared)'}
+            </div>
+            <div style="margin-top:8px;font-size:12px;color:var(--text-3)">
+              PAR-Q+ Signed: <b style="color:var(--text-2)">${esc(inRow.parq_signature || '—')}</b><br>
+              Waiver Signed: <b style="color:var(--text-2)">${esc(inRow.waiver_signature || '—')}</b> (${inRow.signed_at ? new Date(inRow.signed_at).toLocaleString() : '—'})
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
 function render() {
   const root = document.getElementById('root');
   if (S.mode === 'loading') { root.innerHTML = '<div class="auth-screen" style="color:var(--text-3)">Loading Coach Dashboard…</div>'; return; }
@@ -655,13 +742,15 @@ function render() {
     </div>`;
     return;
   }
-  const sel = S.clients.find(c => c.id === S.selId);
+  const sel = S.view === 'client' ? S.clients.find(c => c.id === S.selId) : null;
+  const pendingCount = S.intakes.filter(x => x.status === 'pending' || x.status === 'needs_clearance').length;
   root.innerHTML = `<div class="shell">
     <aside class="side">
       <div class="brand"><span class="mark">CLF</span><div><div class="brand-title">CLF Coaching</div><div class="brand-sub">Supabase OS</div></div></div>
-      <button class="nav-btn" data-act="overview" aria-current="${!sel}">${ic('grid')}Overview</button>
+      <button class="nav-btn" data-act="overview" aria-current="${S.view === 'overview'}">${ic('grid')}Overview</button>
+      <button class="nav-btn" data-act="intake" aria-current="${S.view === 'intake'}">${ic('edit')}<span>Intake</span>${pendingCount ? `<span class="tag accent" style="margin-left:auto;height:20px">${pendingCount}</span>` : ''}</button>
       <div class="side-label"><span>Clients</span><button class="mini-btn" data-act="add-client" title="Add client">${ic('plus')}</button></div>
-      ${S.clients.map(c => `<button class="client-btn" data-act="select" data-id="${c.id}" aria-current="${c.id === S.selId}">
+      ${S.clients.map(c => `<button class="client-btn" data-act="select" data-id="${c.id}" aria-current="${S.view === 'client' && c.id === S.selId}">
         <span class="avatar">${initials(c.full_name)}</span>
         <div style="min-width:0"><div class="client-name">${esc(c.full_name)}</div><div class="client-sub">Wk ${currentWeek(c)} of ${c.weeks}</div></div>
       </button>`).join('')}
@@ -670,7 +759,7 @@ function render() {
         <button class="btn btn-sm" data-act="signout">${S.mode === 'demo' ? 'Exit demo' : 'Sign out'}</button>
       </div>
     </aside>
-    <main class="main">${sel ? viewClient(sel) : viewOverview()}</main>
+    <main class="main">${S.view === 'intake' ? viewIntake() : sel ? viewClient(sel) : viewOverview()}</main>
   </div>${renderClientModal()}`;
 }
 
@@ -680,11 +769,48 @@ document.addEventListener('click', async e => {
   if (!btn) return;
   const act = btn.dataset.act;
   if (act === 'demo') loadDemo();
-  else if (act === 'overview') { S.selId = null; render(); }
-  else if (act === 'select') { S.selId = btn.dataset.id; S.tab = 'overview'; S.liftSel = 'all'; render(); }
+  else if (act === 'overview') { S.view = 'overview'; S.selId = null; render(); }
+  else if (act === 'intake') { S.view = 'intake'; S.selId = null; render(); }
+  else if (act === 'select') { S.view = 'client'; S.selId = btn.dataset.id; S.tab = 'overview'; S.liftSel = 'all'; render(); }
   else if (act === 'tab') { S.tab = btn.dataset.v; render(); }
   else if (act === 'lsel') { S.liftSel = btn.dataset.v; render(); }
   else if (act === 'refresh') { await fetchAll(); toast('Refreshed from Supabase'); }
+  else if (act === 'copy-apply') {
+    try { await navigator.clipboard.writeText(btn.dataset.url); toast('Application link copied'); } catch { toast('Copy failed'); }
+  }
+  else if (act === 'approve-intake') {
+    const row = S.intakes.find(x => x.id === btn.dataset.id);
+    if (!row) return;
+    const fullName = `${row.first_name || ''} ${row.last_name || ''}`.trim();
+    const slug = fullName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Math.floor(Math.random() * 90 + 10);
+    const splitGuess = row.days_per_week >= 5 ? 'Push / Pull / Legs / Upper / Lower' : row.days_per_week === 4 ? 'Upper / Lower (4-Day)' : 'Full Body A / B / C';
+    const notes = `Equipment: ${(row.equipment || []).join(', ')}. Days/wk: ${row.days_per_week || '—'}. Injuries: ${row.injuries || 'None'}. Baseline: ${row.age || '?'}yo, ${row.height || '?'}, ${row.current_weight || '?'} lb → ${row.goal_weight || '?'} lb.`;
+    const payload = {
+      coach_id: S.user?.id, slug, full_name: fullName, email: row.email || null,
+      phase: 'Phase 1', split: splitGuess, start_date: ymd(new Date()), weeks: 8,
+      targets: { weight: row.goal_weight || null, calories: 2200, protein: 160, water: 100, steps: 10000, sleep: 7.5 },
+      program_notes: notes,
+    };
+    if (S.mode === 'demo') {
+      const id = 'd-' + Date.now();
+      S.clients.push({ id, health_sync_token: 'demo_tok', ...payload });
+      S.data[id] = { exercises: [], sets: [], checkins: [], measurements: [], notes: [] };
+      row.status = 'approved'; S.view = 'client'; S.selId = id; S.tab = 'program';
+      toast(`${fullName} onboarded (demo)`); render(); return;
+    }
+    const { data: created, error } = await sb.from('clients').insert(payload).select().single();
+    if (error) { toast('Onboard failed: ' + error.message); return; }
+    await sb.from('intake_submissions').update({ status: 'approved', onboarded_client_id: created.id }).eq('id', row.id);
+    toast(`${fullName} added to roster!`);
+    await fetchAll();
+    S.view = 'client'; S.selId = created.id; S.tab = 'program'; render();
+  }
+  else if (act === 'decline-intake') {
+    const id = btn.dataset.id;
+    if (S.mode !== 'demo') await sb.from('intake_submissions').update({ status: 'declined' }).eq('id', id);
+    const r = S.intakes.find(x => x.id === id); if (r) r.status = 'declined';
+    toast('Application marked declined'); render();
+  }
   else if (act === 'add-client') { S.editClient = null; render(); document.getElementById('client-modal')?.showModal(); }
   else if (act === 'edit-client') { S.editClient = S.clients.find(c => c.id === btn.dataset.id); render(); document.getElementById('client-modal')?.showModal(); }
   else if (act === 'close-modal') { document.getElementById('client-modal')?.close(); }
@@ -706,7 +832,7 @@ document.addEventListener('click', async e => {
   }
   else if (act === 'signout') {
     if (S.mode !== 'demo' && sb) await sb.auth.signOut();
-    S.mode = 'auth'; S.user = null; S.selId = null; S.authMsg = ''; render();
+    S.mode = 'auth'; S.user = null; S.view = 'overview'; S.selId = null; S.authMsg = ''; render();
   }
 });
 
