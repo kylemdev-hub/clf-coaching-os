@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050707">
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAgNklEQVR42u2deZQcVbnA71bVXb3MTGYGEkEgJMEQCGExQRIQAaPwJMB5IE+OoIEnLu/5zkOQRVkEfcIDZPF5FNQniwiHRdlEWQQJO8iSCCGPBGIgJiAhM5mZ3rur7v3eHzVrdy33VlX39IS6pzmcTFfXcu/vftv97lfY2GUnJNkATWoD/zuB+q/B+QSg9EeoO6buKqP/rLsYTDzj+G+h7low8Rtw+BU43iE0/hMcHwpcOgu8RphN9pBPKmRB/hjdNSdzNsqcGth2MrjeogDaRfo53QP4Px7I9kC0OJMpRgTI9vmHSCA27VHZlHl6UOggaEujKeoxh2gfr/HnZHuYF+Bi3bXZRGyq7IQmzEY2tbFotPRDXqHhL4FcFQX1h9oYZTYFsJB6foBJQdP9t0GghYC3B6FvHKYCHNC6YfQKBoCnmwPBrw/Nm/ewHUuOpmEBsg7vpHmqjqoJortBCPj9FIxzoEbVL2OkQWtmW6QkqftysH1KDlmqIcgAQ0uHEkLP6GgsKAh5EJtCWKgdAIpYgOT5Qe1OINwDQxMEgvS9se0Qi7DnB2/JHZkTCwEkSiQPK2twsfbCAaKFSNoUle0uVWwjcU4gUHdB+M5jbYFFyxxYiPbm2tOnjawz2CSLimb8DgIfAVENHnj5ppPbhSA/I9jUYEJe+AcIYICyxHANQijIQfDnEhT7EBR6UuZY1u5AtJ6MRq0Ocpo+nL0RXN4haNKQsEmmAZQOg+AnhZD0gSQLEE5qRKxwIVT8hE2aPIDWXUopVAoQfLK72iwAQR8RIhcb8jfCWmooQzN/LDV1fdZ7AZRmeRQCE5BU7vRk2HasrYEAuZEPFq4Gia/BXaeAp4GnEoFQeSiVgFAwUwSaanNEvywAoY4E6V9FtlQL8rIHvJIBJtUDCAgHtEzMgPT0AhTsAH9tBH7HqoRNJZWe9IWaGj5k7ZisH1XqrDQZUu6IvLshLfZA8shoFpuUVwbaPRNMQncrygx5LeMmNrwDXxD0gdSPhACzRuUXrG14CIBFSPUPYS2+yK2TNjM8WDuJCbnngkg6V0ahBLA2QOF5AVTkBMhZzyDpicjcIWsDJiAyLLyPcV+sV9gT4qVTwHP4o4xnQGQSph0kBwRwE5pEhp8ikY1tKAkGv7AKhNRuTXEnWatQCMpEkAiE9DiABBl+rESxKcU9YOoLksq6DChKItY0COqPiyL9IPx6LMgLAhWFgnxDXV79EWSpHZQ7UX11phlxDmjO+kDQTaLgS4aEQvHFXdGDBRlDpJU6BUKrlabsjojC4w9qZ0grFPAWhKDU76AmNiASKAKMGYP22VWuGh2GIHaGZ1UkaeHks+rmGUCNII6vNEmDezasLbFQLrsge6h8ZE3eZwEVpQrehkwwdemBixxx0J5wBEiCgoDnBC8l6U4GePe1b5aJp3sN0jKqKZt7oS0lR7D1Rd+u9A6vgVwwCqJTKCDttMmZogFtzaCOIptUIAILDMVoh7yaB89p7bPGpriwG0RseJ44Su8Gmik5IrSdQ8ZG3TwLUOpm8Ats+E1Yj9iGgthQgiJsESzWfA6Cgi2pevxI8IwoSJoaEgQChJii/mLDfQkIfPoGgnsxrJlhiwiz7CWVsJ/BF5AMaDiVstiYSGkLKomGCUWOFoyDyYMgpEXiF+eISGY4kRFmjU1y4cbHYZJXLMGHjDUP3SY6LwpYtJwM5/PL2SpeukwNihB5gxP2yk5ShDTALgMZhsDb/FQmQz3KIq1QFJZyAgndENbGZMQ5oqwn4YuFhGPiTYbMhFRTKIqd4xMvn+rJPpGsKkkMG/iveqqT4eu7ejur9e/HaI7YUBYMIP9b1ioIQka9AmERkAzkTEZIU8Ob18BiI+rAl9yOt8mqnwrS0sObHvAV9CoyQzlyH6wPIPTQQ4STOPJkn8irMaljEZwMF5NWSvZ72qFSYkN+q4RfQnREhLBWjH2E4Q1ZLILLDAky/I2PejJARn00Dn0Q3y1U5LFha0JrXdnADgtIBM8lBUZLyZA0nkA6lAOh5lv0O94IwRhHRQMAICFksQA5DQ/+UST33gFnwzYAGd61dCKwQ306OkKxIQcHIaJUhlotKlWDKSWZlL9uVBAVMkaiOxmSfwQJRP0TvUCGg+CFfoKIDdev/LwVjEWhmDpgn/Si/RDGCADZIsQbCOw22oAorb65If/E84gSTKlbEElql6PSRmrwAhACkgE+ZID0sLmNlawdGsUrqtS8FUJEodh1wtEfuegMrDGPYVcRYIAZ3XbrPe9f8VNEqYQ2lNAUwQQGQhGS4ZORLq1QQtXsjc7a8JMcBItSydh//ke+d4YoVSBvIYyjARKg+8snVjdu7r/5TtrZCZyrM6FygKfWiIoM8KgQBxIKxX9egE8gMMymMZffEoTA8YMxhlots/gATBlYFmYMUxrNhxBRLKWXLESUgUMWPzhrEPA8oL7HYeKvnFVJvVZoBhmSgx9cbECI4fe5oI9BKspVREi0L1ADAYgSqNZGfJagGRvK0SEVVSJJhmzyhqLPgiJN9wraiPsQCmIY+cefsbZ8QLNZ4BwJEcGHC6xrGOOhBx5FGGE3ISEpKmSlxQgB0Ph9ODKkjFAp3zXQC5fCbObwl1M4seMOXgZpsWQsmPfRy8/XdpqOABDCoUxSAISQKFe2XP3zbXc9QDuyw8JDdVOT2hIUeGWFTg4ZngpFoRwDeCoxaCYcNh/lMu3sMPacgzBGCBocFlCDg9Laxs21v79H0gYSilUWlYtYgFcYTRKLqMhwx8UzyiHhvkYa21CBAwEiBFmWqFSjiZACYF3HCR0JEaK2hQIWzSDDa/UkSjL8/w4B3VcpOCTWVoRAlJJMOiwW40NhgodiInIsXMlw00XByFDVjOFWX1EoMpDs2grA2I00+01bUlkaAbBQFBiulocMGbIhO89RChMP9VMoEURImzT8Sua01EWCYqGsSpBcgFzeCJUHS9HUiGLQ2jv7XDIFNRgWroJExsiIigw/hRIu9BVYoaioldDNwQPGaCQ8GiBlGyQe1jNXBkBJkPiQgdTICGFqtEihNAeOkbVcgocbAAi7gUAwzAPGCGNM7IYJQkgIsJs8E42PS+y8E/eTcM7dsfAQPcoygxIaVmYoKhTOeYQKRQ4ORdooIQhji1vlchXVqkgAohQl9JRh6LrBGCMYAyDOrVrNrFQq1UoRWRYChHRNSyY1TUMICSEAQFF9IIRRpVhApssCIQDCmKUMm0VJVYJQEDIAoJLLtVhLE03DBEelUEbiHL094cUFxpgQKgSvFArIMpNd02bPmrXP3nvP23PerN13nzFjRldnZyad1hMJSiiAqJlmuVzO5XIfbN36zsaNa9ete2316rVr1+b6+hDBejrDNCY4B5DNgsEIcctasGBBT3e3xXl93hoAwlhw/srKleVymRICUgID+byNy5EMAZqmLVz4cV3XhJgoNux8GJkilyDrvABCGGPB+csvv1QplwmhLtI3IBzdIdGglFqWVcvlWDpz8EEHHbNs2aGf/OQes+d0ptN2SJUjxEGIEc2B0LBOoYTSkdWdYq32zsZ3nnnuud8/8PsVTz5VHtimd3QyxjjnMiqWEFLJ5R959E+f/dRhFcHZmFRHCCGBgCFcrFb2X7jwbxs2JBMJYfcgeJgrkpvboM60Mk2zp6f79ddfnz6t24wg/8WfIopQsVrZZ/78jev/piWSAkQkZMjZHO4ntce4NDBoZLPL//UrXznttEWLFiUJrYKoVqsDhTwAYNu+QKhuNtuU2LjY55k1a9bee3zsK8tPfXX1azfedNMtt91WGBgwurqctIyTvMeoVCpZQhQKBUpp3bUopaVSaczkEaAgMFyLxDXO4uHLFQqFdDpdq9Uwbi4eY49mSykcpfcZPM5BKLVqtUqptOy44y46//wD99vfRKhQKhY5J4RgQupGqBGsur9UqtWSKBOM58+f/7Nrrv3q6adf/P3v//6ee7RsllIqBB97dLfklHGtrgfH/gjIkwz58oFeKmb0NloAx6hRHzIe6tCfAVUJY+ViMZVM/uKXv7z3rt/ut99+/YV8oVggGDPGCCEBuoRgzCglhJRKpf58bt68effcede1P/kJATArFUIoAuG+Ii/vTIGDrAc718dJldSZnxJktFML9XqFAHAAZbQ0NDhn9qxHH374a8tPzRXyxWLRHtdoDG9CGGOlUmmokP/Wv/37/ffe29XRUSuVCGXekyhg6A2c0jwQyJifU4CMMAPhlibo/AGglJWGcnvvPf+RPzx4wL779eWHqB8WAMA555xb4xrn3MWYGEOEUtqXGzrysMPvu+++zo4Oq1p1uJC97gMBt2GCmiqRI0Mm3BB1awYhajYHIbRaLO662273/u7uXT6680A+pzHN4/mFEBjjRCKRYBptuOcaiGq1appmo5Uw2jRN68sNHbLowJt//esTjj8ehLADa+FLXslaGEhmoVXtZjDGjEUTfrQNUjs+FKFCGYYDVB5JcEvTtJtvvGn2zJnbckNO9zQWsNM0rSuVroLYtHnT+vV/+/umTX39fZVyhVCSzWR32mmnObNn7zFnTk+2owqiWCy6mW+apvXlc8d+9sjzL7roB9/5rtHbwy0rDBnuUy2AwGiQGX5BDIyxZVmDAwMRZPMDAgSUkFKpLCZsIoxGwSnwSygtDw7+15VXHr5kSV8+50aG3fXdmez72/pv+c1v7r3vvr+ufq2/rw/ZGcUwbHwiSpPZ7OzZs4/6zGdO+sJJH1+woGzWKtWqo4/DKB0sFc/71pkPP/TQS88/n8xmueOGBqnYEiAMKhWeJHbeTnRlPZoQIp1Kv/jai8cccwylxDU/3n8RBcZHwRBAPp+nuj4BEWgVHJSQSi638JBDzvzmNwdLRc3FTRVCMMaMRPJ/b7nl8isu37B2LaKUGkbSSOFUelQw2BPX4nzN66+vefnl666//qSTTvreBRfuuvPOA4U8azg5xphznkglvn/xxcs+d7RDnAdsg1SyP/CE9/vKbFiVkyUgIc2HJcfWPuTchzJ5Mw4XoWN6KqoXwAFpNDkdP/ZwXnT++UYiKYRwFIlCCE3ThMVPPf0rXzt1+YaNG1M9PUZnJ2NMCDHeILXtU4JxMpVK9fZyhG66/ueHfurQP61Y0Z3JWk5SgVI6VMgvPezwzx79uepQjlI6csuggoW8wHAafj8yJCcsxphojo3Z/zGmMc3twxwPiJwMhBCp90icxQat5POHHnHEUZ/+9FCp6Cj5AYASChY/6ZSTb7vhxlRvbzKZtDlws6UBQHBumSYGSO3Qu+m994479pj7Hvxjd8ZZa9gh1dNPOw1hDMLzjv2fHBx2MdXvh5A1MlCAPQUOTYz7z60JT28lYl9aKjIBGCEhTj/tNI0yEMJNoWQN46zvfufh++5PT9/RsizReGSjTBp5Jss0jVSKAyxfvnzl6tcyRmr057YnbFkWJcRCcPzRyxYuWVIp5AOFVewMVqSGBTj/I4IiTYHtjCZGN8bED5GRgdVyebePfWzppz9dqFYch4Rz3pXJ3v3A73913fVGT7dZrTqrJ8/GOU8YRn5g8Ixvf9viFiBkWRYXgjHWmcn2ZDsSemL9+vW33XWXZZresXmfjsMBLAzkWV8fwr0zNhIyIFoypAxSSgiUSkuPOGLGtO7+Qo45hSkZY/li4QeX/hDTUHsnLdMyujqffezPd99//5dO/BeBkEDo/Q+2PPnqq08+/fSzzz77+utrcls/QIlEIpkck0wjxgcEYyUUFs5aRsUuliEDtZ4MOwjml7wrBKJ06RFHCJf9bpzzaZnsb+66c/VLrxjTupydTKlnHl5Gx5TceOON8/ec99iKx5955plXVq58d9MmVDMRo8wwjGnThBAgYLxJCaoFC1WLOEiSgVUfW5IMaD0Z/pIDY1yzrK4dd9x///2q3HLUKRhjC8Ttt9+u0DXudVc451o6/fzzL3zikIPNXB4RhJNGMp0mWWIzwS0evDPCYIE8U1fVbwePelltQYZ6nANjzCuVOfvuu/NOO1er1cYIJgAkk8kNGze+8OKLNJWqN0KDLkoBAoxxqqd7OAWVC8FFdN0Aqm8P97E9A7zAEAFgGR+86canB2TEFw5kWnvOnZvWE8LJTxFCJClbuXLl4JYtuqaBEBMt0DAOJ7JMi1tcCDHid4KPGxIYi8BkhEghUCADQjgvQclA4xbe3JJ2EQKYM2cOdjH4AAAjtGrVKsRF2MQWxVeJTzgQIil2GFJgKMAiq01aJjtcCsaBd6wGEbzrLruAU+4WQogQIhBa9+abiGBldyEIDVFoWVDAQpEMHGYwJsNxRZ7vsvcL5CFKp++4o3ALohFSrFbefe89RKl8VkGg12BH1B0gYQwFERhqs9ne1ON+i9gTNjuTfexbCB4+CPHSYSEESyY7OjqEk+QYzW4dGBgYLvAFTZjjMlv/IECcAPyEGZLbjadsggAAmKblHGsOIjMIpYF0ukxNMHClWwihMc0wUk4J78OSo1qt5vN5TDAAQNiprYJTEB9BylsBBXmgHOcAAMZYV2+vU1wA/E41IjPGOz0YFwoFSznHReLtkN4SSYAglGia62EYY9M0LcsKTq7qsEpYEK3GQvr6hJBKtbLXXnv99bVXG3psnDaRfngBYBjGccuO+ctzz+nJpFoEUqJ4i4R29Fzi8k4F9RiB0EBEaYqBhGUayePYkqO3tzeSJxBCpBJJj5S8ME6OHxwY2akYHs9q70UAmKj5IbJhU3ieQOIjOBZBHxMATNOMCg5T0xQNUoXKPl4uBkbYMs1qpeK2Pi4AdF1P6DoIESq/IsxoKxmkrcBCKt8nEjg8vZ6wVh3x3IcABONatVooFAhyDmMIIZLJZGdnJ2rcvuw7luAYnZSLq4aIvoJH1VKQ0yNeNEO7bV8J7D76hc8JRrVa/7Zt1N2dSafTO/T2Iov7EOCPAgQVEiBploLHWbywADWBAdsDGf42B0EEAdq8ebNb+FwIkSB05m4znwZwLEgcgQkZ5TlBpZCQsh6RvyEhRFQ2h4JDoNhhUpuaNmzY4GFbYYT2nr83QnbScWT142wl5VzFJdK5FNrqHFsnwXLijxCSNlLRwIFAR3JbpAKVYPBeWxEIobVr19ZAONqkhBALoQMO2B9rGhc8shHC2Lbnk8mEECB8z6waAJOXRpICwzEB0WkuJZPJNWvWnHXGtwgl4R/HDlKvXr2aMOYujQLOKN+1FYET+tp16/r6+zs6OhqDXRjjcrWyYMG+u83afePbb2uJRPh9mxgj4NYOO/QCwNZ330MI6Zk0pdQWoc5nwypkRIDFBCSUxpIROjQ09NSKFVGKQEIojbKmj5RBKgRouv6PTZveeOONpK43Xh5jXKvVpndN+8zSpVAzKaFypqiXWUoIMcuVSy65ZNXLL195zdWLD/2kZZrloVy1XCGEUkLrjBsIq2zkjdMJLgkEujYgxBijuq4bxsRPUjeSejLIx12tRFKCwX1EKaGiZj711NMMYUfBRQgxQZxyyik0kfAL3/ojQwiplcuz5+35+RM+3zt9+jlnnvXYn/+8YsUTZ3z727vvvns1n6/k8/Y6Aki8R6MZWASxPxvkB69vFg/RIpcZE+Mc3nY1IY888kjJrDluCCCEFEqlgw86aNmxx9YKBcaoqugY/ziEEGFaZ59zzg5dXfl8vj+fq9Vqixcv/vFVV73wlxfuuPt3/3ziiR0dHRA80OH0Q1DAAqIQVs6j2IxzhlFWvpNbCKEZyZUvv7Ry1ap00nCzeiyLX3Lx9zJdnZZpqsXsxl2NMVYeyh26dOmpp3xpsFTUNI0xhjEuFAv9+ZyRSp14/An33HXXH//4h2QiYZdjaLKoaAEWzcgQjuacRGJyA2PMLFduvfVWjRA3zVIol/bbe/5lV1xulsrUsZiCpzQBhChjlVKp9yMzrr/uZ+PqGw+f364s2Dc4IABeWbmyMDDINA0EKIsPPC5g1iwsFCP5LSADY0wJphQziimVrP4gtaOQc06TiTvvuGPd2xtSLsKDMbatkP/m175x7gUXlHN5JKDeOPWUUUzTKvl8JpO548475+7xsZLLao6RNPqHBq+5+mpMKQgI3HWSWKAgWIACpq0hgxAkBK/WrGrVqlStahVME0tsJiVSxZ4E6HpicGvftddea2iam2YhhORKxf/+4Q8vv/pqwXklnyeUUsrwSHSsUWQQgm0bpTI0NGuPOQ8+/NDhnzx0MJ9zNG4szrPJ5M9/8Yt33lqvG0aAICMeLqzt0YaPsP+H/I/HwSWBaBEZolZDlGYPOXD6N7484z9Pn/ZPR7DeHl6r+coP2foclsW1VOrmX93wxZNPXnLgJ4aKBccqGgAwVCycd9ZZnzjoE9+78KKnbW9eY0zX63QNAHDBa5UKsoSeMk7/xtcvvuSSGdNnDORzjo6ZECJjGG/8bf01V13NEolg4WfTNEEI0zQbfg5BNANCCGNKaf2iTaTyJQwZmBBeq6UPWLDzpecm99wDM4oQBs6tD/re/9H12377ANF15N6T8mWfgFJSLZa+9Z9nPPnECo1SYRegbeADY9yfzx2y5OBHHv3Tww89dPvtt7/w/POb333XqtVnMJCEPmvW7COPPGr58uUHfvzjJbOWK+TdXHYA0Jh29tlnD/b1JTKZEZ8Z5AcTYzytu7swNKSN32c78bdKPirG2LLMQqEw9uNmFyxWJyN78KKZN12LCeG5/OhNkmxm1//5Aevt3nL9r5mdbhEgfF5neSQy6VUvvnjm2Wf/6mfXbSvk3ap4McZyxQLB+Lhlxxy37Jj3+7auf+utt99++/0tWwqFAkY4lU7NmD599pw5c+fO3bFrWg3BQCFP3OvamqbZ29F5xbXXPHjf/YlMhnO1fEl79VjX9Qcf/CP39nHkouB2b3SmM4+tePwLx5/QQNvkk4EwFpal7dDz0SsuQAjxQgkzOr5Drf6BGWd/o/zXNfkXXqH2brTAamW4Rywrkc3ccN31u8+cecE55/bnc9Ql75kSghAaLOQRQh0dHYsXLzl08ZL6IUeoUq1sy+cxwR4lFWwy7vnDAxd+97uakXRYZwHZ3QDTurujGhDOeUfS6OzsRJPZXK0cTAk3za7PLdV339X6oB9rrM4QAc4RY92nHJ97/mVwmS1M1RcTXOip9IXnnqcx7dwzzxwsFbkQ1MX0tYfcsizTNOtq+I0adJRR70hib0fng4/+afnJp4AdInN+Fa2szREhHDyRtMLUNWxmMMNeLU8tXACmhZxW+DAhUKkk5+2hZTK8WMKMNmYpsQD5sQgjLZU676yztmx5/7JLL0MYFYpF6r51Qj2VbcR/prQn2/GbO27/+le/Wq3UmK4JHkp6R1iJvMFbaSMyRr+i0zo87E0kBM2kSULnhQJCNGCcw4EPhPR0+porrlx29NHr31rfk+2wX6wBUeTI2esFnZksJeS8Cy748hdPrtVMpmuTqtcDSfvJIsP2HBEy392CPMrpUGr1bePFEqLU8ZiA1crtwgiJTOaxRx45+OAll115RbVS6cl2aJrmXSTOy+0XwsarI5PtymQfe/zPRxx2+JWXXaYlk4TSKUIGtAMZo63wzEuYMeQULQSLk3Sq9MprVqVCXDxExdrnEyJYwLmVyKTz+fwF531nyUGLr/rxtX1bt/ZkO6Zlspqm2YM9WuZ89GU8w2XxhBhffxIADMPoyXYkEokVTzxxwoknHvXZI1964YVEJuP37rexWxKT0eruwf6X3K+aSAZwThkbevSJwlN/Yb3ToGaOlw1gWSRtmP/4YOsNdxBCkLsrG1YFUMY0XX/rzXXnnHnWVT+66sijjlq2bNnCRYt22nmnhP1yP/tlTWKsEv7o2/8YwqNvalq3bt3jjz529913P/v00whAMwxMiEsla+edkCkjxQjJZrMUk2aLCA6CYZJKpRpBxRhnMpmMnjD1BK4PioKOcDqdbrbMsE1OUa1tPu/SmTdendxzjsgVwOIIAaKUdnWKQnHzeZdW3vk7S+jgYslhlkxG0ln2C3iqlQqyLIRQ74wZ8/baa5999pk7d+5uu+3W29ub7cimjBTTmF3C137H29YPtr7zzttrXl+zatWqNWvWlPN5hJBmGISQiakhnpucACGMgfN99t23t6cn0N5M9VpzAIzSbdu2vfrXV0f2dI0E6zRt4aJFuq4LEHVV1OysvqGhoVUrV6rcZMAlOkyIqNVoV+dHvvMf2cOXsO4uRCkfypdXv/GPy39a/r83qTsZUcIxagfZ+Xy1Wg2Nm/RE1w3D0DSNUIIRFkKYplkul3m1Ov4YTddAgBDCf8ub4+szx52tZY02bEUEAOHn4lKFDYzh1t8JBtMCAK2nOzFnJmas9vfN1U3vYYSIe2y0KXCMp8SOn463MMa9ABDZ3xNCCcb2pstG20L1rRVyr82CcFJjYsUZAEcDwrtMqtuvoidjbDCwqJp2DQSMENY0hDHyu4dmwTFe4o+84LLxO/B9WXNzPcwQWExi9DMwIghjjBEI2bfVsMg62ufIxnfEtiwuAKEv12IsUFPSw+wXHKj8gkV4CxAVTu3CxKRggZpaWlSpMWguEW0QmoTQ5/nwYTEiOdp4T3goPCH02SZF1LXTcLDth4ZQPTtZoqJNsZhCcEDgL9ubCdTmVRvYVOIgsn6cdCbaWmC0AxwQ4VEt9F+2f4HRAjigZT9qif/y4cLCAw5oWRe17gJtMRgwVbAYhQOm2sBPFSExVQXGODimcJwD2ozO7QeLKeTKSgw7tPHdTtnpx6YkCu3e41Mei7aCA0J+H2MxpeGAJh0bY9FucEDrgYmx2C5c2e20pz5UWLhIjg/FoEYH/nbdXSymIRYVU9GVjUVFDEfMRAxHzEQMR8xEDEfMRAzH9g9EzEQMR7um/8RwxEDEcMQqI4ajvWVDDMSHFY4pkRcYwzFZHMQofGjgmLqJgDEc0Q52TMAUhANaLBHiNnXgiAcybi6NxF0QtxiOuMVwxC2GI24xHHGL4YhbDEfcYjjiFsMRtxiOuMVwxC1uMRxxi+GIWwxH3GI44hbDEbcYjrhNjfb/mjyfPKSZDtkAAAAASUVORK5CYII=">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<title>Clash Lab Fitness — Client Onboarding Application</title>
+<meta name="description" content="Clash Lab Fitness LLC 8-Week Protocol Client Intake, PAR-Q+ Health Screening, and Liability Waiver.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#030404;color-scheme:dark}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:#2DD4BF}
+
+.page{
+  --bg:#050707; --surface:#0C1011; --surface-2:#111617; --surface-3:#192021;
+  --line:rgba(255,255,255,.07); --line-2:rgba(255,255,255,.12);
+  --text:#ECF3F2; --text-2:#9AA7A6; --text-3:#5F6B6B;
+  --accent:#2DD4BF; --accent-text:#5EEAD4; --accent-tint:rgba(45,212,191,.10); --accent-line:rgba(45,212,191,.34); --on-accent:#022320;
+  --ok:#4ADE80; --ok-tint:rgba(74,222,128,.10);
+  --warn:#F2B84B; --warn-tint:rgba(242,184,75,.10);
+  --bad:#F2706A; --bad-tint:rgba(242,112,106,.11); --bad-line:rgba(242,112,106,.35);
+  --font:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  min-height:100dvh;
+  background:radial-gradient(960px 440px at 50% -180px,rgba(45,212,191,.09),transparent 70%) no-repeat,var(--bg);
+  color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;padding:28px 18px 72px;
+}
+.wrap{max-width:680px;margin:0 auto}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* Top brand */
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}
+.brand{display:flex;align-items:center;gap:12px}
+.mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(160deg,#5EEAD4,#14B8A6);color:var(--on-accent);
+  display:grid;place-items:center;font:700 11px/1 var(--mono);letter-spacing:.04em;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.brand-name{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.brand-sub{font-size:12px;color:var(--text-3)}
+.step-pill{font:500 12px/1 var(--mono);color:var(--accent-text);background:var(--accent-tint);border:1px solid var(--accent-line);padding:6px 11px;border-radius:999px}
+
+/* Stepper bar */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px}
+.step-item{padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;gap:9px;transition:border-color .2s}
+.step-item.active{border-color:var(--accent-line);background:var(--surface-2)}
+.step-item.done{border-color:rgba(74,222,128,.28)}
+.step-num{width:24px;height:24px;border-radius:7px;background:var(--surface-3);color:var(--text-3);display:grid;place-items:center;font:600 11.5px/1 var(--mono);flex:none}
+.step-item.active .step-num{background:var(--accent);color:var(--on-accent)}
+.step-item.done .step-num{background:var(--ok);color:#041A0C}
+.step-lbl{font-size:12.5px;font-weight:500;color:var(--text-2);line-height:1.2}
+.step-item.active .step-lbl{color:var(--text)}
+
+/* Card */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px 22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 8px 30px rgba(0,0,0,.4)}
+.card + .card{margin-top:14px}
+h1{font-size:26px;font-weight:600;letter-spacing:-.03em;margin:0 0 6px;line-height:1.15}
+h2{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0 0 6px}
+.lede{font-size:14px;color:var(--text-2);margin:0 0 18px;line-height:1.55}
+
+.callout{padding:13px 15px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line-2);font-size:13.5px;color:var(--text-2);margin:14px 0 18px;line-height:1.55}
+.callout strong{color:var(--text);display:block;margin-bottom:3px;font-size:13.5px}
+.callout.accent{border-color:var(--accent-line);box-shadow:inset 3px 0 0 var(--accent)}
+.callout.warn{background:var(--bad-tint);border-color:var(--bad-line);color:var(--text)}
+.callout.warn strong{color:var(--bad)}
+
+/* Form fields */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.field{display:block;margin-top:14px}
+.field:first-child,.grid-2 .field,.grid-3 .field{margin-top:0}
+.grid-2 + .grid-2,.grid-2 + .field,.field + .grid-2{margin-top:14px}
+.field label{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px}
+.req{color:var(--accent);margin-left:2px}
+.hint{display:block;font-size:12px;color:var(--text-3);margin-top:4px;line-height:1.45}
+.field input[type=text],.field input[type=email],.field input[type=number],.field textarea{
+  width:100%;height:44px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);
+  padding:0 13px;font-size:15px;outline:none;transition:border-color .15s,box-shadow .15s}
+.field textarea{height:auto;min-height:92px;padding:11px 13px;resize:vertical;line-height:1.5}
+.field input:focus,.field textarea:focus{border-color:var(--accent-line);box-shadow:0 0 0 3px rgba(45,212,191,.10)}
+
+/* Pill selectors */
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.pill{height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--text-2);font-size:13.5px;font-weight:500;transition:all .15s}
+.pill:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.pill[aria-pressed=true]{background:var(--accent-tint);border-color:var(--accent-line);color:var(--accent-text)}
+.days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:6px}
+.days-grid .pill{padding:0;text-align:center;font-family:var(--mono)}
+
+/* PAR-Q questions */
+.parq-q{padding:14px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:14px}
+.parq-q:first-of-type{border-top:0;padding-top:4px}
+.parq-text{font-size:14px;color:var(--text);line-height:1.45}
+.yn{display:inline-flex;gap:6px;flex:none}
+.yn button{height:34px;min-width:56px;border-radius:8px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--text-2);font-size:13px;font-weight:500}
+.yn button[data-v=no][aria-pressed=true]{background:var(--ok-tint);border-color:rgba(74,222,128,.4);color:var(--ok)}
+.yn button[data-v=yes][aria-pressed=true]{background:var(--bad-tint);border-color:var(--bad-line);color:var(--bad)}
+
+/* Waiver scroll box */
+.legal-box{max-height:360px;overflow-y:auto;padding:18px;border-radius:12px;background:var(--bg);border:1px solid var(--line-2);font-size:13.5px;color:var(--text-2);line-height:1.6}
+.legal-box h3{font-size:14px;color:var(--text);margin:16px 0 6px;letter-spacing:-.01em}
+.legal-box h3:first-child{margin-top:0}
+.legal-box p,.legal-box ul{margin:0 0 10px}
+.legal-box ul{padding-left:20px}
+.check-row{display:flex;align-items:flex-start;gap:10px;margin-top:16px;font-size:13.5px;color:var(--text);cursor:pointer}
+.check-row input{width:18px;height:18px;margin-top:2px;accent-color:#2DD4BF;flex:none}
+
+/* Actions */
+.nav-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:22px}
+.btn{height:46px;padding:0 20px;border-radius:12px;border:1px solid transparent;font-size:14.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:filter .15s,background .15s}
+.btn-primary{background:linear-gradient(180deg,#3FE0CB,#20BFAA);color:var(--on-accent);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 2px 8px rgba(0,0,0,.4)}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-secondary{background:var(--surface-2);border-color:var(--line-2);color:var(--text)}
+.btn-secondary:hover{background:var(--surface-3)}
+.err{margin-top:12px;font-size:13px;color:var(--bad);min-height:18px}
+
+/* Done state */
+.done-icon{width:54px;height:54px;border-radius:16px;background:var(--ok-tint);border:1px solid rgba(74,222,128,.35);color:var(--ok);display:grid;place-items:center;font-size:24px;margin-bottom:16px}
+.done-icon.warn{background:var(--bad-tint);border-color:var(--bad-line);color:var(--bad)}
+
+@media (max-width:600px){
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  .parq-q{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body class="page">
+<div class="wrap">
+  <header class="header">
+    <div class="brand">
+      <span class="mark">CLF</span>
+      <div>
+        <div class="brand-name">Clash Lab Fitness LLC</div>
+        <div class="brand-sub">8-Week Protocol · Client Onboarding</div>
+      </div>
+    </div>
+    <span class="step-pill" id="step-pill">STEP 1 OF 3</span>
+  </header>
+
+  <div class="steps" id="stepper"></div>
+  <div id="stage"></div>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+const SUPABASE_URL = 'https://rvktkrodnkfktvpbleib.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_XZPmucPNraOaPCYXy-fjGQ_6xakqTNS';
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+const EQUIPMENT = ['Full Gym', 'Garage Gym', 'Dumbbells Only', 'Resistance Bands', 'None of the above'];
+const PARQ = [
+  { id: 'q1', text: 'Has your doctor ever said that you have a heart condition OR high blood pressure?' },
+  { id: 'q2', text: 'Do you feel pain in your chest at rest, during daily activities, or during physical activity?' },
+  { id: 'q3', text: 'Do you lose balance because of dizziness, or have you lost consciousness in the last 12 months?' },
+  { id: 'q4', text: 'Have you ever been diagnosed with another chronic medical condition (other than heart disease or high blood pressure)?' },
+  { id: 'q5', text: 'Are you currently taking prescribed medications for a chronic medical condition?' },
+  { id: 'q6', text: 'Do you have a bone, joint, or soft tissue issue that physical activity could exacerbate?' },
+  { id: 'q7', text: 'Has your doctor ever said that you should only do medically supervised physical activity?' },
+];
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+
+const F = {
+  step: 1, // 1 | 2 | 3 | 4 (done)
+  submitting: false,
+  err: '',
+  first_name: '', last_name: '', email: '', age: '', height: '', current_weight: '', goal_weight: '',
+  injuries: '', typical_eating: '',
+  equipment: [],
+  days_per_week: null,
+  parq_answers: {}, // q1..q7 -> 'yes' | 'no'
+  parq_signature: '',
+  waiver_agreed: false,
+  waiver_signature: '',
+};
+
+const hasMedFlag = () => PARQ.some(q => F.parq_answers[q.id] === 'yes');
+
+function renderStepper() {
+  const pill = document.getElementById('step-pill');
+  pill.textContent = F.step <= 3 ? `STEP ${F.step} OF 3` : 'SUBMITTED';
+  const labels = ['Client Intake', 'Health Screening (PAR-Q+)', 'Waiver & Terms'];
+  document.getElementById('stepper').innerHTML = labels.map((l, i) => {
+    const n = i + 1;
+    const cls = F.step > n ? 'done' : F.step === n ? 'active' : '';
+    return `<div class="step-item ${cls}"><span class="step-num">${F.step > n ? '✓' : n}</span><span class="step-lbl">${l}</span></div>`;
+  }).join('');
+}
+
+function renderStep1() {
+  return `<div class="card">
+    <h1>Client Intake Form</h1>
+    <p class="lede">Tell us your baseline stats, training environment, and history so we can engineer your custom 8-week protocol.</p>
+
+    <div class="grid-2">
+      <div class="field"><label>First Name</label><input type="text" data-f="first_name" value="${esc(F.first_name)}" placeholder="First name" autocomplete="given-name"></div>
+      <div class="field"><label>Last Name<span class="req">*</span></label><input type="text" data-f="last_name" value="${esc(F.last_name)}" placeholder="Last name" autocomplete="family-name"></div>
+    </div>
+    <div class="field"><label>Email<span class="req">*</span></label><input type="email" data-f="email" value="${esc(F.email)}" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="grid-2">
+      <div class="field"><label>Age<span class="req">*</span></label><input type="number" data-f="age" value="${esc(F.age)}" placeholder="e.g. 34" min="14" max="100"></div>
+      <div class="field"><label>Height<span class="req">*</span></label><input type="text" data-f="height" value="${esc(F.height)}" placeholder="e.g. 5'10&quot;"></div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Current Weight (lb)<span class="req">*</span></label><input type="number" step="0.1" data-f="current_weight" value="${esc(F.current_weight)}" placeholder="e.g. 185"></div>
+      <div class="field"><label>What is your goal weight? (lb)<span class="req">*</span></label><input type="number" step="0.1" data-f="goal_weight" value="${esc(F.goal_weight)}" placeholder="e.g. 175"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Metabolic Data &amp; Injury History</h2>
+    <div class="callout accent">
+      <strong>Protocol Disclaimer: Precision Requires Accuracy</strong>
+      To engineer an effective 8-week nutritional protocol, we need to solve for your specific metabolic variables. The meal plan I build for you is only as good as the data you provide in this section.
+    </div>
+    <div class="callout">
+      <strong>The 3-Day Food Log</strong>
+      You will receive a separate 3-day food log template. This is mandatory for your custom meal plan.
+    </div>
+    <div class="field">
+      <label>List any past surgeries, old injuries, or "check engine lights" (joint pain, etc.) we need to account for in your training split.<span class="req">*</span></label>
+      <textarea data-f="injuries" placeholder="Type 'None' if no injuries or surgeries…">${esc(F.injuries)}</textarea>
+    </div>
+    <div class="field">
+      <label>Briefly describe a typical day of eating. Include total meals and water intake.<span class="req">*</span></label>
+      <textarea data-f="typical_eating" placeholder="Breakfast, lunch, dinner, snacks, and roughly how many oz of water per day…">${esc(F.typical_eating)}</textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Training Environment</h2>
+    <div class="field">
+      <label>Available equipment<span class="req">*</span></label>
+      <span class="hint">Select all equipment you have access to.</span>
+      <div class="pills">
+        ${EQUIPMENT.map(eq => `<button type="button" class="pill" data-eq="${esc(eq)}" aria-pressed="${F.equipment.includes(eq)}">${esc(eq)}</button>`).join('')}
+      </div>
+    </div>
+    <div class="field" style="margin-top:20px">
+      <label>How many days per week can you realistically commit to 60 minutes of focused training?<span class="req">*</span></label>
+      <div class="days-grid">
+        ${[1,2,3,4,5,6,7].map(d => `<button type="button" class="pill" data-days="${d}" aria-pressed="${F.days_per_week === d}">${d}</button>`).join('')}
+      </div>
+    </div>
+    <div class="err">${esc(F.err)}</div>
+    <div class="nav-row">
+      <span></span>
+      <button type="button" class="btn btn-primary" data-act="next1">Continue to Health Screening →</button>
+    </div>
+  </div>`;
+}
+
+function renderStep2() {
+  const flagged = hasMedFlag();
+  return `<div class="card">
+    <h1>General Health Questions (PAR-Q+)</h1>
+    <p class="lede">Answer every question honestly so we can ensure your 8-week protocol is 100% safe for you.</p>
+
+    <div>
+      ${PARQ.map((q, idx) => `<div class="parq-q">
+        <div class="parq-text"><span class="mono" style="color:var(--text-3);margin-right:6px">0${idx + 1}.</span>${esc(q.text)}<span class="req">*</span></div>
+        <div class="yn">
+          <button type="button" data-parq="${q.id}" data-v="no" aria-pressed="${F.parq_answers[q.id] === 'no'}">No</button>
+          <button type="button" data-parq="${q.id}" data-v="yes" aria-pressed="${F.parq_answers[q.id] === 'yes'}">Yes</button>
+        </div>
+      </div>`).join('')}
+    </div>
+
+    ${flagged ? `<div class="callout warn" style="margin-top:18px">
+      <strong>Medical Referral — Further Action Required</strong>
+      Your safety is the priority at Clash Lab Fitness. Because you answered "YES" to one or more health questions, our protocol requires a medical clearance before we can begin your 8-week program.<br><br>
+      <b>Your Next Steps:</b><br>
+      1. <b>Consult your physician:</b> Share your PAR-Q+ responses with your doctor.<br>
+      2. <b>Obtain a Clearance Letter:</b> Ask your doctor to provide a brief note stating you are cleared for "unsupervised, vigorous physical activity and resistance training."<br>
+      3. <b>Email a copy of the letter</b> to <a href="mailto:clashlabfitness@gmail.com">clashlabfitness@gmail.com</a>.<br><br>
+      <i>Note: We cannot issue your training split or meal plan until this clearance is received. If you are unable to obtain clearance, a full refund of your $100 will be issued.</i>
+    </div>` : ''}
+
+    <div class="callout" style="margin-top:18px">
+      <strong>Declaration</strong>
+      I have read, understood, and completed this questionnaire. I received satisfactory answers to all my questions.
+    </div>
+
+    <div class="field">
+      <label>Digital Signature (Full Legal Name)<span class="req">*</span></label>
+      <input type="text" data-f="parq_signature" value="${esc(F.parq_signature)}" placeholder="Type your full legal name">
+      <span class="hint">By typing your full name above, you are providing a digital signature that is as legally binding as a handwritten signature. You are confirming your intent to electronically sign this document and agree to its terms.</span>
+    </div>
+
+    <div class="err">${esc(F.err)}</div>
+    <div class="nav-row">
+      <button type="button" class="btn btn-secondary" data-act="back1">← Back</button>
+      <button type="button" class="btn btn-primary" data-act="next2">Continue to Liability Waiver →</button>
+    </div>
+  </div>`;
+}
+
+function renderStep3() {
+  return `<div class="card">
+    <h1>Liability Waiver, Release &amp; Terms</h1>
+    <p class="lede">Please review the Clash Lab Fitness LLC Liability Waiver &amp; Terms and sign below to complete your onboarding.</p>
+
+    <div class="legal-box">
+      <h3>I. Assumption of Risk</h3>
+      <p>I, the undersigned, acknowledge that following a remote personal training protocol involves strenuous physical activity, including weightlifting and high-intensity intervals. I understand these activities carry inherent risks of injury. I voluntarily assume all risks associated with performing these protocols in my own chosen environment.</p>
+
+      <h3>II. Remote Training Environment &amp; Equipment</h3>
+      <p>I acknowledge that Clash Lab Fitness LLC is providing digital instruction and programming only. I am solely responsible for:</p>
+      <ul>
+        <li>Ensuring the safety and maintenance of any equipment I use.</li>
+        <li>Maintaining a safe, unobstructed workout space.</li>
+        <li>Executing only movements that are within my physical capabilities and align with the instructions provided in the digital materials.</li>
+      </ul>
+
+      <h3>III. Release of Liability</h3>
+      <p>I hereby release Clash Lab Fitness LLC, its owner(s), and agents from any and all claims of ordinary negligence arising from my participation in any remote training program. This encompasses any injuries I may sustain while adhering to the program or using either personal or public gym equipment.</p>
+
+      <h3>IV. Medical Acknowledgment</h3>
+      <p>I attest to my good health and physician's clearance for physical activity. I agree to stop any exercise that causes unusual pain or discomfort and will notify my coach immediately of any changes to my physical health.</p>
+
+      <h3>Terms &amp; Conditions</h3>
+      <p><b>1. Scope of Remote Services:</b> Clash Lab Fitness LLC provides digital personal training, which includes custom training splits, exercise protocols, and nutritional guidance. All programs will be delivered digitally within 3–5 business days of receiving completed intake forms. This 8-week program includes weekly check-ins and in-app coaching support, with responses typically provided within 24–48 hours.</p>
+      <p><b>2. Client Accountability &amp; Adherence:</b> The logic of this program depends on your input. Clients are expected to submit weekly progress data (weights, measurements, or check-ins) on the designated "Lab Day," and record and upload video of specific lifts if requested for form analysis. Results cannot be guaranteed if the protocol is not followed as prescribed.</p>
+      <p><b>3. Program Duration &amp; Access:</b> This is a fixed 8-week intensive program. Your 8-week cycle begins on the day you receive your first protocol. Upon completion of the 8 weeks, you will retain access to your data, but active coaching and program updates will cease unless a renewal is processed.</p>
+      <p><b>4. Payment &amp; Refund Policy:</b> The fee for the 8-week protocol is $100.00, payable in full upfront. Due to the digital nature of the proprietary training splits and meal plans provided, no refunds will be issued once the program has been delivered (except in the event of an inability to obtain required medical clearance prior to delivery).</p>
+      <p><b>5. Intellectual Property:</b> All training materials, apps, spreadsheets, and meal plans provided are the intellectual property of Clash Lab Fitness LLC. These are for your personal use only. Sharing, distributing, or reselling these protocols is strictly prohibited.</p>
+      <p><b>6. Medical Disclaimer:</b> I understand that my trainer is not a physician or registered dietitian. I affirm that a doctor has cleared me for physical activity, and I am following these remote suggestions at my own risk.</p>
+    </div>
+
+    <label class="check-row">
+      <input type="checkbox" id="waiver-chk" ${F.waiver_agreed ? 'checked' : ''}>
+      <span>I have read and agree to the Clash Lab Fitness LLC Liability Waiver, Release, and Terms &amp; Conditions above.</span>
+    </label>
+
+    <div class="field">
+      <label>Digital Signature (Full Legal Name)<span class="req">*</span></label>
+      <input type="text" data-f="waiver_signature" value="${esc(F.waiver_signature)}" placeholder="Type your full legal name">
+      <span class="hint">By typing your full name above, you are providing a digital signature that is as legally binding as a handwritten signature.</span>
+    </div>
+
+    <div class="err">${esc(F.err)}</div>
+    <div class="nav-row">
+      <button type="button" class="btn btn-secondary" data-act="back2">← Back</button>
+      <button type="button" class="btn btn-primary" data-act="submit" ${F.submitting ? 'disabled' : ''}>${F.submitting ? 'Submitting…' : 'Submit Onboarding Application'}</button>
+    </div>
+  </div>`;
+}
+
+function renderDone() {
+  const flagged = hasMedFlag();
+  return `<div class="card">
+    <div class="done-icon ${flagged ? 'warn' : ''}">${flagged ? '!' : '✓'}</div>
+    <h1>${flagged ? 'Application Received — Medical Clearance Needed' : 'Application Received!'}</h1>
+    <p class="lede">Thanks, ${esc(F.first_name || F.last_name)}. Your Clash Lab Fitness onboarding packet has been securely logged for Kyle to review.</p>
+    ${flagged ? `<div class="callout warn">
+      <strong>Next Step: Doctor's Clearance Letter</strong>
+      Because you answered "Yes" on the PAR-Q+ health screening, please ask your physician for a brief note clearing you for <i>"unsupervised, vigorous physical activity and resistance training"</i> and email it to <a href="mailto:clashlabfitness@gmail.com">clashlabfitness@gmail.com</a>. Once received, Kyle will build and unlock your 8-week protocol.
+    </div>` : `<div class="callout accent">
+      <strong>What Happens Next</strong>
+      1. Kyle will review your intake stats, injury notes, and equipment.<br>
+      2. Watch your inbox (<b>${esc(F.email)}</b>) for your 3-day food log and your CLF Protocol app invite within 3–5 business days.
+    </div>`}
+    <div class="nav-row">
+      <a class="btn btn-secondary" href="index.html" style="text-decoration:none">Back to CLF Protocol</a>
+    </div>
+  </div>`;
+}
+
+function render() {
+  renderStepper();
+  document.getElementById('stage').innerHTML =
+    F.step === 1 ? renderStep1() : F.step === 2 ? renderStep2() : F.step === 3 ? renderStep3() : renderDone();
+}
+
+document.addEventListener('input', e => {
+  const k = e.target.dataset.f;
+  if (k) F[k] = e.target.value;
+});
+
+document.addEventListener('change', e => {
+  if (e.target.id === 'waiver-chk') F.waiver_agreed = e.target.checked;
+});
+
+document.addEventListener('click', async e => {
+  const eqBtn = e.target.closest('[data-eq]');
+  if (eqBtn) {
+    const v = eqBtn.dataset.eq;
+    if (v === 'None of the above') F.equipment = F.equipment.includes(v) ? [] : [v];
+    else {
+      F.equipment = F.equipment.filter(x => x !== 'None of the above');
+      F.equipment = F.equipment.includes(v) ? F.equipment.filter(x => x !== v) : F.equipment.concat(v);
+    }
+    render(); return;
+  }
+  const dayBtn = e.target.closest('[data-days]');
+  if (dayBtn) { F.days_per_week = Number(dayBtn.dataset.days); render(); return; }
+
+  const pqBtn = e.target.closest('[data-parq]');
+  if (pqBtn) { F.parq_answers[pqBtn.dataset.parq] = pqBtn.dataset.v; render(); return; }
+
+  const actBtn = e.target.closest('[data-act]');
+  if (!actBtn) return;
+  const act = actBtn.dataset.act;
+  F.err = '';
+
+  if (act === 'next1') {
+    if (!F.last_name.trim() || !F.email.trim() || !F.age || !F.height.trim() || !F.current_weight || !F.goal_weight || !F.injuries.trim() || !F.typical_eating.trim() || !F.equipment.length || !F.days_per_week) {
+      F.err = 'Please fill out all required fields (*) before continuing.'; render(); return;
+    }
+    F.step = 2; render(); window.scrollTo(0, 0);
+  }
+  else if (act === 'back1') { F.step = 1; render(); window.scrollTo(0, 0); }
+  else if (act === 'next2') {
+    if (PARQ.some(q => !F.parq_answers[q.id])) { F.err = 'Please answer Yes or No to all 7 health questions.'; render(); return; }
+    if (!F.parq_signature.trim()) { F.err = 'Please type your full legal name to sign the PAR-Q+ declaration.'; render(); return; }
+    if (!F.waiver_signature) F.waiver_signature = F.parq_signature;
+    F.step = 3; render(); window.scrollTo(0, 0);
+  }
+  else if (act === 'back2') { F.step = 2; render(); window.scrollTo(0, 0); }
+  else if (act === 'submit') {
+    if (!F.waiver_agreed) { F.err = 'Please check the box agreeing to the Liability Waiver & Terms.'; render(); return; }
+    if (!F.waiver_signature.trim()) { F.err = 'Please type your full legal name to sign the waiver.'; render(); return; }
+    if (!sb) { F.err = 'Connection unavailable. Please refresh and try again.'; render(); return; }
+    F.submitting = true; render();
+    const { error } = await sb.rpc('submit_client_intake', {
+      p_data: {
+        first_name: F.first_name, last_name: F.last_name, email: F.email,
+        age: F.age, height: F.height, current_weight: F.current_weight, goal_weight: F.goal_weight,
+        injuries: F.injuries, typical_eating: F.typical_eating,
+        equipment: F.equipment, days_per_week: F.days_per_week,
+        parq_answers: F.parq_answers, medical_clearance_required: hasMedFlag(),
+        parq_signature: F.parq_signature, waiver_agreed: F.waiver_agreed, waiver_signature: F.waiver_signature,
+      }
+    });
+    F.submitting = false;
+    if (error) { F.err = 'Submission error: ' + error.message; render(); return; }
+    F.step = 4; render(); window.scrollTo(0, 0);
+  }
+});
+
+render();
+})();
+</script>
+</body>
+</html>
