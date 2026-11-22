@@ -209,6 +209,14 @@ h1{font-size:34px;line-height:1.04;letter-spacing:-.04em;font-weight:600;margin:
 .metric-field .num-input{padding-right:40px;padding-left:40px}
 .unit{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-3);pointer-events:none}
 .metric .track{margin-top:9px;height:3px}
+.quick-adds{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.qadd{height:30px;padding:0 10px;border-radius:8px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--accent-text);font:500 12px/1 var(--mono);transition:background .15s,border-color .15s,transform .1s}
+.qadd:hover{background:var(--accent-tint);border-color:var(--accent-line)}
+.qadd:active{transform:scale(.95)}
+.qadd-custom{display:inline-flex;align-items:center;gap:4px;margin-left:auto}
+.qadd-custom input{width:64px;height:30px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);text-align:center;font:500 12.5px/1 var(--mono);color:var(--text);outline:none}
+.qadd-custom input:focus{border-color:var(--accent-line)}
+.qadd-custom button{height:30px;padding:0 10px;border-radius:8px;border:1px solid var(--accent-line);background:var(--accent-tint);color:var(--accent);font:600 12px/1 var(--mono)}
 .scale{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
 .scale button{height:38px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);font:500 13px/1 var(--mono);color:var(--text-2);padding:0}
 .scale button.on{background:var(--accent);color:var(--on-accent);border-color:transparent}
@@ -944,7 +952,7 @@ function viewCheckin() {
   const hitCount = hits.filter(Boolean).length;
   const curMeas = S.measurements.find(m => m.date === d) || {};
 
-  const metricRow = (key, label, unit, step, target) => {
+  const metricRow = (key, label, unit, step, target, quickAdds = []) => {
     const val = row[key];
     const pct = target && val ? Math.min(100, Math.round((val / target) * 100)) : 0;
     const ok = target && val && (key === 'calories' ? Math.abs(val - target) <= target * 0.1 : val >= target * 0.9);
@@ -961,6 +969,7 @@ function viewCheckin() {
         </div>
         <button class="step" data-act="step" data-k="${key}" data-d="${step}">${ic('plus')}</button>
       </div>
+      ${quickAdds.length ? `<div class="quick-adds">${quickAdds.map(a => `<button type="button" class="qadd" data-act="step" data-k="${key}" data-d="${a}" data-u="${unit}">+${a} ${unit}</button>`).join('')}<form class="qadd-custom" data-cadd="${key}" data-u="${unit}"><input type="number" step="1" min="1" inputmode="decimal" placeholder="+oz" aria-label="Custom ${label} amount"><button type="submit">+ Add</button></form></div>` : ''}
       ${target ? `<div class="track"><i style="width:${pct}%" ${ok ? 'data-tone="ok"' : ''}></i></div>` : ''}
     </div>`;
   };
@@ -985,7 +994,7 @@ function viewCheckin() {
       ${metricRow('weight', 'Morning bodyweight', 'lb', 0.2, T.weight)}
       ${metricRow('calories', 'Calories', 'kcal', 50, T.calories)}
       ${metricRow('protein', 'Protein', 'g', 5, T.protein)}
-      ${metricRow('water_oz', 'Water', 'oz', 8, T.water)}
+      ${metricRow('water_oz', 'Water', 'oz', 8, T.water, [8, 16, 24, 32])}
       ${metricRow('steps', 'Steps', 'steps', 500, T.steps)}
       ${metricRow('sleep_hrs', 'Sleep', 'hrs', 0.5, T.sleep)}
     </div>
@@ -1202,6 +1211,7 @@ document.addEventListener('click', async e => {
     const cur = Number(S.checkins[S.checkDate]?.[k] ?? 0);
     const next = Math.max(0, +(cur + delta).toFixed(1));
     persistCheckin(S.checkDate, { [k]: next });
+    if (btn.dataset.u) toast(`+${delta} ${btn.dataset.u} → ${next} ${btn.dataset.u}`);
     render();
   }
   else if (act === 'scale') { persistCheckin(S.checkDate, { [btn.dataset.k]: Number(v) }); render(); }
@@ -1258,6 +1268,18 @@ document.addEventListener('submit', async e => {
   if (e.target.id === 'meas-form') {
     e.preventDefault();
     await saveMeasurement(e.target);
+  }
+  if (e.target.dataset.cadd) {
+    e.preventDefault();
+    const k = e.target.dataset.cadd, u = e.target.dataset.u || '';
+    const inp = e.target.querySelector('input');
+    const add = Number(inp?.value);
+    if (!add || add <= 0) return;
+    const cur = Number(S.checkins[S.checkDate]?.[k] ?? 0);
+    const next = +(cur + add).toFixed(1);
+    persistCheckin(S.checkDate, { [k]: next });
+    toast(`+${add} ${u} → ${next} ${u}`);
+    render();
   }
 });
 
