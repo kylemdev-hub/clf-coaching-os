@@ -126,11 +126,22 @@ h2{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0 0 6px}
 .done-icon{width:54px;height:54px;border-radius:16px;background:var(--ok-tint);border:1px solid rgba(74,222,128,.35);color:var(--ok);display:grid;place-items:center;font-size:24px;margin-bottom:16px}
 .done-icon.warn{background:var(--bad-tint);border-color:var(--bad-line);color:var(--bad)}
 
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card{animation:fadeUp .35s var(--ease) both}
+.plan-pick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 6px}
+.plan-opt{padding:14px 15px;border-radius:13px;border:1px solid var(--line-2);background:var(--bg);text-align:left;transition:all .18s var(--ease);display:flex;flex-direction:column;gap:4px}
+.plan-opt:hover{border-color:rgba(255,255,255,.24);transform:translateY(-1px)}
+.plan-opt[aria-pressed=true]{background:linear-gradient(180deg,rgba(45,212,191,.13),rgba(45,212,191,.04));border-color:var(--accent-line);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.plan-opt-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--text)}
+.plan-opt-price{font:600 18px/1 var(--mono);color:var(--accent-text);margin-top:2px}
+.plan-opt-sub{font-size:12px;color:var(--text-3);line-height:1.4}
+
 @media (max-width:600px){
-  .grid-2,.grid-3{grid-template-columns:1fr}
+  .grid-2,.grid-3,.plan-pick{grid-template-columns:1fr}
   .steps{grid-template-columns:1fr}
   .parq-q{flex-direction:column;align-items:flex-start}
 }
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body class="page">
@@ -140,7 +151,7 @@ h2{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0 0 6px}
       <span class="mark">CLF</span>
       <div>
         <div class="brand-name">Clash Lab Fitness LLC</div>
-        <div class="brand-sub">8-Week Protocol · Client Onboarding</div>
+        <div class="brand-sub">CLF Protocol · Client Onboarding</div>
       </div>
     </div>
     <span class="step-pill" id="step-pill">STEP 1 OF 3</span>
@@ -156,7 +167,8 @@ h2{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0 0 6px}
 
 const SUPABASE_URL = 'https://rvktkrodnkfktvpbleib.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_XZPmucPNraOaPCYXy-fjGQ_6xakqTNS';
-const STRIPE_LINK = 'https://buy.stripe.com/9B63cvct3fQS0TReVDaR200';
+const STRIPE_8WEEK = 'https://buy.stripe.com/9B63cvct3fQS0TReVDaR200';
+const STRIPE_MONTHLY = 'https://buy.stripe.com/aFa28r1Opawy9qn5l3aR201';
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 const EQUIPMENT = ['Full Gym', 'Garage Gym', 'Dumbbells Only', 'Resistance Bands', 'None of the above'];
@@ -171,9 +183,11 @@ const PARQ = [
 ];
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+const qp = new URLSearchParams(location.search);
 
 const F = {
-  step: new URLSearchParams(location.search).get('paid') === '1' ? 5 : 1, // 1..3 | 4 (submitted) | 5 (paid)
+  step: qp.get('paid') === '1' ? 5 : 1, // 1..3 | 4 (submitted) | 5 (paid)
+  selected_plan: qp.get('plan') === 'monthly' ? 'monthly' : '8_week',
   submitting: false,
   err: '',
   first_name: '', last_name: '', email: '', age: '', height: '', current_weight: '', goal_weight: '',
@@ -202,7 +216,23 @@ function renderStepper() {
 function renderStep1() {
   return `<div class="card">
     <h1>Client Intake Form</h1>
-    <p class="lede">Tell us your baseline stats, training environment, and history so we can engineer your custom 8-week protocol.</p>
+    <p class="lede">Choose your coaching plan and share your baseline stats so we can engineer your custom protocol.</p>
+
+    <div class="field" style="margin-bottom:18px">
+      <label>Select Your Coaching Plan<span class="req">*</span></label>
+      <div class="plan-pick">
+        <button type="button" class="plan-opt" data-plan="8_week" aria-pressed="${F.selected_plan === '8_week'}">
+          <div class="plan-opt-top"><span>8-Week Intensive</span><span class="mono" style="font-size:11px;color:var(--text-3)">ONE-TIME</span></div>
+          <div class="plan-opt-price">$100</div>
+          <div class="plan-opt-sub">Fixed 8-week custom split, macro plan &amp; full app access.</div>
+        </button>
+        <button type="button" class="plan-opt" data-plan="monthly" aria-pressed="${F.selected_plan === 'monthly'}">
+          <div class="plan-opt-top"><span>Ongoing Membership</span><span class="mono" style="font-size:11px;color:var(--accent)">POPULAR</span></div>
+          <div class="plan-opt-price">$50 / mo</div>
+          <div class="plan-opt-sub">Continuous 8-week Phase Gate reviews, updates &amp; coaching. Cancel anytime.</div>
+        </button>
+      </div>
+    </div>
 
     <div class="grid-2">
       <div class="field"><label>First Name</label><input type="text" data-f="first_name" value="${esc(F.first_name)}" placeholder="First name" autocomplete="given-name"></div>
@@ -360,21 +390,23 @@ function renderStep3() {
 
 function renderDone() {
   const flagged = hasMedFlag();
-  const payUrl = F.email ? `${STRIPE_LINK}?prefilled_email=${encodeURIComponent(F.email.trim())}` : STRIPE_LINK;
+  const isMo = F.selected_plan === 'monthly';
+  const basePay = isMo ? STRIPE_MONTHLY : STRIPE_8WEEK;
+  const payUrl = F.email ? `${basePay}?prefilled_email=${encodeURIComponent(F.email.trim())}` : basePay;
   return `<div class="card">
     <div class="done-icon ${flagged ? 'warn' : ''}">${flagged ? '!' : '✓'}</div>
     <h1>${flagged ? 'Application Received — Medical Clearance Needed' : 'Application Received — Complete Enrollment'}</h1>
     <p class="lede">Thanks, ${esc(F.first_name || F.last_name)}. Your Clash Lab Fitness onboarding packet has been securely logged for Kyle to review.</p>
     ${flagged ? `<div class="callout warn">
       <strong>Next Step: Doctor's Clearance Letter</strong>
-      Because you answered "Yes" on the PAR-Q+ health screening, please ask your physician for a brief note clearing you for <i>"unsupervised, vigorous physical activity and resistance training"</i> and email it to <a href="mailto:clashlabfitness@gmail.com">clashlabfitness@gmail.com</a>. Once received, Kyle will send your enrollment link and unlock your 8-week protocol.
+      Because you answered "Yes" on the PAR-Q+ health screening, please ask your physician for a brief note clearing you for <i>"unsupervised, vigorous physical activity and resistance training"</i> and email it to <a href="mailto:clashlabfitness@gmail.com">clashlabfitness@gmail.com</a>. Once received, Kyle will send your enrollment link and unlock your protocol.
     </div>` : `<div class="callout accent">
-      <strong>Final Step: Reserve Your 8-Week Protocol ($100)</strong>
-      1. Complete your $100.00 upfront enrollment below via secure Stripe Checkout.<br>
+      <strong>Final Step: ${isMo ? 'Start Your $50/mo Coaching Membership' : 'Reserve Your 8-Week Protocol ($100)'}</strong>
+      1. Complete your ${isMo ? '$50/month subscription' : '$100.00 one-time enrollment'} below via secure Stripe Checkout.<br>
       2. Watch your inbox (<b>${esc(F.email)}</b>) for your 3-day food log and your CLF Protocol app invite within 3–5 business days.
     </div>
     <div class="nav-row" style="margin-top:18px">
-      <a class="btn btn-primary" href="${esc(payUrl)}" style="text-decoration:none;flex:1">Complete $100 Enrollment →</a>
+      <a class="btn btn-primary" href="${esc(payUrl)}" style="text-decoration:none;flex:1">${isMo ? 'Start $50/mo Membership →' : 'Complete $100 Enrollment →'}</a>
     </div>`}
     <div class="nav-row" style="margin-top:12px">
       <a class="btn btn-secondary" href="index.html" style="text-decoration:none">Back to CLF Protocol</a>
@@ -386,7 +418,7 @@ function renderPaid() {
   return `<div class="card">
     <div class="done-icon">✓</div>
     <h1>Payment Confirmed — Welcome to CLF Protocol!</h1>
-    <p class="lede">Your $100.00 enrollment for the 8-Week Remote Coaching Protocol is complete.</p>
+    <p class="lede">Your Clash Lab Fitness coaching enrollment is officially active.</p>
     <div class="callout accent">
       <strong>What Happens Next</strong>
       1. Kyle is reviewing your intake stats, equipment, and injury history.<br>
@@ -416,6 +448,9 @@ document.addEventListener('change', e => {
 });
 
 document.addEventListener('click', async e => {
+  const planBtn = e.target.closest('[data-plan]');
+  if (planBtn) { F.selected_plan = planBtn.dataset.plan; render(); return; }
+
   const eqBtn = e.target.closest('[data-eq]');
   if (eqBtn) {
     const v = eqBtn.dataset.eq;
@@ -458,6 +493,7 @@ document.addEventListener('click', async e => {
     F.submitting = true; render();
     const { error } = await sb.rpc('submit_client_intake', {
       p_data: {
+        selected_plan: F.selected_plan,
         first_name: F.first_name, last_name: F.last_name, email: F.email,
         age: F.age, height: F.height, current_weight: F.current_weight, goal_weight: F.goal_weight,
         injuries: F.injuries, typical_eating: F.typical_eating,
