@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#040606">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="apple-touch-icon.png">
+<title>About Coach Kyle — Clash Lab Fitness</title>
+<meta name="description" content="Meet Kyle, ISSA Certified Personal Trainer, Air Force veteran, Brazilian Jiu-Jitsu practitioner, and founder of Clash Lab Fitness LLC.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0;padding:0;background:#030505;color-scheme:dark}
+a{color:inherit;text-decoration:none}
+
+.site{
+  --bg:#040606; --surface:#0A0E0F; --surface-2:#0F1516; --surface-3:#161E20;
+  --line:rgba(255,255,255,.065); --line-2:rgba(255,255,255,.12);
+  --text:#EFF6F5; --text-2:#99A8A7; --text-3:#5E6C6C;
+  --accent:#2DD4BF; --accent-text:#5EEAD4; --accent-tint:rgba(45,212,191,.10); --accent-line:rgba(45,212,191,.36); --on-accent:#021E1B;
+  --ok:#4ADE80;
+  --font:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.16,1,.3,1);
+  min-height:100dvh;color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6;
+  background:
+    radial-gradient(1100px 520px at 50% -180px,rgba(45,212,191,.12),transparent 70%) no-repeat,
+    var(--bg);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.anim{animation:fadeUp .6s var(--ease) both}
+.d1{animation-delay:.07s} .d2{animation-delay:.14s}
+
+/* Nav */
+.nav{position:sticky;top:0;z-index:40;background:rgba(4,6,6,.78);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:66px}
+.brand{display:flex;align-items:center;gap:11px}
+.mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(155deg,#5EEAD4,#14B8A6);color:var(--on-accent);
+  display:grid;place-items:center;font:700 10.5px/1 var(--mono);letter-spacing:.04em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 2px 10px rgba(45,212,191,.2)}
+.brand-name{font-size:15px;font-weight:600;letter-spacing:-.015em}
+.brand-sub{font-size:11.5px;color:var(--text-3);margin-top:-1px}
+.nav-links{display:flex;align-items:center;gap:24px;font-size:13.5px;color:var(--text-2)}
+.nav-links a{transition:color .15s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-links a.active{color:var(--accent-text);font-weight:500}
+.nav-act{display:flex;align-items:center;gap:10px}
+.menu-btn{display:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface);color:var(--text);cursor:pointer;place-items:center}
+.mob-nav{display:none;flex-direction:column;gap:4px;padding:12px 24px 18px;border-top:1px solid var(--line);background:rgba(4,6,6,.96)}
+.mob-nav.open{display:flex}
+.mob-nav a{padding:10px 12px;border-radius:10px;font-size:14px;color:var(--text-2)}
+.mob-nav a:hover,.mob-nav a.active{background:var(--surface);color:var(--text)}
+
+/* Buttons */
+.btn{height:40px;padding:0 16px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface);color:var(--text);
+  font-size:13.5px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .2s var(--ease),background .15s,border-color .15s,filter .15s,box-shadow .2s;white-space:nowrap;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);cursor:pointer}
+.btn:hover{background:var(--surface-2);border-color:rgba(255,255,255,.22);transform:translateY(-1px)}
+.btn:active{transform:scale(.98)}
+.btn-lg{height:48px;padding:0 22px;border-radius:12px;font-size:14.5px}
+.btn-primary{background:linear-gradient(180deg,#44E6D1,#1BBBA6);border-color:transparent;color:var(--on-accent);font-weight:600;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 22px rgba(45,212,191,.22)}
+.btn-primary:hover{filter:brightness(1.06);background:linear-gradient(180deg,#44E6D1,#1BBBA6);border-color:transparent}
+.btn-ghost{background:transparent;border-color:transparent;box-shadow:none;color:var(--text-2)}
+.btn-ghost:hover{color:var(--text);background:rgba(255,255,255,.05);border-color:transparent;transform:none}
+
+/* Hero Bio */
+.about-hero{padding:64px 0 48px;display:grid;grid-template-columns:minmax(0,.88fr) minmax(0,1.15fr);gap:48px;align-items:center}
+.photo-card{background:var(--surface);border:1px solid var(--line-2);border-radius:22px;padding:12px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 26px 64px rgba(0,0,0,.55)}
+.photo-wrap{position:relative;border-radius:14px;overflow:hidden;background:#080B0C;aspect-ratio:4/3.6}
+.photo-wrap img{width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block}
+.photo-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px 6px 6px}
+.pm-item{background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:10px 10px;text-align:center}
+.pm-item b{display:block;font-size:14px;font-weight:600;color:var(--accent-text);letter-spacing:-.01em}
+.pm-item span{display:block;font-size:11px;color:var(--text-3);margin-top:2px}
+
+.kicker{font:600 11.5px/1 var(--mono);color:var(--accent-text);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+h1{font-size:clamp(34px,4.5vw,48px);line-height:1.06;letter-spacing:-.038em;font-weight:600;margin:0 0 18px}
+.lead{font-size:16.5px;color:var(--text);margin:0 0 16px;line-height:1.6}
+.story p{color:var(--text-2);margin:0 0 15px;font-size:15px;line-height:1.7}
+.story strong{color:var(--text);font-weight:600}
+.cred-row{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 26px}
+.cred{font:500 11.5px/1 var(--mono);padding:7px 11px;border-radius:8px;background:var(--surface-2);border:1px solid var(--line-2);color:var(--text-2)}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px}
+
+/* Sections */
+.sec{padding:48px 0}
+.sec-head{margin-bottom:28px}
+.sec h2{font-size:clamp(24px,3.1vw,32px);font-weight:600;letter-spacing:-.03em;margin:0}
+.sec-sub{font-size:14.5px;color:var(--text-2);margin:8px 0 0;max-width:600px}
+
+.pillars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.pillar{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 8px 28px rgba(0,0,0,.32);transition:border-color .2s,transform .25s var(--ease)}
+.pillar:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.pillar-n{font:600 11.5px/1 var(--mono);color:var(--accent);letter-spacing:.05em;margin-bottom:12px}
+.pillar h3{font-size:17px;font-weight:600;letter-spacing:-.015em;margin:0 0 8px}
+.pillar p{font-size:14px;color:var(--text-2);margin:0;line-height:1.62}
+
+/* Timeline / Background Strip */
+.who-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.who-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
+.who-card h3{font-size:15.5px;font-weight:600;margin:0 0 6px}
+.who-card p{font-size:13.5px;color:var(--text-2);margin:0;line-height:1.58}
+
+/* Bottom CTA Band */
+.cta-band{margin:24px 0 16px;background:linear-gradient(180deg,rgba(18,32,32,.72),rgba(10,14,15,.98));border:1px solid var(--line-2);
+  border-radius:22px;padding:38px 34px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.cta-band h2{font-size:clamp(22px,2.8vw,28px);margin:0 0 6px;letter-spacing:-.025em}
+.cta-band p{color:var(--text-2);margin:0;max-width:520px;font-size:14.5px}
+
+/* Studio Multi-column Footer */
+footer{margin-top:52px;padding:42px 0 36px;border-top:1px solid var(--line);font-size:13px;color:var(--text-3)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.1fr;gap:28px;margin-bottom:32px}
+.foot-col h4{font:600 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--text-2);margin:0 0 12px}
+.foot-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.foot-col a{color:var(--text-3);transition:color .15s}
+.foot-col a:hover{color:var(--text)}
+.foot-desc{color:var(--text-3);font-size:13px;line-height:1.6;margin:12px 0 0;max-width:290px}
+.foot-bottom{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}
+.coach-link{opacity:.6;transition:opacity .15s,color .15s}
+.coach-link:hover{opacity:1;color:var(--accent)}
+
+@media (max-width:880px){
+  .nav-links{display:none}
+  .menu-btn{display:grid}
+  .nav-act .btn-ghost{display:none}
+  .about-hero{grid-template-columns:1fr;padding:38px 0 32px;gap:30px}
+  .pillars,.who-grid,.foot-grid{grid-template-columns:1fr}
+  .cta-band{padding:28px 22px}
+}
+@media (max-width:520px){
+  .wrap{padding:0 18px}
+  .cta-row .btn{flex:1}
+}
+</style>
+</head>
+<body class="site">
+  <header class="nav">
+    <div class="wrap nav-in">
+      <a class="brand" href="index.html">
+        <span class="mark">CLF</span>
+        <div>
+          <div class="brand-name">Clash Lab Fitness</div>
+          <div class="brand-sub">CLF Protocol</div>
+        </div>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="index.html#plans">Programs</a>
+        <a href="about.html" class="active">About</a>
+        <a href="index.html#faq">FAQ</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="nav-act">
+        <a class="btn btn-ghost" href="client.html">Client Login</a>
+        <a class="btn btn-primary" href="apply.html">Apply Now</a>
+        <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <nav class="mob-nav" id="mobNav" aria-label="Mobile">
+      <a href="index.html">Home</a>
+      <a href="index.html#plans">Programs &amp; Pricing</a>
+      <a href="about.html" class="active">About Coach Kyle</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="contact.html">Contact Us</a>
+      <a href="client.html">Client Login</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="about-hero">
+      <div class="photo-card anim">
+        <div class="photo-wrap">
+          <img src="kyle-coach.jpg" alt="Coach Kyle — Founder of Clash Lab Fitness LLC" width="858" height="726">
+        </div>
+        <div class="photo-meta">
+          <div class="pm-item"><b class="mono">ISSA</b><span>Certified Coach</span></div>
+          <div class="pm-item"><b class="mono">10+ Yrs</b><span>Under the Bar</span></div>
+          <div class="pm-item"><b class="mono">USAF</b><span>Veteran (2011)</span></div>
+        </div>
+      </div>
+
+      <div class="story anim d1">
+        <div class="kicker">About Clash Lab Fitness</div>
+        <h1>Built from the ground up — zero fluff, real progression.</h1>
+        <p class="lead">
+          I'm Kyle, founder of Clash Lab Fitness LLC and an ISSA Certified Personal Trainer.
+        </p>
+        <p>
+          I didn't start out naturally big or strong. Growing up, I was the skinny kid who just wanted to put on real muscle and feel capable in my own skin. In <strong>2011, I joined the U.S. Air Force</strong>, picked up a barbell for the first time with real intent, and never looked back. Over the past decade-plus of training, I learned firsthand what actually drives results — and how much time people waste on random workouts, cookie-cutter PDFs, and unsustainable diets.
+        </p>
+        <p>
+          Outside the weight room, I spend my spare time training <strong>Mixed Martial Arts</strong> — with <strong>Brazilian Jiu-Jitsu and grappling</strong> at the top of my list. Combat sports completely shape how I coach: building muscle and moving heavy weight means nothing if your joints feel wrecked or your conditioning falls apart. Every protocol I write balances strength, hypertrophy, and joint longevity so you look athletic and actually perform like it.
+        </p>
+        <p>
+          I built <strong>CLF Protocol</strong> so remote coaching feels like having a coach standing next to you — your exact split, form cues, PR tracking, daily check-ins, and direct 1-on-1 messaging all in one distraction-free app.
+        </p>
+
+        <div class="cred-row">
+          <span class="cred">ISSA Certified Personal Trainer</span>
+          <span class="cred">U.S. Air Force Veteran</span>
+          <span class="cred">10+ Years Strength &amp; Hypertrophy</span>
+          <span class="cred">MMA · BJJ &amp; Grappling</span>
+        </div>
+
+        <div class="cta-row">
+          <a class="btn btn-primary btn-lg" href="apply.html">Apply for Coaching →</a>
+          <a class="btn btn-lg" href="contact.html">Ask Kyle a Question</a>
+          <a class="btn btn-lg" href="https://linktr.ee/clashlabfitness" target="_blank" rel="noopener">Socials &amp; Links ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head">
+        <div class="kicker">Coaching Philosophy</div>
+        <h2>How we engineer your protocol.</h2>
+        <p class="sec-sub">Every client starts with an intake, a PAR-Q+ health screen, and a 3-day food log — never a recycled template.</p>
+      </div>
+      <div class="pillars">
+        <article class="pillar">
+          <div class="pillar-n">01 / INDIVIDUALIZED PROGRAMMING</div>
+          <h3>Built around your body, gear &amp; schedule</h3>
+          <p>Whether you train 3 days a week in a garage gym or 5 days in a full commercial facility, every movement is selected around your equipment, weak points, and past injuries.</p>
+        </article>
+        <article class="pillar">
+          <div class="pillar-n">02 / MEASURED PROGRESSION</div>
+          <h3>Data-backed overload every session</h3>
+          <p>Inside your CLF Protocol app, every working set is logged with automatic PR detection, next-session target recommendations, and an 8-week strength trajectory curve.</p>
+        </article>
+        <article class="pillar">
+          <div class="pillar-n">03 / SUSTAINABLE NUTRITION</div>
+          <h3>Macros that fit real life</h3>
+          <p>We start from your real 3-day food log — not an unrealistic crash diet — and dial in protein, calories, and hydration so you can build muscle or lean out without burning out.</p>
+        </article>
+        <article class="pillar">
+          <div class="pillar-n">04 / 8-WEEK PHASE GATES</div>
+          <h3>Structured blocks &amp; direct coach access</h3>
+          <p>Training runs in focused 8-week blocks with direct 1-on-1 chat, pinned weekly coaching notes, form video feedback, and a full Phase Gate review before your next block begins.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="sec" style="padding-top:16px">
+      <div class="sec-head">
+        <div class="kicker">Who It's Built For</div>
+        <h2>Real training for people ready to work.</h2>
+      </div>
+      <div class="who-grid">
+        <div class="who-card">
+          <h3>Hardgainers &amp; Lifters</h3>
+          <p>If you're tired of spinning your wheels and want structured hypertrophy, clear rep targets, and visible strength progression.</p>
+        </div>
+        <div class="who-card">
+          <h3>Busy Professionals</h3>
+          <p>No guesswork when you walk into the gym — open your phone, see your exact lifts and targets, log your sets, and get out.</p>
+        </div>
+        <div class="who-card">
+          <h3>Athletes &amp; Grapplers</h3>
+          <p>Strength and muscle programming that respects your mat time, protects your joints, and carries over to real performance.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div>
+        <h2>Ready to start your 8-week protocol?</h2>
+        <p>Complete the 5-minute application or reach out directly if you have questions before signing up.</p>
+      </div>
+      <div class="cta-row">
+        <a class="btn btn-primary btn-lg" href="apply.html">Apply Now →</a>
+        <a class="btn btn-lg" href="contact.html">Contact Us</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="index.html">
+            <span class="mark">CLF</span>
+            <div>
+              <div class="brand-name">Clash Lab Fitness</div>
+              <div class="brand-sub">CLF Protocol</div>
+            </div>
+          </a>
+          <p class="foot-desc">Precision 1-on-1 remote personal training, custom hypertrophy &amp; strength splits, and metabolic nutrition — powered by CLF Protocol.</p>
+        </div>
+        <div class="foot-col">
+          <h4>Website</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#plans">Programs &amp; Pricing</a></li>
+            <li><a href="about.html">About Coach Kyle</a></li>
+            <li><a href="index.html#faq">FAQ</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Client Access</h4>
+          <ul>
+            <li><a href="apply.html">Apply for Coaching</a></li>
+            <li><a href="client.html">Client App Login</a></li>
+            <li><a href="support.html">App Support</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="mailto:support@clashlabfitness.com">support@clashlabfitness.com</a></li>
+            <li><a href="mailto:kyle@clashlabfitness.com">kyle@clashlabfitness.com</a></li>
+            <li><a href="https://linktr.ee/clashlabfitness" target="_blank" rel="noopener">Socials (Linktree) ↗</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© Clash Lab Fitness LLC · Remote Personal Training</span>
+        <a class="coach-link" href="coach.html">Coach Portal</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const btn = document.getElementById('menuBtn');
+    const nav = document.getElementById('mobNav');
+    if (btn && nav) {
+      btn.addEventListener('click', () => {
+        const open = nav.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(open));
+      });
+    }
+  </script>
+</body>
+</html>
