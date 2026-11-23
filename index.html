@@ -138,18 +138,53 @@ h1{font-size:clamp(38px,5.2vw,56px);line-height:1.03;letter-spacing:-.042em;font
 .plan-list li::before{content:"✓";color:var(--accent);font:700 12px/1 var(--mono);width:18px;height:18px;border-radius:6px;background:var(--accent-tint);display:grid;place-items:center;flex:none}
 .plan .btn{margin-top:auto;width:100%}
 
-/* Footer */
-footer{margin-top:44px;padding:26px 0 40px;border-top:1px solid var(--line);font-size:12.5px;color:var(--text-3)}
-.foot-in{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
-.foot-links{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-.foot-links a:hover{color:var(--text-2)}
-.coach-link{color:var(--text-3);opacity:.65;transition:opacity .15s,color .15s}
+/* Coach Teaser */
+.coach-band{display:grid;grid-template-columns:280px minmax(0,1fr);gap:30px;align-items:center;
+  background:var(--surface);border:1px solid var(--line-2);border-radius:22px;padding:24px 28px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 18px 46px rgba(0,0,0,.42)}
+.coach-pic{border-radius:15px;overflow:hidden;background:#080B0C;aspect-ratio:4/3.6;border:1px solid var(--line)}
+.coach-pic img{width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block}
+.coach-copy h2{font-size:clamp(22px,2.8vw,28px);font-weight:600;letter-spacing:-.03em;margin:0 0 10px}
+.coach-copy p{font-size:14.5px;color:var(--text-2);margin:0 0 16px;line-height:1.65}
+.coach-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.coach-tags span{font:500 11px/1 var(--mono);padding:6px 10px;border-radius:7px;background:var(--surface-2);border:1px solid var(--line-2);color:var(--text-2)}
+.coach-actions{display:flex;flex-wrap:wrap;gap:10px}
+
+/* FAQ */
+.faq-list{display:flex;flex-direction:column;gap:10px}
+.faq-item{background:var(--surface);border:1px solid var(--line);border-radius:15px;overflow:hidden;transition:border-color .15s}
+.faq-item[open]{border-color:var(--line-2);background:var(--surface-2)}
+.faq-item summary{list-style:none;cursor:pointer;padding:18px 22px;font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:"+";font:500 18px/1 var(--mono);color:var(--accent);transition:transform .2s var(--ease);flex:none}
+.faq-item[open] summary::after{content:"−"}
+.faq-body{padding:0 22px 18px;font-size:14px;color:var(--text-2);line-height:1.65}
+.faq-body a{color:var(--accent-text);text-decoration:underline}
+
+/* Mobile Nav */
+.menu-btn{display:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface);color:var(--text);cursor:pointer;place-items:center}
+.mob-nav{display:none;flex-direction:column;gap:4px;padding:12px 24px 18px;border-top:1px solid var(--line);background:rgba(4,6,6,.96)}
+.mob-nav.open{display:flex}
+.mob-nav a{padding:10px 12px;border-radius:10px;font-size:14px;color:var(--text-2)}
+.mob-nav a:hover,.mob-nav a.active{background:var(--surface);color:var(--text)}
+
+/* Studio Multi-column Footer */
+footer{margin-top:52px;padding:42px 0 36px;border-top:1px solid var(--line);font-size:13px;color:var(--text-3)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.1fr;gap:28px;margin-bottom:32px}
+.foot-col h4{font:600 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--text-2);margin:0 0 12px}
+.foot-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.foot-col a{color:var(--text-3);transition:color .15s}
+.foot-col a:hover{color:var(--text)}
+.foot-desc{color:var(--text-3);font-size:13px;line-height:1.6;margin:12px 0 0;max-width:290px}
+.foot-bottom{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}
+.coach-link{color:var(--text-3);opacity:.6;transition:opacity .15s,color .15s}
 .coach-link:hover{opacity:1;color:var(--accent)}
 
 @media (max-width:880px){
   .nav-links{display:none}
+  .menu-btn{display:grid}
   .hero{grid-template-columns:1fr;padding:48px 0 36px;gap:34px}
-  .bento,.steps,.pricing{grid-template-columns:1fr}
+  .bento,.steps,.pricing,.coach-band,.foot-grid{grid-template-columns:1fr}
   .nav-act .btn-ghost{display:none}
 }
 @media (max-width:520px){
@@ -157,6 +192,7 @@ footer{margin-top:44px;padding:26px 0 40px;border-top:1px solid var(--line);font
   .stats{gap:8px}
   .stat b{font-size:18px}
   .hero-cta .btn{flex:1}
+  .coach-band{padding:20px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -171,16 +207,29 @@ footer{margin-top:44px;padding:26px 0 40px;border-top:1px solid var(--line);font
           <div class="brand-sub">CLF Protocol</div>
         </div>
       </a>
-      <nav class="nav-links" aria-label="Sections">
-        <a href="#features">Inside the App</a>
-        <a href="#how">How It Works</a>
-        <a href="#plans">Plans</a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html" style="color:var(--accent-text);font-weight:500">Home</a>
+        <a href="#plans">Programs</a>
+        <a href="about.html">About</a>
+        <a href="#faq">FAQ</a>
+        <a href="contact.html">Contact</a>
       </nav>
       <div class="nav-act">
         <a class="btn btn-ghost" href="client.html">Client Login</a>
         <a class="btn btn-primary" href="apply.html">Apply Now</a>
+        <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
       </div>
     </div>
+    <nav class="mob-nav" id="mobNav" aria-label="Mobile">
+      <a href="index.html" class="active">Home</a>
+      <a href="#plans">Programs &amp; Pricing</a>
+      <a href="about.html">About Coach Kyle</a>
+      <a href="#faq">FAQ</a>
+      <a href="contact.html">Contact Us</a>
+      <a href="client.html">Client Login</a>
+    </nav>
   </header>
 
   <main class="wrap">
@@ -334,20 +383,128 @@ footer{margin-top:44px;padding:26px 0 40px;border-top:1px solid var(--line);font
         </div>
       </div>
     </section>
+
+    <section class="sec" id="coach" style="padding-top:20px">
+      <div class="coach-band">
+        <div class="coach-pic">
+          <img src="kyle-coach.jpg" alt="Coach Kyle — Clash Lab Fitness LLC" width="858" height="726" loading="lazy">
+        </div>
+        <div class="coach-copy">
+          <div class="sec-kicker">Meet Your Coach</div>
+          <h2>Trained by discipline, backed by data.</h2>
+          <p>
+            I'm Kyle — an ISSA Certified Personal Trainer, U.S. Air Force veteran, and lifelong lifter who started out as a skinny kid trying to build real muscle. With 10+ years under the bar and a passion for Brazilian Jiu-Jitsu &amp; MMA, I build custom programs that deliver real hypertrophy and strength while keeping your joints resilient.
+          </p>
+          <div class="coach-tags">
+            <span>ISSA Certified</span>
+            <span>10+ Yrs Experience</span>
+            <span>USAF Veteran</span>
+            <span>BJJ &amp; Grappling</span>
+          </div>
+          <div class="coach-actions">
+            <a class="btn btn-primary" href="about.html">Read Kyle's Story →</a>
+            <a class="btn" href="contact.html">Contact Kyle</a>
+            <a class="btn" href="https://linktr.ee/clashlabfitness" target="_blank" rel="noopener">Socials ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="faq" style="padding-top:20px">
+      <div class="sec-head">
+        <div class="sec-kicker">FAQ</div>
+        <h2>Common questions.</h2>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>Do I need a commercial gym, or can I train at home?</summary>
+          <div class="faq-body">Both work great. During your intake, you list the exact equipment you have access to — whether it's a commercial gym, a garage barbell setup, or dumbbells and bands — and Kyle builds your split around your exact gear.</div>
+        </details>
+        <details class="faq-item">
+          <summary>What's the difference between the $100 8-Week Intensive and the $50/mo Membership?</summary>
+          <div class="faq-body">The <b>$100 8-Week Intensive</b> is a one-time payment for a complete 8-week custom split, nutrition protocol, and full CLF Protocol app access — ideal if you want a structured block with zero recurring charges. The <b>$50/mo Ongoing Membership</b> includes everything in the 8-Week Intensive plus automatic Phase Gate reviews, fresh splits every 8 weeks, ongoing macro adjustments, and cancel-anytime flexibility.</div>
+        </details>
+        <details class="faq-item">
+          <summary>How do I access the CLF Protocol app on my phone?</summary>
+          <div class="faq-body">Once your program is built, you sign in at <a href="client.html">CLF Protocol</a> using your email magic link or password (or via our mobile app). Everything — your workouts, rest timer, PR badges, daily check-ins, progress photos, and 1-on-1 coach chat — syncs automatically.</div>
+        </details>
+        <details class="faq-item">
+          <summary>What happens if I answer "Yes" on the PAR-Q+ health screening?</summary>
+          <div class="faq-body">Your safety comes first. If you flag an item on the PAR-Q+, we won't charge you right away — we'll ask for a quick physician clearance note sent to <a href="mailto:support@clashlabfitness.com">support@clashlabfitness.com</a> before unlocking your enrollment and training split.</div>
+        </details>
+        <details class="faq-item">
+          <summary>How fast will I get my custom program after applying?</summary>
+          <div class="faq-body">Once your application and 3-day food log are submitted, Kyle personally reviews your intake and builds your custom split and macro targets within <b>3–5 business days</b>.</div>
+        </details>
+        <details class="faq-item">
+          <summary>Can I cancel my $50/month membership anytime?</summary>
+          <div class="faq-body">Yes — zero contracts and zero lock-in. Just message Kyle in the app or email <a href="mailto:support@clashlabfitness.com">support@clashlabfitness.com</a> anytime before your next billing date.</div>
+        </details>
+      </div>
+    </section>
   </main>
 
   <footer>
-    <div class="wrap foot-in">
-      <span>© Clash Lab Fitness LLC · Remote Personal Training</span>
-      <div class="foot-links">
-        <a href="mailto:clashlabfitness@gmail.com">clashlabfitness@gmail.com</a>
-        <a href="client.html">Client App</a>
-        <a href="apply.html">Apply</a>
-        <a href="privacy.html">Privacy</a>
-        <a href="support.html">Support</a>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="index.html">
+            <span class="mark">CLF</span>
+            <div>
+              <div class="brand-name">Clash Lab Fitness</div>
+              <div class="brand-sub">CLF Protocol</div>
+            </div>
+          </a>
+          <p class="foot-desc">Precision 1-on-1 remote personal training, custom hypertrophy &amp; strength splits, and metabolic nutrition — powered by CLF Protocol.</p>
+        </div>
+        <div class="foot-col">
+          <h4>Website</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#plans">Programs &amp; Pricing</a></li>
+            <li><a href="about.html">About Coach Kyle</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Client Access</h4>
+          <ul>
+            <li><a href="apply.html">Apply for Coaching</a></li>
+            <li><a href="client.html">Client App Login</a></li>
+            <li><a href="support.html">App Support</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="mailto:support@clashlabfitness.com">support@clashlabfitness.com</a></li>
+            <li><a href="mailto:kyle@clashlabfitness.com">kyle@clashlabfitness.com</a></li>
+            <li><a href="https://linktr.ee/clashlabfitness" target="_blank" rel="noopener">Socials (Linktree) ↗</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© Clash Lab Fitness LLC · Remote Personal Training</span>
         <a class="coach-link" href="coach.html">Coach Portal</a>
       </div>
     </div>
   </footer>
+
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const mobNav = document.getElementById('mobNav');
+    if (menuBtn && mobNav) {
+      menuBtn.addEventListener('click', () => {
+        const open = mobNav.classList.toggle('open');
+        menuBtn.setAttribute('aria-expanded', String(open));
+      });
+      mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        mobNav.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      }));
+    }
+  </script>
 </body>
 </html>
