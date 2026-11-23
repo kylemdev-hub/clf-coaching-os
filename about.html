@@ -119,6 +119,22 @@ h1{font-size:clamp(34px,4.5vw,48px);line-height:1.06;letter-spacing:-.038em;font
 .cta-band h2{font-size:clamp(22px,2.8vw,28px);margin:0 0 6px;letter-spacing:-.025em}
 .cta-band p{color:var(--text-2);margin:0;max-width:520px;font-size:14.5px}
 
+/* Newsletter Band */
+.nl-band{margin:28px 0 12px;background:linear-gradient(180deg,rgba(18,32,32,.65),rgba(10,14,15,.98));border:1px solid var(--line-2);
+  border-radius:22px;padding:34px 32px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:28px;align-items:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 18px 46px rgba(0,0,0,.4)}
+.nl-band h2{font-size:clamp(21px,2.6vw,26px);font-weight:600;letter-spacing:-.028em;margin:0 0 8px}
+.nl-band p{font-size:14px;color:var(--text-2);margin:0;line-height:1.6}
+.nl-form{display:grid;grid-template-columns:1fr 1.35fr auto;gap:10px;align-items:center}
+.nl-form input{height:44px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:11px;padding:0 13px;
+  color:var(--text);font-family:inherit;font-size:14px;outline:none;width:100%;transition:border-color .15s,background .15s}
+.nl-form input:focus{border-color:var(--accent-line);background:#11191B}
+.nl-form button{height:44px;padding:0 18px}
+.nl-note{font-size:12px;color:var(--text-3);margin-top:9px}
+.nl-msg{font-size:13px;margin-top:9px;min-height:18px;font-weight:500}
+.nl-msg.ok{color:var(--ok)}
+.nl-msg.err{color:#f87171}
+
 /* Studio Multi-column Footer */
 footer{margin-top:52px;padding:42px 0 36px;border-top:1px solid var(--line);font-size:13px;color:var(--text-3)}
 .foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.1fr;gap:28px;margin-bottom:32px}
@@ -137,6 +153,8 @@ footer{margin-top:52px;padding:42px 0 36px;border-top:1px solid var(--line);font
 .coach-link:hover{opacity:1;color:var(--accent)}
 
 @media (max-width:880px){
+  .nl-band,.nl-form{grid-template-columns:1fr}
+  .nl-band{padding:26px 20px}
   .nav-links{display:none}
   .menu-btn{display:grid}
   .nav-act .btn-ghost{display:none}
@@ -290,6 +308,23 @@ footer{margin-top:52px;padding:42px 0 36px;border-top:1px solid var(--line);font
         <a class="btn btn-lg" href="contact.html">Contact Us</a>
       </div>
     </section>
+
+    <section class="nl-band" id="newsletter" aria-label="Mailing list signup">
+      <div>
+        <div class="sec-kicker" style="font:600 11.5px/1 var(--mono);color:var(--accent-text);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">The CLF Dispatch</div>
+        <h2>Weekly training &amp; nutrition notes — zero fluff.</h2>
+        <p>Get Kyle's weekly breakdowns on progressive overload, real-world macros, and first notice on open coaching spots &amp; giveaways.</p>
+      </div>
+      <div>
+        <form class="nl-form" id="nlForm" data-source="about">
+          <input type="text" id="nlName" placeholder="First name" autocomplete="given-name">
+          <input type="email" id="nlEmail" placeholder="you@example.com" autocomplete="email" required>
+          <button type="submit" class="btn btn-primary" id="nlBtn">Join List →</button>
+        </form>
+        <div class="nl-note">No spam. Unsubscribe anytime with one click.</div>
+        <div class="nl-msg" id="nlMsg" role="status" aria-live="polite"></div>
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -357,6 +392,50 @@ footer{margin-top:52px;padding:42px 0 36px;border-top:1px solid var(--line);font
         btn.setAttribute('aria-expanded', String(open));
       });
     }
+
+    (function(){
+      const f = document.getElementById('nlForm');
+      if (!f) return;
+      const SUPA_URL = 'https://rvktkrodnkfktvpbleib.supabase.co';
+      const SUPA_KEY = 'sb_publishable_XZPmucPNraOaPCYXy-fjGQ_6xakqTNS';
+      f.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('nlEmail').value.trim();
+        const first_name = document.getElementById('nlName').value.trim();
+        const btn = document.getElementById('nlBtn');
+        const msg = document.getElementById('nlMsg');
+        btn.disabled = true; btn.textContent = 'Joining…';
+        msg.className = 'nl-msg'; msg.textContent = '';
+        try {
+          const r = await fetch(SUPA_URL + '/rest/v1/rpc/subscribe_newsletter', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SUPA_KEY,
+              'Authorization': 'Bearer ' + SUPA_KEY
+            },
+            body: JSON.stringify({
+              p_email: email,
+              p_first_name: first_name || null,
+              p_source: f.dataset.source || 'website'
+            })
+          });
+          const data = await r.json().catch(() => ({}));
+          if (!r.ok) throw new Error(data.message || 'Could not subscribe right now.');
+          msg.className = 'nl-msg ok';
+          msg.textContent = data.already_subscribed
+            ? "You're already on the list — you're all set!"
+            : "You're on the list! Keep an eye on your inbox.";
+          f.reset();
+        } catch (err) {
+          msg.className = 'nl-msg err';
+          msg.textContent = err.message || 'Something went wrong. Please try again.';
+        } finally {
+          btn.disabled = false; btn.textContent = 'Join List →';
+        }
+      });
+    })();
+
   </script>
 </body>
 </html>
