@@ -147,12 +147,19 @@ td.wrap{white-space:normal;min-width:200px;color:var(--text-2)}
 tbody tr.link{cursor:pointer}
 tbody tr.link:hover td{background:var(--surface-2)}
 
-/* Program Builder inline form */
+/* Program Builder inline form & video override */
 .builder-form{display:grid;grid-template-columns:130px 1.4fr 64px 86px 74px auto;gap:8px;padding:14px 20px;border-top:1px solid var(--line);align-items:end}
 .builder-form-2{display:grid;grid-template-columns:1.4fr 1fr auto;gap:8px;padding:0 20px 16px;align-items:end}
 .f-in label{display:block;font-size:11.5px;color:var(--text-3);margin-bottom:4px}
 .f-in input,.f-in select{width:100%;height:34px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:13px;outline:none}
 .f-in input:focus{border-color:var(--accent-line)}
+.vid-cell{display:inline-flex;align-items:center;gap:6px}
+.vid-edit-row td{background:var(--surface-2);padding:10px 20px!important}
+.vid-override-form{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.vid-override-label{font-size:12px;color:var(--text-2);white-space:nowrap}
+.vid-override-label b{color:var(--text);font-weight:600}
+.vid-override-form input{flex:1 1 240px;min-width:0;height:32px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:12.5px;outline:none}
+.vid-override-form input:focus{border-color:var(--accent-line)}
 
 /* Dialog */
 dialog.modal{border:0;padding:0;border-radius:16px;width:min(540px,calc(100% - 32px));background:var(--surface);color:var(--text);box-shadow:0 24px 64px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.08)}
@@ -227,6 +234,169 @@ function toast(m) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
+async function copyTextWithFallback(txt) {
+  const str = String(txt ?? '');
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(str);
+      return true;
+    }
+  } catch {}
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = str;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, str.length);
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return !!ok;
+  } catch {
+    return false;
+  }
+}
+
+const CURATED_VIDEOS = {
+  'flat bench press': 'https://www.youtube.com/watch?v=BbvyOxXFFHE',
+  'incline db press': 'https://www.youtube.com/watch?v=xBj33JqHOPI',
+  'db lateral raises': 'https://www.youtube.com/watch?v=-hyAJdSFzT4',
+  'diamond push-ups': 'https://www.youtube.com/watch?v=J0DnG1_S92I',
+  'rear delt row (chest supported)': 'https://www.youtube.com/watch?v=6mvWr4JKOUM',
+  'barbell deadlift': 'https://www.youtube.com/watch?v=AweC3UaM14o',
+  'db seal rows (chest supported)': 'https://www.youtube.com/watch?v=ym-Mp8tCF00',
+  'weighted pull-ups (neutral grip)': 'https://www.youtube.com/watch?v=fGv2Sxw9SDQ',
+  'barbell shrugs': 'https://www.youtube.com/watch?v=M_MjF5Nm_h4',
+  'db hammer curls': 'https://www.youtube.com/watch?v=8XLxfXROrTo',
+  'incline db curls': 'https://www.youtube.com/watch?v=cIYCLQVKzlQ',
+  'barbell back squat': 'https://www.youtube.com/watch?v=1oed-UmAxFs',
+  'db goblet squat': 'https://www.youtube.com/watch?v=MxsFDhcyFyE',
+  'barbell stiff-legged deadlift': 'https://www.youtube.com/watch?v=CN_7cz3P-1U',
+  'db lunges': 'https://www.youtube.com/watch?v=qQyCK_rxzN0',
+  'db calf raises': 'https://www.youtube.com/watch?v=HvvqTpTongY',
+  'barbell bench press': 'https://www.youtube.com/watch?v=BbvyOxXFFHE',
+  'seated db shoulder press': 'https://www.youtube.com/watch?v=HzIiNhHhhtA',
+  'incline db bench press': 'https://www.youtube.com/watch?v=0f6-uCUKqgA',
+  'cable lateral raises': 'https://www.youtube.com/watch?v=qitQHqNZbeM',
+  'cable tricep pushdowns': 'https://www.youtube.com/watch?v=_w-HpW70nSQ',
+  'barbell romanian deadlift': 'https://www.youtube.com/watch?v=pTocjWvkMj0',
+  'chest-supported db row': 'https://www.youtube.com/watch?v=wY_qMbOuPMI',
+  'lat pulldown': 'https://www.youtube.com/watch?v=3PmWIGn0dwU',
+  'cable face pulls': 'https://www.youtube.com/watch?v=7z65m-qWJrA',
+  'db bicep curls': 'https://www.youtube.com/watch?v=CvOWb2nmcog',
+  'barbell hip thrust': 'https://www.youtube.com/watch?v=EF7jXP17DPE',
+  'db bulgarian split squat': 'https://www.youtube.com/watch?v=OHOmkrKoOt8',
+  'seated leg curl': 'https://www.youtube.com/watch?v=Orxowest56U',
+  'standing calf raises': 'https://www.youtube.com/watch?v=YMmgqO8Jo-k',
+  'barbell overhead press': 'https://www.youtube.com/watch?v=mUxbYo3Im34',
+  'assisted or bw pull-ups': 'https://www.youtube.com/watch?v=gnElpp3Fm50',
+  'flat db bench press': 'https://www.youtube.com/watch?v=SHsUIZiNdeY',
+  'seated cable row': 'https://www.youtube.com/watch?v=jgjrOlY6XIM',
+  'overhead cable tricep ext.': 'https://www.youtube.com/watch?v=7hx0-DZgdl8',
+  'trap bar or conv. deadlift': 'https://www.youtube.com/watch?v=eIFW8zspJzQ',
+  'front squat or hack squat': 'https://www.youtube.com/watch?v=u_1a0nWG7vQ',
+  'db romanian deadlift': 'https://www.youtube.com/watch?v=BF-vvMGP8Y0',
+  'db walking lunges': 'https://www.youtube.com/watch?v=_DLIS8SySzs',
+  'hanging knee raises': 'https://www.youtube.com/watch?v=RD_A-Z15ER4',
+  'banded goblet squats': 'https://www.youtube.com/watch?v=W3sp_uGF9XA',
+  'tempo push-ups': 'https://www.youtube.com/watch?v=B2QZkEu-n0g',
+  'banded seated rows': 'https://www.youtube.com/watch?v=PpdPVyH-nqw',
+  'banded overhead press': 'https://www.youtube.com/watch?v=956rqQ8PgH0',
+  'banded bicep curls': 'https://www.youtube.com/watch?v=oXAMW-LNX_Q',
+  'plank w/ shoulder taps': 'https://www.youtube.com/watch?v=VX4Q1gX4NqU',
+  'banded stiff-leg deadlifts': 'https://www.youtube.com/watch?v=SncRS4cTjmc',
+  'banded lat pulldowns': 'https://www.youtube.com/watch?v=84D8bVJWB3s',
+  'banded chest press': 'https://www.youtube.com/watch?v=6-86jEAXA08',
+  'banded lateral raises': 'https://www.youtube.com/watch?v=gfEyrmxbCbw',
+  'banded tricep extensions': 'https://www.youtube.com/watch?v=OWV6s4FtwME',
+  'banded woodchoppers': 'https://www.youtube.com/watch?v=ooP1Zq6lq5Y',
+  'barbell row': 'https://www.youtube.com/watch?v=6FZHJGzMFEc',
+  'barbell bent over row': 'https://www.youtube.com/watch?v=6FZHJGzMFEc',
+  'leg press': 'https://www.youtube.com/watch?v=yZmx_Ac3880',
+  'leg extension': 'https://www.youtube.com/watch?v=m0FOpMEgero',
+  'lying leg curl': 'https://www.youtube.com/watch?v=n5WDXD_mpVY',
+  'cable chest fly': 'https://www.youtube.com/watch?v=hrh0K1Oo7Yc',
+  'tricep dips': 'https://www.youtube.com/watch?v=Rea9_yRXWmU',
+  'skull crushers': 'https://www.youtube.com/watch?v=RavQHfFxbdA',
+  'push-ups': 'https://www.youtube.com/watch?v=vh72hbUqqfs',
+};
+
+function isSearchVideoUrl(u) {
+  const s = String(u || '').trim();
+  return !s || !/^https?:\/\//i.test(s) || /youtube\.com\/results\b/i.test(s);
+}
+
+function curatedVideoUrl(name) {
+  const k = String(name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  if (!k) return '';
+  if (CURATED_VIDEOS[k]) return CURATED_VIDEOS[k];
+  const isBand = /\bband(ed)?\b|resistance band/.test(k);
+  if (isBand) {
+    if (/goblet|squat/.test(k)) return CURATED_VIDEOS['banded goblet squats'];
+    if (/deadlift|rdl|stiff/.test(k)) return CURATED_VIDEOS['banded stiff-leg deadlifts'];
+    if (/pulldown/.test(k)) return CURATED_VIDEOS['banded lat pulldowns'];
+    if (/row/.test(k)) return CURATED_VIDEOS['banded seated rows'];
+    if (/chest|bench/.test(k)) return CURATED_VIDEOS['banded chest press'];
+    if (/overhead|shoulder press/.test(k)) return CURATED_VIDEOS['banded overhead press'];
+    if (/lateral/.test(k)) return CURATED_VIDEOS['banded lateral raises'];
+    if (/tricep/.test(k)) return CURATED_VIDEOS['banded tricep extensions'];
+    if (/curl/.test(k)) return CURATED_VIDEOS['banded bicep curls'];
+    if (/woodchop/.test(k)) return CURATED_VIDEOS['banded woodchoppers'];
+  }
+  if (/rear delt/.test(k) && /row|fly|raise/.test(k)) return CURATED_VIDEOS['rear delt row (chest supported)'];
+  if (/seal row/.test(k)) return CURATED_VIDEOS['db seal rows (chest supported)'];
+  if (/chest[- ]supported/.test(k) && /row/.test(k)) return CURATED_VIDEOS['chest-supported db row'];
+  if (/neutral/.test(k) && /pull[- ]?up/.test(k)) return CURATED_VIDEOS['weighted pull-ups (neutral grip)'];
+  if (/assisted/.test(k) && /pull[- ]?up/.test(k)) return CURATED_VIDEOS['assisted or bw pull-ups'];
+  if (/pull[- ]?up/.test(k)) return CURATED_VIDEOS['weighted pull-ups (neutral grip)'];
+  if (/diamond/.test(k) && /push[- ]?up/.test(k)) return CURATED_VIDEOS['diamond push-ups'];
+  if (/tempo/.test(k) && /push[- ]?up/.test(k)) return CURATED_VIDEOS['tempo push-ups'];
+  if (/push[- ]?up/.test(k)) return CURATED_VIDEOS['push-ups'];
+  if (/shoulder tap|plank/.test(k)) return CURATED_VIDEOS['plank w/ shoulder taps'];
+  if (/incline/.test(k) && /curl/.test(k)) return CURATED_VIDEOS['incline db curls'];
+  if (/hammer/.test(k) && /curl/.test(k)) return CURATED_VIDEOS['db hammer curls'];
+  if (/leg curl/.test(k)) return /lying/.test(k) ? CURATED_VIDEOS['lying leg curl'] : CURATED_VIDEOS['seated leg curl'];
+  if (/curl/.test(k)) return CURATED_VIDEOS['db bicep curls'];
+  if (/stiff[- ]leg/.test(k)) return CURATED_VIDEOS['barbell stiff-legged deadlift'];
+  if (/romanian|\brdl\b/.test(k)) return /\bdb\b|dumbbell/.test(k) ? CURATED_VIDEOS['db romanian deadlift'] : CURATED_VIDEOS['barbell romanian deadlift'];
+  if (/trap bar/.test(k)) return CURATED_VIDEOS['trap bar or conv. deadlift'];
+  if (/deadlift/.test(k)) return CURATED_VIDEOS['barbell deadlift'];
+  if (/goblet/.test(k)) return CURATED_VIDEOS['db goblet squat'];
+  if (/bulgarian/.test(k)) return CURATED_VIDEOS['db bulgarian split squat'];
+  if (/hack squat|front squat/.test(k)) return CURATED_VIDEOS['front squat or hack squat'];
+  if (/squat/.test(k)) return CURATED_VIDEOS['barbell back squat'];
+  if (/hip thrust/.test(k)) return CURATED_VIDEOS['barbell hip thrust'];
+  if (/walking lunge/.test(k)) return CURATED_VIDEOS['db walking lunges'];
+  if (/lunge/.test(k)) return CURATED_VIDEOS['db lunges'];
+  if (/calf/.test(k)) return /\bdb\b|dumbbell/.test(k) ? CURATED_VIDEOS['db calf raises'] : CURATED_VIDEOS['standing calf raises'];
+  if (/incline/.test(k) && /\bdb\b|dumbbell/.test(k) && /press/.test(k)) return /bench/.test(k) ? CURATED_VIDEOS['incline db bench press'] : CURATED_VIDEOS['incline db press'];
+  if (/\bdb\b|dumbbell/.test(k) && /shoulder press|overhead/.test(k)) return CURATED_VIDEOS['seated db shoulder press'];
+  if (/\bdb\b|dumbbell/.test(k) && /bench|chest press/.test(k)) return CURATED_VIDEOS['flat db bench press'];
+  if (/overhead press|\bohp\b/.test(k)) return CURATED_VIDEOS['barbell overhead press'];
+  if (/bench press/.test(k)) return CURATED_VIDEOS['flat bench press'];
+  if (/cable/.test(k) && /lateral/.test(k)) return CURATED_VIDEOS['cable lateral raises'];
+  if (/lateral raise/.test(k)) return CURATED_VIDEOS['db lateral raises'];
+  if (/face pull/.test(k)) return CURATED_VIDEOS['cable face pulls'];
+  if (/shrug/.test(k)) return CURATED_VIDEOS['barbell shrugs'];
+  if (/overhead/.test(k) && /tricep/.test(k)) return CURATED_VIDEOS['overhead cable tricep ext.'];
+  if (/pushdown|tricep/.test(k)) return CURATED_VIDEOS['cable tricep pushdowns'];
+  if (/pulldown/.test(k)) return CURATED_VIDEOS['lat pulldown'];
+  if (/cable row/.test(k)) return CURATED_VIDEOS['seated cable row'];
+  if (/row/.test(k)) return CURATED_VIDEOS['barbell row'];
+  if (/knee raise|leg raise/.test(k)) return CURATED_VIDEOS['hanging knee raises'];
+  if (/leg press/.test(k)) return CURATED_VIDEOS['leg press'];
+  if (/leg extension/.test(k)) return CURATED_VIDEOS['leg extension'];
+  return '';
+}
+
+function resolveVideoUrl(ex) {
+  if (!ex) return '';
+  if (!isSearchVideoUrl(ex.video_url)) return String(ex.video_url).trim();
+  return curatedVideoUrl(ex.name);
+}
+
 const S = {
   mode: 'loading', // 'auth' | 'app' | 'demo'
   authMsg: '', authTone: '',
@@ -241,6 +411,7 @@ const S = {
   tab: 'overview', // overview | program | training | nutrition | measurements
   liftSel: 'all',
   editClient: null,
+  editVideoId: null,
 };
 
 function currentWeek(c) {
@@ -280,13 +451,13 @@ function loadDemo() {
     const lift = c.slug === 'charles' ? 'Banded Goblet Squats' : 'Barbell Back Squat';
     const sets = [1, 2, 3].map(w => ({ week: w, day_name: c.slug === 'charles' ? 'Full Body A' : 'Legs', exercise_name: lift, set_num: 1, weight: (c.slug === 'emily' ? 105 : c.slug === 'charles' ? 45 : 185) + w * 5, reps: 8, rpe: 8, done: true }));
     S.data[c.id] = {
-      exercises: [{ id: 'ex1-' + c.id, day_name: c.slug === 'charles' ? 'Full Body A' : 'Legs', day_order: 1, exercise_order: 1, name: lift, sets: 4, target_reps: 8, rep_label: '8', rest_sec: 120, is_bodyweight: false, cue: 'Control the descent and brace core.', video_url: 'https://www.youtube.com/results?search_query=' + encodeURIComponent(lift + ' form') }],
+      exercises: [{ id: 'ex1-' + c.id, day_name: c.slug === 'charles' ? 'Full Body A' : 'Legs', day_order: 1, exercise_order: 1, name: lift, sets: 4, target_reps: 8, rep_label: '8', rest_sec: 120, is_bodyweight: false, cue: 'Control the descent and brace core.', video_url: '' }],
       sets, checkins: chks,
       measurements: [{ date: ymd(new Date(today - 7 * DAY_MS)), waist_in: c.slug === 'emily' ? 27.2 : 35.8, chest_in: 41.5, hips_in: 39.2, arms_in: 15.1, thighs_in: 23.5, photo_url: '', notes: 'Week 2 check-in' }],
       notes: [{ id: 'n-' + c.id, message: 'Strong week — keep tempo crisp on top sets.', pinned: true, created_at: new Date().toISOString() }],
     };
   });
-  S.view = 'overview'; S.selId = null;
+  S.view = 'overview'; S.selId = null; S.editVideoId = null;
   render();
 }
 
@@ -542,17 +713,42 @@ function viewClient(c) {
         </div>
       </div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Day</th><th>Exercise</th><th>Sets × Reps</th><th>Rest</th><th>Coaching Cue</th><th>Video</th><th class="r"></th></tr></thead>
+        <thead><tr><th>Day</th><th>Exercise</th><th>Sets × Reps</th><th>Rest</th><th>Coaching Cue</th><th>Form Video</th><th class="r"></th></tr></thead>
         <tbody>
-          ${d.exercises.map(ex => `<tr>
-            <td><span class="tag">${esc(ex.day_name)}</span></td>
-            <td style="font-weight:500">${esc(ex.name)}${ex.is_bodyweight ? ' <span class="tag accent">BW</span>' : ''}</td>
-            <td class="n">${ex.sets} × ${esc(ex.rep_label)}</td>
-            <td class="n" style="color:var(--text-2)">${ex.rest_sec}s</td>
-            <td class="wrap">${esc(ex.cue || '—')}</td>
-            <td>${ex.video_url ? `<a href="${esc(ex.video_url)}" target="_blank" style="color:var(--accent)">Link ↗</a>` : '—'}</td>
-            <td class="r"><button class="btn btn-ghost btn-sm danger" data-act="del-ex" data-id="${ex.id}">${ic('trash')}</button></td>
-          </tr>`).join('')}
+          ${d.exercises.map(ex => {
+            const hasCustom = !isSearchVideoUrl(ex.video_url);
+            const resolved = resolveVideoUrl(ex);
+            const isEditingVid = S.editVideoId === String(ex.id);
+            return `<tr>
+              <td><span class="tag">${esc(ex.day_name)}</span></td>
+              <td style="font-weight:500">${esc(ex.name)}${ex.is_bodyweight ? ' <span class="tag accent">BW</span>' : ''}</td>
+              <td class="n">${ex.sets} × ${esc(ex.rep_label)}</td>
+              <td class="n" style="color:var(--text-2)">${ex.rest_sec}s</td>
+              <td class="wrap">${esc(ex.cue || '—')}</td>
+              <td>
+                <div class="vid-cell">
+                  ${hasCustom
+                    ? `<a href="${esc(ex.video_url.trim())}" target="_blank" rel="noopener" class="tag accent" title="${esc(ex.video_url.trim())}">Custom ↗</a>`
+                    : resolved
+                      ? `<a href="${esc(resolved)}" target="_blank" rel="noopener" class="tag ok" title="Curated demo: ${esc(resolved)}">Curated ↗</a>`
+                      : `<span class="tag">None</span>`}
+                  <button type="button" class="btn btn-ghost btn-sm" data-act="edit-ex-vid" data-id="${esc(ex.id)}">${isEditingVid ? 'Close' : (hasCustom ? 'Edit URL' : 'Override')}</button>
+                </div>
+              </td>
+              <td class="r"><button class="btn btn-ghost btn-sm danger" data-act="del-ex" data-id="${esc(ex.id)}">${ic('trash')}</button></td>
+            </tr>
+            ${isEditingVid ? `<tr class="vid-edit-row">
+              <td colspan="7">
+                <form class="vid-override-form" data-ex-vid-form="${esc(ex.id)}">
+                  <span class="vid-override-label">Custom video URL for <b>${esc(ex.name)}</b>:</span>
+                  <input name="video_url" type="url" value="${esc(hasCustom ? ex.video_url.trim() : '')}" placeholder="${esc(resolved ? `Default curated: ${resolved}` : 'https://www.youtube.com/watch?v=...')}">
+                  <button type="submit" class="btn btn-accent btn-sm">Save URL</button>
+                  ${hasCustom || ex.video_url ? `<button type="button" class="btn btn-sm" data-act="reset-ex-vid" data-id="${esc(ex.id)}">Use Curated</button>` : ''}
+                  <button type="button" class="btn btn-ghost btn-sm" data-act="cancel-ex-vid">Cancel</button>
+                </form>
+              </td>
+            </tr>` : ''}`;
+          }).join('')}
         </tbody>
       </table></div>
       <form id="ex-form">
@@ -566,7 +762,7 @@ function viewClient(c) {
         </div>
         <div class="builder-form-2">
           <div class="f-in"><label>Coaching cue</label><input name="cue" placeholder="Form cues, tempo, range of motion…"></div>
-          <div class="f-in"><label>Form video URL (YouTube / Vimeo / Drive)</label><input name="video_url" type="url" placeholder="https://youtube.com/..."></div>
+          <div class="f-in"><label>Custom video URL override (optional — auto-uses curated demo)</label><input name="video_url" type="url" placeholder="Leave blank for curated demo, or paste https://..."></div>
           <button type="submit" class="btn btn-accent">${ic('plus')}Add exercise</button>
         </div>
       </form>
@@ -650,9 +846,9 @@ function viewClient(c) {
           <div style="font-size:11px;color:var(--text-3);margin-top:4px">${m.sender_role === 'coach' ? 'You' : esc(c.full_name)} · ${new Date(m.created_at).toLocaleString([], { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' })}</div>
         </div>`).join('') : '<div style="padding:28px 0;text-align:center;color:var(--text-3)">No messages yet. Start the conversation below.</div>'}
       </div>
-      <form id="coach-chat-form" style="display:flex;gap:8px;margin-top:12px">
-        <input name="body" required placeholder="Message ${esc(c.full_name)}…" style="flex:1;height:40px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);padding:0 12px;font-size:13.5px;outline:none">
-        <button type="submit" class="btn btn-accent">Send</button>
+      <form id="coach-chat-form" style="display:flex;gap:8px;margin-top:12px;min-width:0">
+        <input name="body" required placeholder="Message ${esc(c.full_name)}…" style="flex:1 1 0%;min-width:0;height:40px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);padding:0 12px;font-size:13.5px;outline:none">
+        <button type="submit" class="btn btn-accent" style="flex:0 0 auto">Send</button>
       </form>
     </div>`;
   }
@@ -897,14 +1093,15 @@ document.addEventListener('click', async e => {
   if (!btn) return;
   const act = btn.dataset.act;
   if (act === 'demo') loadDemo();
-  else if (act === 'overview') { S.view = 'overview'; S.selId = null; render(); }
-  else if (act === 'intake') { S.view = 'intake'; S.selId = null; render(); }
-  else if (act === 'select') { S.view = 'client'; S.selId = btn.dataset.id; S.tab = 'overview'; S.liftSel = 'all'; render(); }
-  else if (act === 'tab') { S.tab = btn.dataset.v; render(); }
+  else if (act === 'overview') { S.view = 'overview'; S.selId = null; S.editVideoId = null; render(); }
+  else if (act === 'intake') { S.view = 'intake'; S.selId = null; S.editVideoId = null; render(); }
+  else if (act === 'select') { S.view = 'client'; S.selId = btn.dataset.id; S.tab = 'overview'; S.liftSel = 'all'; S.editVideoId = null; render(); }
+  else if (act === 'tab') { S.tab = btn.dataset.v; S.editVideoId = null; render(); }
   else if (act === 'lsel') { S.liftSel = btn.dataset.v; render(); }
   else if (act === 'refresh') { await fetchAll(); toast('Refreshed from Supabase'); }
   else if (act === 'copy-apply') {
-    try { await navigator.clipboard.writeText(btn.dataset.url); toast('Application link copied'); } catch { toast('Copy failed'); }
+    const ok = await copyTextWithFallback(btn.dataset.url);
+    toast(ok ? 'Application link copied' : 'Copy failed');
   }
   else if (act === 'approve-intake') {
     const row = S.intakes.find(x => x.id === btn.dataset.id);
@@ -960,12 +1157,39 @@ document.addEventListener('click', async e => {
   else if (act === 'close-modal') { document.getElementById('client-modal')?.close(); }
   else if (act === 'copy-health') {
     const info = `Endpoint: ${SUPABASE_URL}/rest/v1/rpc/sync_apple_health\nAPI Key: ${SUPABASE_KEY}\nToken: ${btn.dataset.token}`;
-    try { await navigator.clipboard.writeText(info); toast('Apple Health setup copied'); } catch { toast('Copy failed'); }
+    const ok = await copyTextWithFallback(info);
+    toast(ok ? 'Apple Health setup copied' : 'Copy failed');
+  }
+  else if (act === 'edit-ex-vid') {
+    const id = String(btn.dataset.id);
+    S.editVideoId = S.editVideoId === id ? null : id;
+    render();
+    if (S.editVideoId) {
+      const inp = document.querySelector(`[data-ex-vid-form="${CSS.escape(id)}"] input[name="video_url"]`);
+      inp?.focus();
+    }
+  }
+  else if (act === 'cancel-ex-vid') {
+    S.editVideoId = null;
+    render();
+  }
+  else if (act === 'reset-ex-vid') {
+    const id = String(btn.dataset.id);
+    if (S.mode !== 'demo') {
+      const { error } = await sb.from('program_exercises').update({ video_url: '' }).eq('id', id);
+      if (error) { toast('Reset failed: ' + error.message); return; }
+    }
+    const ex = S.data[S.selId]?.exercises.find(x => String(x.id) === id);
+    if (ex) ex.video_url = '';
+    S.editVideoId = null;
+    toast('Reset to curated form video');
+    render();
   }
   else if (act === 'del-ex') {
     const id = btn.dataset.id;
     if (S.mode !== 'demo') await sb.from('program_exercises').delete().eq('id', id);
     if (S.data[S.selId]) S.data[S.selId].exercises = S.data[S.selId].exercises.filter(x => x.id !== id);
+    if (S.editVideoId === String(id)) S.editVideoId = null;
     toast('Exercise removed'); render();
   }
   else if (act === 'del-note') {
@@ -981,7 +1205,8 @@ document.addEventListener('click', async e => {
     const name = prompt('Template name:', `${c.phase} — ${c.split}`);
     if (!name) return;
     const clean = exs.map(({ day_name, day_order, exercise_order, name: n, sets, target_reps, rep_label, rest_sec, is_bodyweight, cue, video_url }) => ({
-      day_name, day_order, exercise_order, name: n, sets, target_reps, rep_label, rest_sec, is_bodyweight, cue, video_url
+      day_name, day_order, exercise_order, name: n, sets, target_reps, rep_label, rest_sec, is_bodyweight, cue,
+      video_url: isSearchVideoUrl(video_url) ? '' : String(video_url).trim(),
     }));
     if (S.mode === 'demo') { S.templates.unshift({ id: 'd-' + Date.now(), name, split: c.split, exercises: clean }); toast('Template saved (demo)'); render(); return; }
     const { error } = await sb.from('program_templates').insert({ coach_id: S.user.id, name: name.trim(), split: c.split, exercises: clean });
@@ -998,7 +1223,8 @@ document.addEventListener('click', async e => {
     const rows = source.map(e => ({
       client_id: S.selId, day_name: e.day_name, day_order: e.day_order, exercise_order: e.exercise_order,
       name: e.name, sets: e.sets, target_reps: e.target_reps, rep_label: e.rep_label,
-      rest_sec: e.rest_sec, is_bodyweight: !!e.is_bodyweight, cue: e.cue || '', video_url: e.video_url || '',
+      rest_sec: e.rest_sec, is_bodyweight: !!e.is_bodyweight, cue: e.cue || '',
+      video_url: isSearchVideoUrl(e.video_url) ? '' : String(e.video_url).trim(),
     }));
     if (S.mode === 'demo') {
       S.data[S.selId].exercises = rows.map((r, i) => ({ id: 'd-' + Date.now() + '-' + i, ...r }));
@@ -1011,7 +1237,7 @@ document.addEventListener('click', async e => {
   }
   else if (act === 'signout') {
     if (S.mode !== 'demo' && sb) await sb.auth.signOut();
-    S.mode = 'auth'; S.user = null; S.view = 'overview'; S.selId = null; S.authMsg = ''; render();
+    S.mode = 'auth'; S.user = null; S.view = 'overview'; S.selId = null; S.editVideoId = null; S.authMsg = ''; render();
   }
 });
 
@@ -1023,6 +1249,28 @@ document.addEventListener('submit', async e => {
     const { data, error } = await sb.auth.signInWithPassword({ email: email.trim(), password });
     if (error) { S.authMsg = error.message; S.authTone = 'bad'; render(); }
     else { S.user = data.user; S.mode = 'app'; await fetchAll(); }
+  }
+  if (e.target.dataset.exVidForm) {
+    e.preventDefault();
+    const id = String(e.target.dataset.exVidForm);
+    const raw = e.target.elements.video_url.value.trim();
+    if (raw && !/^https?:\/\//i.test(raw)) {
+      toast('Video URL must start with https://');
+      return;
+    }
+    if (/youtube\.com\/results\b/i.test(raw)) {
+      toast('Paste a direct video URL (not a YouTube search link), or click Use Curated');
+      return;
+    }
+    if (S.mode !== 'demo') {
+      const { error } = await sb.from('program_exercises').update({ video_url: raw }).eq('id', id);
+      if (error) { toast('Save failed: ' + error.message); return; }
+    }
+    const ex = S.data[S.selId]?.exercises.find(x => String(x.id) === id);
+    if (ex) ex.video_url = raw;
+    S.editVideoId = null;
+    toast(raw ? 'Custom video URL saved' : 'Using curated form video');
+    render();
   }
   if (e.target.id === 'coach-chat-form') {
     e.preventDefault();
@@ -1053,6 +1301,11 @@ document.addEventListener('submit', async e => {
   if (e.target.id === 'ex-form') {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
+    const rawVid = f.video_url.trim();
+    if (/youtube\.com\/results\b/i.test(rawVid)) {
+      toast('Paste a direct video link (or leave blank to auto-use curated demo)');
+      return;
+    }
     const cur = S.data[S.selId]?.exercises || [];
     const days = [...new Set(cur.map(x => x.day_name))];
     const dayOrder = days.includes(f.day_name) ? days.indexOf(f.day_name) + 1 : days.length + 1;
@@ -1062,7 +1315,7 @@ document.addEventListener('submit', async e => {
       name: f.name.trim(), sets: Number(f.sets) || 3,
       target_reps: /^\d+$/.test(f.rep_label.trim()) ? Number(f.rep_label.trim()) : null,
       rep_label: f.rep_label.trim() || '10', rest_sec: Number(f.rest_sec) || 90,
-      is_bodyweight: f.is_bodyweight === 'true', cue: f.cue.trim(), video_url: f.video_url.trim(),
+      is_bodyweight: f.is_bodyweight === 'true', cue: f.cue.trim(), video_url: rawVid,
     };
     if (S.mode === 'demo') {
       S.data[S.selId].exercises.push({ id: 'd-' + Date.now(), ...payload });
