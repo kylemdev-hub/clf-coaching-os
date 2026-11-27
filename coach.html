@@ -223,6 +223,8 @@ const ICONS = {
   trash: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>',
   ext: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
   heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
+  bolt: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
 };
 const ic = k => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[k] || ''}</svg>`;
 
@@ -403,18 +405,76 @@ const S = {
   user: null,
   clients: [],
   intakes: [],
+  expoLeads: [],
+  testimonials: [],
+  autoLogs: [],
+  autoBusy: false,
   templates: [],
   photoUrls: {},
   data: {}, // clientId -> { exercises, sets, checkins, measurements, notes, messages, photos, supplements, suppLogs }
   suppTableReady: true,
   suppOverlay: true,
-  view: 'overview', // 'overview' | 'intake' | 'client'
+  view: 'overview', // 'overview' | 'intake' | 'automations' | 'client'
   selId: null,
   tab: 'overview', // overview | program | training | nutrition | supplements | measurements | messages
   liftSel: 'all',
   editClient: null,
   editVideoId: null,
 };
+
+async function sendCoachAutomation(payload, fallbackHref) {
+  if (S.mode === 'demo') {
+    S.autoLogs.unshift({
+      id: 'dl-' + Date.now(),
+      event_type: payload.template || payload.action || 'email',
+      recipient_email: payload.to || 'kyle@clashlabfitness.com',
+      subject: payload.label || payload.template || payload.action,
+      status: 'sent_demo',
+      created_at: new Date().toISOString(),
+    });
+    toast(`Sent ${payload.label || 'branded CLF email'} (demo)`);
+    render();
+    return true;
+  }
+  try {
+    S.autoBusy = true;
+    const { data: { session } } = await sb.auth.getSession();
+    const token = session?.access_token || SUPABASE_KEY;
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/clf-automations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+    S.autoBusy = false;
+    if (res.ok) {
+      const out = await res.json().catch(() => ({}));
+      toast(out.message || `Sent ${payload.label || 'CLF email'} via Resend`);
+      await fetchAll();
+      return true;
+    }
+    if (fallbackHref) {
+      toast('Edge Function not active yet; opening mail app fallback');
+      location.href = fallbackHref;
+      return false;
+    }
+    const errBody = await res.text().catch(() => '');
+    toast('Automation error: ' + (errBody.slice(0, 80) || res.status));
+    return false;
+  } catch (err) {
+    S.autoBusy = false;
+    if (fallbackHref) {
+      toast('Opening mail app fallback');
+      location.href = fallbackHref;
+      return false;
+    }
+    toast('Network error triggering automation');
+    return false;
+  }
+}
 
 const COACH_SUPP_PRESETS = [
   { name: 'Creatine Monohydrate', dosage: '5g', timing: 'Morning', reminder_time: '08:30', note: '5g daily with water for ATP saturation, rep volume, and strength recovery.' },
@@ -508,7 +568,17 @@ function loadDemo() {
     { id:'d-charles', slug:'charles', full_name:'Charles Bennett', email:'', phase:'Phase 1', split:'Full Body A / B / C', start_date:s21, weeks:8, targets:{ weight:180, calories:2500, protein:200, water:100, steps:10000, sleep:7.5 }, program_notes:'3-day Full Body banded & bodyweight resistance protocol.', health_sync_token:'demo_charles_token' },
   ];
   S.intakes = [
-    { id:'d-in1', status:'pending', first_name:'Jordan', last_name:'Lee', email:'jordan@example.com', age:31, height:'5\'10"', current_weight:196, goal_weight:180, injuries:'Mild right knee patellar tendonitis on deep lunges', typical_eating:'3 meals + 1 protein shake, ~80 oz water\n[Supplements: Creatine Monohydrate, Protein Powder]', supplements:['Creatine Monohydrate','Protein Powder'], equipment:['Full Gym','Dumbbells Only'], days_per_week:4, parq_answers:{q1:'no',q2:'no',q3:'no',q4:'no',q5:'no',q6:'no',q7:'no'}, medical_clearance_required:false, parq_signature:'Jordan Lee', waiver_agreed:true, waiver_signature:'Jordan Lee', signed_at:new Date().toISOString(), created_at:new Date().toISOString() },
+    { id:'d-in1', status:'pending', payment_status:'paid', paid_amount_cents:7500, first_name:'Jordan', last_name:'Lee', email:'jordan@example.com', age:31, height:'5\'10"', current_weight:196, goal_weight:180, injuries:'Mild right knee patellar tendonitis on deep lunges', typical_eating:'3 meals + 1 protein shake, ~80 oz water\n[Supplements: Creatine Monohydrate, Protein Powder]', supplements:['Creatine Monohydrate','Protein Powder'], equipment:['Full Gym','Dumbbells Only'], days_per_week:4, parq_answers:{q1:'no',q2:'no',q3:'no',q4:'no',q5:'no',q6:'no',q7:'no'}, medical_clearance_required:false, parq_signature:'Jordan Lee', waiver_agreed:true, waiver_signature:'Jordan Lee', signed_at:new Date().toISOString(), created_at:new Date().toISOString() },
+  ];
+  S.expoLeads = [
+    { id:'d-ex1', first_name:'Marcus', email:'marcus@example.com', age:29, height_label:'6\'0"', weight_lb:208, goal_weight_lb:190, goal:'cut', days_per_week:4, calories:2290, protein_g:200, carbs_g:220, fats_g:65, water_oz:115, recommended_split:'4-Day Upper / Lower Progressive Overload', source:'booth_kiosk', drip_stage:1, converted:false, created_at:new Date(today - DAY_MS).toISOString() },
+  ];
+  S.testimonials = [
+    { id:'d-tm1', client_id:'d-charles', quote:'Before talking to Kyle, I hit a plateau and was unable to drop any weight no matter how little I was eating. After working with him I dropped 25lbs in 3 months.', milestone:'-25 lb in 3 months', consent_verified_quote:true, created_at:new Date(today - 2 * DAY_MS).toISOString() },
+  ];
+  S.autoLogs = [
+    { id:'d-al1', event_type:'stripe_paid', recipient_email:'kyle@clashlabfitness.com', subject:'Stripe Paid ($75.00): Jordan Lee', status:'sent', created_at:new Date(today - 3600000).toISOString() },
+    { id:'d-al2', event_type:'expo_blueprint', recipient_email:'marcus@example.com', subject:'Your CLF Custom Macro & Split Blueprint', status:'sent', created_at:new Date(today - DAY_MS).toISOString() },
   ];
   S.clients.forEach(c => {
     const baseW = c.slug === 'emily' ? 125.2 : c.slug === 'scott' ? 198.4 : 193.5;
@@ -566,15 +636,21 @@ const COACH_EX_SUGGESTIONS = [
 
 async function fetchAll() {
   if (S.mode === 'demo') return;
-  const [{ data: clients, error }, intakeRes, tplRes] = await Promise.all([
+  const [{ data: clients, error }, intakeRes, tplRes, expoRes, testRes, logRes] = await Promise.all([
     sb.from('clients').select('*').eq('coach_id', S.user.id).eq('active', true).order('created_at'),
     sb.from('intake_submissions').select('*').order('created_at', { ascending: false }),
     sb.from('program_templates').select('*').eq('coach_id', S.user.id).order('created_at', { ascending: false }),
+    sb.from('expo_leads').select('*').order('created_at', { ascending: false }).limit(60),
+    sb.from('client_testimonials').select('*').order('created_at', { ascending: false }).limit(40),
+    sb.from('automation_logs').select('*').order('created_at', { ascending: false }).limit(30),
   ]);
   if (error) { toast('Load error: ' + error.message); return; }
   S.clients = clients || [];
   S.intakes = intakeRes.error ? [] : (intakeRes.data || []);
   S.templates = tplRes.error ? [] : (tplRes.data || []);
+  S.expoLeads = expoRes.error ? [] : (expoRes.data || []);
+  S.testimonials = testRes.error ? [] : (testRes.data || []);
+  S.autoLogs = logRes.error ? [] : (logRes.data || []);
   const ids = S.clients.map(c => c.id);
   if (!ids.length) { S.data = {}; render(); return; }
   const [exRes, setRes, chkRes, measRes, noteRes, msgRes, phRes, suppRes, slogRes] = await Promise.all([
@@ -935,7 +1011,8 @@ function viewClient(c) {
           <div class="note-box">
             <form id="note-form">
               <textarea name="message" required placeholder="Write weekly feedback or cues to pin at the top of ${esc(c.full_name)}'s Train screen…"></textarea>
-              <button type="submit" class="btn btn-accent" style="margin-top:8px;width:100%;justify-content:center">Pin note to client app</button>
+              ${c.email ? `<label style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-2);margin-top:8px;cursor:pointer"><input type="checkbox" name="send_email" checked> Also email this feedback to ${esc(c.email)} (CLF Branded)</label>` : ''}
+              <button type="submit" class="btn btn-accent" style="margin-top:8px;width:100%;justify-content:center">${c.email ? 'Pin Note & Send Branded Email' : 'Pin note to client app'}</button>
             </form>
             ${d.notes.slice(0, 3).map(n => `<div class="note-item ${n.pinned ? 'pinned' : ''}">
               <div class="note-meta"><span>${n.pinned ? 'PINNED' : 'Past note'} · ${new Date(n.created_at).toLocaleDateString()}</span>
@@ -1244,21 +1321,27 @@ function viewClient(c) {
     return `mailto:${encodeURIComponent(c.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
   })() : '';
 
-  const cycleBanner = dLeft != null && dLeft <= 10 ? `<div class="card card-pad" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border-color:${isMo ? 'var(--accent-line)' : dLeft <= 0 ? 'rgba(242,112,106,.4)' : 'rgba(242,184,75,.38)'}">
+  const cycleBanner = dLeft != null && dLeft <= 14 ? `<div class="card card-pad" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border-color:${isMo ? 'var(--accent-line)' : dLeft <= 0 ? 'rgba(242,112,106,.4)' : 'rgba(242,184,75,.38)'}">
     <div>
       <strong style="color:${isMo ? 'var(--accent)' : dLeft <= 0 ? 'var(--bad)' : 'var(--warn)'}">
         ${isMo ? `Phase Gate Review Ready (${dLeft <= 0 ? 'Week ' + c.weeks + ' complete' : dLeft + ' days left'})`
           : dLeft <= 0 ? `8-Week Protocol Expired (${Math.abs(dLeft)}d ago)` : `8-Week Protocol Expiring in ${dLeft} days`}
       </strong>
       <div style="font-size:12.5px;color:var(--text-2);margin-top:2px">
-        ${isMo ? 'Monthly member ($50/mo) — roll into a fresh 8-week phase while keeping all historical PRs & check-ins.' : 'One-time $100 plan — send renewal offer ($100 next 8 weeks or $50/mo membership) or pause coaching.'}
+        ${isMo ? 'Monthly member ($50/mo): roll into a fresh 8-week phase while keeping all historical PRs and check-ins.' : 'One-time $100 plan: send 1-click Phase 2 rollover offer ($50/mo membership or $100 next 8 weeks).'}
       </div>
     </div>
     <div class="actions">
-      ${renewMailto ? `<a class="btn btn-sm" href="${renewMailto}">${isMo ? 'Email Phase Gate Note' : 'Email Renewal Offer'}</a>` : ''}
-      <button class="btn btn-accent btn-sm" data-act="next-phase" data-id="${c.id}">Start ${esc(nextPhaseLabel(c.phase))} →</button>
+      ${c.email ? `<button class="btn btn-sm" data-act="send-auto-email" data-tpl="phase_rollover" data-to="${esc(c.email)}" data-name="${esc(c.full_name)}" data-phase="${esc(c.phase)}" data-plan="${esc(c.plan_type || '8_week')}" data-fallback="${esc(renewMailto)}">${ic('mail')}${isMo ? 'Send Phase Gate Email' : 'Send Renewal Email (1-Click)'}</button>` : ''}
+      <button class="btn btn-accent btn-sm" data-act="next-phase" data-id="${c.id}">Start ${esc(nextPhaseLabel(c.phase))} &rarr;</button>
     </div>
   </div>` : '';
+
+  const billTag = c.billing_status === 'past_due'
+    ? '<span class="tag bad">Stripe Past Due</span>'
+    : c.billing_status === 'canceled'
+      ? '<span class="tag bad">Subscription Canceled</span>'
+      : '';
 
   return `<div class="view">
     <div class="page-head">
@@ -1269,13 +1352,14 @@ function viewClient(c) {
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
             <h1>${esc(c.full_name)}</h1>
             <span class="tag ${isMo ? 'accent' : ''}">${isMo ? 'Monthly · $50/mo' : '8-Week · $100'}</span>
-            ${dLeft != null ? `<span class="tag ${dLeft <= 0 ? 'bad' : dLeft <= 10 ? 'warn' : ''}">${dLeft <= 0 ? 'Cycle ended' : dLeft + 'd left'}</span>` : ''}
+            ${billTag}
+            ${dLeft != null ? `<span class="tag ${dLeft <= 0 ? 'bad' : dLeft <= 14 ? 'warn' : ''}">${dLeft <= 0 ? 'Cycle ended' : dLeft + 'd left'}</span>` : ''}
           </div>
           <div class="meta">${esc(c.phase)} · Week ${a.wk} of ${c.weeks} · ${esc(c.split)} ${c.email ? `· ${esc(c.email)}` : ''}</div>
         </div>
       </div>
       <div class="actions">
-        ${c.email ? `<a class="btn" href="${buildInviteMailto(c.full_name, c.email)}">Email App Invite</a>` : ''}
+        ${c.email ? `<button class="btn" data-act="send-auto-email" data-tpl="app_invite" data-to="${esc(c.email)}" data-name="${esc(c.full_name)}" data-fallback="${esc(buildInviteMailto(c.full_name, c.email))}">${ic('mail')}Send App Invite</button>` : ''}
         <button class="btn" data-act="edit-client" data-id="${c.id}">${ic('edit')}Edit profile</button>
         <a class="btn btn-accent" href="client.html?client=${esc(c.slug)}">${ic('ext')}Open as client</a>
       </div>
@@ -1326,21 +1410,21 @@ function buildInviteMailto(name, email) {
   const first = String(name || 'there').split(/\s+/)[0];
   const appUrl = location.href.replace(/coach\.html.*$/i, 'client.html');
   const subj = 'Your CLF Protocol Training App is Live';
-  const body = `Hey ${first},\n\nYour custom CLF Protocol app is ready — it has your full training split, coaching cues, form videos, daily check-ins, and strength trajectory tracker.\n\nHow to get in (30 seconds):\n1. Open this link on your phone: ${appUrl}\n2. Tap "Email Magic Link", enter this email (${email}), and tap the link in your inbox — your program loads automatically.\n3. Pin it to your Home Screen (iPhone Safari: Share -> Add to Home Screen).\n\nLet me know once you're logged in!\n\n— Kyle\nClash Lab Fitness LLC`;
+  const body = `Hey ${first},\n\nYour custom CLF Protocol app is ready with your full training split, coaching cues, form videos, daily check-ins, supplement stack, and strength trajectory tracker.\n\nHow to get in (30 seconds):\n1. Open this link on your phone: ${appUrl}\n2. Tap "Email Magic Link", enter this email (${email}), and tap the link in your inbox.\n3. Pin it to your Home Screen (iPhone Safari: Share -> Add to Home Screen).\n\nLet me know once you're logged in!\n\nCoach Kyle\nClash Lab Fitness LLC`;
   return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
 }
 
 function buildIntakeMailto(row) {
   const first = row.first_name || row.last_name || 'there';
-  if (row.status === 'approved') return { label: 'Email App Invite', href: buildInviteMailto(`${row.first_name} ${row.last_name}`, row.email) };
+  if (row.status === 'approved') return { tpl: 'app_invite', label: 'Send App Invite', href: buildInviteMailto(`${row.first_name} ${row.last_name}`, row.email) };
   if (row.medical_clearance_required) {
-    const subj = 'Clash Lab Fitness — Medical Clearance Next Steps';
-    const body = `Hey ${first},\n\nThanks for submitting your Clash Lab Fitness onboarding packet! Because one or more answers on your PAR-Q+ health screening was marked "Yes", our protocol requires a brief medical clearance note from your physician before we issue your 8-week training split and meal plan.\n\nNext steps:\n1. Share your PAR-Q+ answers with your doctor.\n2. Ask for a brief note clearing you for "unsupervised, vigorous physical activity and resistance training."\n3. Reply to this email with a photo or PDF of the note.\n\n(If you're unable to obtain clearance, a full $100 refund will be issued immediately.)\n\n— Kyle\nClash Lab Fitness LLC`;
-    return { label: 'Email Clearance Steps', href: `mailto:${encodeURIComponent(row.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}` };
+    const subj = 'Clash Lab Fitness: Medical Clearance Next Steps';
+    const body = `Hey ${first},\n\nThanks for submitting your Clash Lab Fitness onboarding packet! Because one or more answers on your PAR-Q+ health screening was marked "Yes", our protocol requires a brief medical clearance note from your physician before we issue your 8-week training split and nutrition targets.\n\nNext steps:\n1. Share your PAR-Q+ answers with your doctor.\n2. Ask for a brief note clearing you for "unsupervised, vigorous physical activity and resistance training."\n3. Reply to this email with a photo or PDF of the note.\n\nCoach Kyle\nClash Lab Fitness LLC`;
+    return { tpl: 'clearance', label: 'Send Clearance Email', href: `mailto:${encodeURIComponent(row.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}` };
   }
-  const subj = 'Clash Lab Fitness — Application Received + 3-Day Food Log';
-  const body = `Hey ${first},\n\nGot your Clash Lab Fitness intake, PAR-Q+ screening, and signed waiver — everything looks great!\n\nBefore I build your custom 8-week training split and nutrition targets, please reply with your 3-Day Food Log (everything you eat and drink for 3 typical days, including rough portions and daily water intake).\n\nOnce I have your 3-day log, I'll deliver your full CLF Protocol app access within 3–5 business days.\n\n— Kyle\nClash Lab Fitness LLC`;
-  return { label: 'Email 3-Day Food Log', href: `mailto:${encodeURIComponent(row.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}` };
+  const subj = 'Clash Lab Fitness: Application Received + 3-Day Food Log';
+  const body = `Hey ${first},\n\nGot your Clash Lab Fitness intake, PAR-Q+ screening, and signed waiver!\n\nBefore I build your custom 8-week training split and nutrition targets, please reply with your 3-Day Food Log (everything you eat and drink for 3 typical days, including rough portions and daily water intake).\n\nOnce I have your 3-day log, I will deliver your full CLF Protocol app access within 3 to 5 business days.\n\nCoach Kyle\nClash Lab Fitness LLC`;
+  return { tpl: 'food_log', label: 'Send Food Log Email', href: `mailto:${encodeURIComponent(row.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}` };
 }
 
 function viewIntake() {
@@ -1359,7 +1443,7 @@ function viewIntake() {
       <div>
         <div class="crumb">Client Onboarding</div>
         <h1>Intake &amp; Applications</h1>
-        <div class="meta">${S.intakes.length} total submissions · Review PAR-Q+ screening, waiver signatures, and onboard in 1 click</div>
+        <div class="meta">${S.intakes.length} total submissions · Auto-synced with Stripe Checkout &amp; 1-click Resend emails</div>
       </div>
       <div class="actions">
         <button class="btn" data-act="refresh">${ic('refresh')}Refresh</button>
@@ -1369,7 +1453,7 @@ function viewIntake() {
 
     ${!S.intakes.length ? `<div class="card card-pad" style="margin-top:20px;text-align:center;padding:42px 24px">
       <div style="font-size:16px;font-weight:600;margin-bottom:6px">No applications yet</div>
-      <div style="color:var(--text-2);font-size:13.5px;max-width:440px;margin:0 auto 16px">Share your branded Clash Lab Fitness onboarding link (<code style="color:var(--accent)">apply.html</code>) with prospective clients. Submissions will appear here automatically.</div>
+      <div style="color:var(--text-2);font-size:13.5px;max-width:440px;margin:0 auto 16px">Share your branded Clash Lab Fitness onboarding link (<code style="color:var(--accent)">apply.html</code>) with prospective clients. Submissions and Stripe payments appear here automatically.</div>
       <button class="btn btn-accent" data-act="copy-apply" data-url="${esc(applyUrl)}">${ic('copy')}Copy Application Link</button>
     </div>` : S.intakes.map(inRow => {
       const fullName = `${inRow.first_name || ''} ${inRow.last_name || ''}`.trim() || 'Applicant';
@@ -1380,20 +1464,27 @@ function viewIntake() {
         : inRow.status === 'declined' ? '<span class="tag">Declined</span>'
         : inRow.medical_clearance_required ? '<span class="tag bad">Medical Clearance Required</span>'
         : '<span class="tag accent">Ready to Review</span>';
+      const payBadge = inRow.payment_status === 'paid'
+        ? `<span class="tag ok">Stripe Paid${inRow.paid_amount_cents ? ` ($${(inRow.paid_amount_cents / 100).toFixed(0)})` : ''}</span>`
+        : inRow.payment_status === 'past_due'
+          ? '<span class="tag bad">Payment Failed</span>'
+          : '<span class="tag">Awaiting Stripe</span>';
       return `<div class="card card-pad" style="margin-top:14px">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
           <div>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
               <strong style="font-size:16px">${esc(fullName)}</strong>
               ${badge}
-              <span class="tag">${inRow.days_per_week ?? '—'} days/wk</span>
+              ${payBadge}
+              <span class="tag">${inRow.selected_plan === 'monthly' ? 'Monthly ($50/mo)' : '8-Week ($100)'}</span>
+              <span class="tag">${inRow.days_per_week ?? '?'} days/wk</span>
             </div>
             <div style="font-size:12.5px;color:var(--text-2);margin-top:4px">
-              ${esc(inRow.email)} · Age ${inRow.age ?? '—'} · ${esc(inRow.height || '—')} · ${inRow.current_weight ?? '—'} lb → Goal ${inRow.goal_weight ?? '—'} lb · Submitted ${new Date(inRow.created_at).toLocaleDateString()}
+              ${esc(inRow.email)} · Age ${inRow.age ?? '?'} · ${esc(inRow.height || '?')} · ${inRow.current_weight ?? '?'} lb &rarr; Goal ${inRow.goal_weight ?? '?'} lb · Submitted ${new Date(inRow.created_at).toLocaleDateString()}
             </div>
           </div>
           <div class="actions">
-            ${mailBtn ? `<a class="btn btn-sm" href="${mailBtn.href}">${esc(mailBtn.label)}</a>` : ''}
+            ${mailBtn ? `<button class="btn btn-sm" data-act="send-auto-email" data-tpl="${esc(mailBtn.tpl)}" data-to="${esc(inRow.email)}" data-name="${esc(fullName)}" data-fallback="${esc(mailBtn.href)}">${ic('mail')}${esc(mailBtn.label)}</button>` : ''}
             ${inRow.status !== 'approved' ? `<button class="btn btn-accent btn-sm" data-act="approve-intake" data-id="${inRow.id}">${ic('plus')}Approve &amp; Onboard</button>` : ''}
             ${inRow.status !== 'declined' && inRow.status !== 'approved' ? `<button class="btn btn-ghost btn-sm danger" data-act="decline-intake" data-id="${inRow.id}">Decline</button>` : ''}
           </div>
@@ -1425,6 +1516,112 @@ function viewIntake() {
   </div>`;
 }
 
+function viewAutomations() {
+  const expoUrl = location.href.replace(/coach\.html.*$/i, 'expo.html');
+  const kioskUrl = `${expoUrl}?kiosk=1`;
+  return `<div class="view">
+    <div class="page-head">
+      <div>
+        <div class="crumb">Operations &amp; Growth</div>
+        <h1>Automations &amp; Booth Leads</h1>
+        <div class="meta">Trade show QR leads, scheduled check-in nudges, Monday Coach Digest, Stripe billing sync &amp; Verified Testimonials</div>
+      </div>
+      <div class="actions">
+        <a class="btn btn-sm" href="${esc(expoUrl)}" target="_blank" rel="noopener">${ic('ext')}Macro Calculator</a>
+        <a class="btn btn-accent btn-sm" href="${esc(kioskUrl)}" target="_blank" rel="noopener">${ic('bolt')}Booth Kiosk Mode</a>
+      </div>
+    </div>
+
+    <div class="grid g4" style="margin-top:16px">
+      <div class="card card-pad">
+        <div class="stat-label">Monday Coach Digest</div>
+        <div style="font-size:13px;color:var(--text-2);margin:6px 0 10px">Scheduled every Monday 7 AM PT (compliance, PRs &amp; at-risk clients).</div>
+        <button class="btn btn-sm" style="width:100%;justify-content:center" data-act="run-auto-job" data-job="monday_coach_digest" data-label="Monday Coach Digest">${ic('mail')}Send Digest Now</button>
+      </div>
+      <div class="card card-pad">
+        <div class="stat-label">Sunday Check-In Nudge</div>
+        <div style="font-size:13px;color:var(--text-2);margin:6px 0 10px">Scheduled Sunday 9 AM PT to active clients missing weekly weigh-in.</div>
+        <button class="btn btn-sm" style="width:100%;justify-content:center" data-act="run-auto-job" data-job="sunday_checkin_nudge" data-label="Sunday Check-In Nudges">${ic('mail')}Nudge Missing Now</button>
+      </div>
+      <div class="card card-pad">
+        <div class="stat-label">Phase Gate &amp; Lead Drip</div>
+        <div style="font-size:13px;color:var(--text-2);margin:6px 0 10px">Runs daily at 9 AM PT (Week 7 rollover + Day-2/Day-5 Expo follow-ups).</div>
+        <button class="btn btn-sm" style="width:100%;justify-content:center" data-act="run-auto-job" data-job="daily_lifecycle_check" data-label="Lifecycle & Drip Check">${ic('bolt')}Run Daily Check</button>
+      </div>
+      <div class="card card-pad">
+        <div class="stat-label">Booth QR Link</div>
+        <div style="font-size:13px;color:var(--text-2);margin:6px 0 10px">${S.expoLeads.length} calculator leads captured &middot; Auto-synced to Dispatch.</div>
+        <button class="btn btn-accent btn-sm" style="width:100%;justify-content:center" data-act="copy-apply" data-url="${esc(expoUrl)}">${ic('copy')}Copy Expo QR Link</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-head">
+        <div><span class="card-title">Trade Show &amp; QR Calculator Leads</span><span class="card-sub" style="margin-left:8px">${S.expoLeads.length} captured via expo.html</span></div>
+        <button class="btn btn-sm" data-act="refresh">${ic('refresh')}Refresh</button>
+      </div>
+      <div style="padding:0 16px 16px">
+        ${!S.expoLeads.length ? `<div style="padding:22px 0;color:var(--text-3);font-size:13.5px">No QR calculator leads yet. Open <code>expo.html</code> or Booth Kiosk Mode at events to capture leads automatically.</div>` :
+        S.expoLeads.map(l => {
+          const dripTag = l.converted ? '<span class="tag ok">Converted</span>'
+            : (l.drip_stage || 0) >= 2 ? '<span class="tag accent">Day-5 Drip Sent</span>'
+            : (l.drip_stage || 0) === 1 ? '<span class="tag accent">Day-2 Drip Sent</span>'
+            : '<span class="tag">Blueprint Sent</span>';
+          const prefill = `apply.html?${new URLSearchParams({ first_name: l.first_name || '', email: l.email || '', age: l.age || '', height: l.height_label || '', weight: l.weight_lb || '', goal_weight: l.goal_weight_lb || '', days: l.days_per_week || 4 }).toString()}`;
+          const fbMail = `mailto:${encodeURIComponent(l.email)}?subject=${encodeURIComponent('Ready to build your custom CLF 8-Week Split?')}&body=${encodeURIComponent(`Hey ${l.first_name || 'there'},\n\nSaw your CLF Macro & Split Audit (${l.calories} kcal, ${l.protein_g}g protein, ${l.recommended_split}). Whenever you are ready to have me build your exact gym program and set up your CLF Protocol app, you can apply right here:\n\nhttps://clashlabfitness.com/${prefill}\n\nCoach Kyle\nClash Lab Fitness`)}`;
+          return `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line-soft)">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <strong>${esc(l.first_name || 'Visitor')}</strong>
+                <span style="font-size:12.5px;color:var(--text-2)">${esc(l.email)}</span>
+                ${dripTag}
+                <span class="tag">${esc(l.source || 'expo_qr')}</span>
+              </div>
+              <div style="font-size:12.5px;color:var(--text-2);margin-top:3px">
+                <b>${l.calories} kcal</b> (${l.protein_g}g P / ${l.carbs_g}g C / ${l.fats_g}g F) &middot; ${esc(l.recommended_split || '')} &middot; ${new Date(l.created_at).toLocaleDateString()}
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-sm" data-act="send-auto-email" data-tpl="expo_followup" data-to="${esc(l.email)}" data-name="${esc(l.first_name || 'there')}" data-split="${esc(l.recommended_split || '')}" data-cal="${l.calories || ''}" data-prot="${l.protein_g || ''}" data-fallback="${esc(fbMail)}">${ic('mail')}Send Personal Invite</button>
+              <a class="btn btn-accent btn-sm" href="${esc(prefill)}" target="_blank" rel="noopener">Open Pre-Filled Apply</a>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="grid g-1-1" style="margin-top:16px">
+      <div class="card">
+        <div class="card-head"><span class="card-title">Verified Client Wins</span><span class="card-sub">Submitted inside client.html</span></div>
+        <div style="padding:0 16px 16px">
+          ${!S.testimonials.length ? `<div style="padding:18px 0;color:var(--text-3);font-size:13px">Client wins submitted from the Progress tab appear here ready to copy as anonymous "Verified Client" website quotes.</div>` :
+          S.testimonials.map(t => `<div style="padding:12px 0;border-bottom:1px solid var(--line-soft)">
+            <div style="font-size:13.5px;color:var(--text);line-height:1.5">"${esc(t.quote)}"</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">
+              <span style="font-size:12px;color:var(--text-3)">Verified Client${t.milestone ? ` &middot; ${esc(t.milestone)}` : ''} &middot; ${new Date(t.created_at).toLocaleDateString()}</span>
+              <button class="btn btn-sm" data-act="copy-testimonial" data-quote="${esc(t.quote)}">${ic('copy')}Copy Website Quote</button>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-title">Recent Automation Activity</span><span class="card-sub">Webhooks &amp; Resend log</span></div>
+        <div style="padding:0 16px 16px">
+          ${!S.autoLogs.length ? `<div style="padding:18px 0;color:var(--text-3);font-size:13px">Outbound emails, Stripe webhook updates, and scheduled digests will log here automatically.</div>` :
+          S.autoLogs.slice(0, 10).map(lg => `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line-soft);font-size:12.5px">
+            <div style="min-width:0">
+              <div style="font-weight:600;color:var(--text)">${esc(lg.subject || lg.event_type)}</div>
+              <div style="color:var(--text-3)">${esc(lg.recipient_email || '')} &middot; ${new Date(lg.created_at).toLocaleString()}</div>
+            </div>
+            <span class="tag ok">${esc(lg.status || 'sent')}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
 function render() {
   const root = document.getElementById('root');
   if (S.mode === 'loading') { root.innerHTML = '<div class="auth-screen" style="color:var(--text-3)">Loading Coach Dashboard…</div>'; return; }
@@ -1450,11 +1647,13 @@ function render() {
   }
   const sel = S.view === 'client' ? S.clients.find(c => c.id === S.selId) : null;
   const pendingCount = S.intakes.filter(x => x.status === 'pending' || x.status === 'needs_clearance').length;
+  const openLeads = S.expoLeads.filter(x => !x.converted).length;
   root.innerHTML = `<div class="shell">
     <aside class="side">
       <div class="brand"><span class="mark">CLF</span><div><div class="brand-title">CLF Coaching</div><div class="brand-sub">Supabase OS</div></div></div>
       <button class="nav-btn" data-act="overview" aria-current="${S.view === 'overview'}">${ic('grid')}Overview</button>
       <button class="nav-btn" data-act="intake" aria-current="${S.view === 'intake'}">${ic('edit')}<span>Intake</span>${pendingCount ? `<span class="tag accent" style="margin-left:auto;height:20px">${pendingCount}</span>` : ''}</button>
+      <button class="nav-btn" data-act="automations" aria-current="${S.view === 'automations'}">${ic('bolt')}<span>Automations</span>${openLeads ? `<span class="tag" style="margin-left:auto;height:20px">${openLeads}</span>` : ''}</button>
       <div class="side-label"><span>Clients</span><button class="mini-btn" data-act="add-client" title="Add client">${ic('plus')}</button></div>
       ${S.clients.map(c => `<button class="client-btn" data-act="select" data-id="${c.id}" aria-current="${S.view === 'client' && c.id === S.selId}">
         <span class="avatar">${initials(c.full_name)}</span>
@@ -1465,7 +1664,7 @@ function render() {
         <button class="btn btn-sm" data-act="signout">${S.mode === 'demo' ? 'Exit demo' : 'Sign out'}</button>
       </div>
     </aside>
-    <main class="main">${S.view === 'intake' ? viewIntake() : sel ? viewClient(sel) : viewOverview()}</main>
+    <main class="main">${S.view === 'intake' ? viewIntake() : S.view === 'automations' ? viewAutomations() : sel ? viewClient(sel) : viewOverview()}</main>
   </div>${renderClientModal()}`;
 }
 
@@ -1477,6 +1676,32 @@ document.addEventListener('click', async e => {
   if (act === 'demo') loadDemo();
   else if (act === 'overview') { S.view = 'overview'; S.selId = null; S.editVideoId = null; render(); }
   else if (act === 'intake') { S.view = 'intake'; S.selId = null; S.editVideoId = null; render(); }
+  else if (act === 'automations') { S.view = 'automations'; S.selId = null; S.editVideoId = null; render(); }
+  else if (act === 'send-auto-email') {
+    await sendCoachAutomation({
+      action: 'coach_send_email',
+      template: btn.dataset.tpl,
+      to: btn.dataset.to,
+      name: btn.dataset.name || 'there',
+      phase: btn.dataset.phase || '',
+      plan_type: btn.dataset.plan || '',
+      split: btn.dataset.split || '',
+      calories: btn.dataset.cal || '',
+      protein: btn.dataset.prot || '',
+      label: btn.textContent.trim(),
+    }, btn.dataset.fallback || '');
+  }
+  else if (act === 'run-auto-job') {
+    await sendCoachAutomation({
+      action: btn.dataset.job,
+      label: btn.dataset.label || btn.dataset.job,
+    }, '');
+  }
+  else if (act === 'copy-testimonial') {
+    const formatted = `"${btn.dataset.quote}"\nVerified Client`;
+    const ok = await copyTextWithFallback(formatted);
+    toast(ok ? 'Copied Verified Client quote' : 'Copy failed');
+  }
   else if (act === 'select') { S.view = 'client'; S.selId = btn.dataset.id; S.tab = 'overview'; S.liftSel = 'all'; S.editVideoId = null; render(); }
   else if (act === 'tab') { S.tab = btn.dataset.v; S.editVideoId = null; render(); }
   else if (act === 'lsel') { S.liftSel = btn.dataset.v; render(); }
@@ -1779,16 +2004,30 @@ document.addEventListener('submit', async e => {
   if (e.target.id === 'note-form') {
     e.preventDefault();
     const message = e.target.elements.message.value.trim();
+    const alsoEmail = Boolean(e.target.elements.send_email?.checked);
+    const curClient = S.clients.find(x => x.id === S.selId);
     if (!message || !S.selId) return;
     if (S.mode === 'demo') {
       S.data[S.selId].notes.forEach(n => n.pinned = false);
       S.data[S.selId].notes.unshift({ id: 'd-' + Date.now(), message, pinned: true, created_at: new Date().toISOString() });
-      toast('Note pinned (demo)'); render(); return;
+      if (alsoEmail && curClient?.email) {
+        await sendCoachAutomation({ action: 'coach_send_email', template: 'checkin_reviewed', to: curClient.email, name: curClient.full_name, message, label: 'Check-In Feedback Email' }, '');
+      } else {
+        toast('Note pinned (demo)');
+      }
+      render(); return;
     }
     await sb.from('coach_notes').update({ pinned: false }).eq('client_id', S.selId);
     const { error } = await sb.from('coach_notes').insert({ client_id: S.selId, coach_id: S.user.id, message, pinned: true });
     if (error) toast('Failed: ' + error.message);
-    else { toast('Pinned to client app'); await fetchAll(); }
+    else {
+      if (alsoEmail && curClient?.email) {
+        await sendCoachAutomation({ action: 'coach_send_email', template: 'checkin_reviewed', to: curClient.email, name: curClient.full_name, message, label: 'Check-In Feedback Email' }, '');
+      } else {
+        toast('Pinned to client app');
+        await fetchAll();
+      }
+    }
   }
   if (e.target.id === 'ex-form') {
     e.preventDefault();
