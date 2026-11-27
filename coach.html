@@ -405,14 +405,83 @@ const S = {
   intakes: [],
   templates: [],
   photoUrls: {},
-  data: {}, // clientId -> { exercises, sets, checkins, measurements, notes, messages, photos }
+  data: {}, // clientId -> { exercises, sets, checkins, measurements, notes, messages, photos, supplements, suppLogs }
+  suppTableReady: true,
+  suppOverlay: true,
   view: 'overview', // 'overview' | 'intake' | 'client'
   selId: null,
-  tab: 'overview', // overview | program | training | nutrition | measurements
+  tab: 'overview', // overview | program | training | nutrition | supplements | measurements | messages
   liftSel: 'all',
   editClient: null,
   editVideoId: null,
 };
+
+const COACH_SUPP_PRESETS = [
+  { name: 'Creatine Monohydrate', dosage: '5g', timing: 'Morning', reminder_time: '08:30', note: '5g daily with water for ATP saturation, rep volume, and strength recovery.' },
+  { name: 'Electrolytes', dosage: '1 scoop', timing: 'Pre-Workout', reminder_time: '16:00', note: 'Take 20 mins pre-workout for hydration, sodium balance, and muscle pump.' },
+  { name: 'Whey Protein', dosage: '1 to 2 scoops', timing: 'Post-Workout', reminder_time: '18:00', note: 'Use post-workout or between meals to hit your daily protein target effortlessly.' },
+  { name: 'Omega-3 Fish Oil', dosage: '2g', timing: 'With Meals', reminder_time: '12:30', note: 'Daily EPA/DHA support for joint comfort and systemic recovery.' },
+  { name: 'Vitamin D3 + K2', dosage: '5000 IU', timing: 'Morning', reminder_time: '08:30', note: 'Take in the morning alongside a meal containing dietary fats.' },
+  { name: 'Magnesium Glycinate', dosage: '200 to 400mg', timing: 'Evening', reminder_time: '21:00', note: 'Take 30 to 60 mins before sleep to support recovery and nervous system relaxation.' },
+  { name: 'Pre-Workout', dosage: '1 scoop', timing: 'Pre-Workout', reminder_time: '16:00', note: 'Optional 20 to 30 mins before heavy training sessions.' },
+];
+
+function parseIntakeSupps(inRow) {
+  const fromArr = Array.isArray(inRow?.supplements) ? inRow.supplements.filter(Boolean) : [];
+  if (fromArr.length) return fromArr;
+  const m = String(inRow?.typical_eating || '').match(/\[Supplements:\s*([^\]]+)\]/i);
+  if (!m) return [];
+  return m[1].split(',').map(s => s.trim()).filter(s => s && s.toLowerCase() !== 'none currently');
+}
+
+function cleanIntakeEating(inRow) {
+  return String(inRow?.typical_eating || '').replace(/\s*\[Supplements:[^\]]*\]\s*/ig, '').trim();
+}
+
+function coachSuppStartWk(c, supp) {
+  if (!supp?.started_at || !c?.start_date) return 1;
+  const diff = Math.floor((parseYmd(supp.started_at) - parseYmd(c.start_date)) / DAY_MS);
+  return Math.max(1, Math.min(c.weeks || 8, Math.floor(diff / 7) + 1));
+}
+
+function coachSuppWkAdh(c, supp, suppLogs, wk) {
+  if (!c?.start_date) return null;
+  const wkStart = parseYmd(c.start_date).getTime() + (wk - 1) * 7 * DAY_MS;
+  const todayMs = parseYmd(ymd(new Date())).getTime();
+  const sStartMs = supp.started_at ? parseYmd(supp.started_at).getTime() : wkStart;
+  let elig = 0, taken = 0;
+  for (let i = 0; i < 7; i++) {
+    const ms = wkStart + i * DAY_MS;
+    if (ms > todayMs || ms < sStartMs) continue;
+    elig++;
+    if (suppLogs?.[`${supp.id}|${ymd(new Date(ms))}`]) taken++;
+  }
+  return elig ? Math.round((taken / elig) * 100) : null;
+}
+
+function coachSuppAdh(supp, suppLogs, maxDays = 28) {
+  const todayMs = parseYmd(ymd(new Date())).getTime();
+  const startMs = supp.started_at ? parseYmd(supp.started_at).getTime() : todayMs;
+  const earliest = Math.max(startMs, todayMs - (maxDays - 1) * DAY_MS);
+  let elig = 0, taken = 0;
+  for (let ms = earliest; ms <= todayMs; ms += DAY_MS) {
+    elig++;
+    if (suppLogs?.[`${supp.id}|${ymd(new Date(ms))}`]) taken++;
+  }
+  return elig ? Math.round((taken / elig) * 100) : 100;
+}
+
+function coachSuppStreak(supp, suppLogs) {
+  const base = parseYmd(ymd(new Date()));
+  let count = 0;
+  let offset = suppLogs?.[`${supp.id}|${ymd(base)}`] ? 0 : 1;
+  for (let i = offset; i < 365; i++) {
+    const dStr = ymd(new Date(base.getTime() - i * DAY_MS));
+    if (suppLogs?.[`${supp.id}|${dStr}`]) count++;
+    else break;
+  }
+  return count;
+}
 
 function currentWeek(c) {
   if (!c?.start_date) return 1;
@@ -439,12 +508,12 @@ function loadDemo() {
     { id:'d-charles', slug:'charles', full_name:'Charles Bennett', email:'', phase:'Phase 1', split:'Full Body A / B / C', start_date:s21, weeks:8, targets:{ weight:180, calories:2500, protein:200, water:100, steps:10000, sleep:7.5 }, program_notes:'3-day Full Body banded & bodyweight resistance protocol.', health_sync_token:'demo_charles_token' },
   ];
   S.intakes = [
-    { id:'d-in1', status:'pending', first_name:'Jordan', last_name:'Lee', email:'jordan@example.com', age:31, height:'5\'10"', current_weight:196, goal_weight:180, injuries:'Mild right knee patellar tendonitis on deep lunges', typical_eating:'3 meals + 1 protein shake, ~80 oz water', equipment:['Full Gym','Dumbbells Only'], days_per_week:4, parq_answers:{q1:'no',q2:'no',q3:'no',q4:'no',q5:'no',q6:'no',q7:'no'}, medical_clearance_required:false, parq_signature:'Jordan Lee', waiver_agreed:true, waiver_signature:'Jordan Lee', signed_at:new Date().toISOString(), created_at:new Date().toISOString() },
+    { id:'d-in1', status:'pending', first_name:'Jordan', last_name:'Lee', email:'jordan@example.com', age:31, height:'5\'10"', current_weight:196, goal_weight:180, injuries:'Mild right knee patellar tendonitis on deep lunges', typical_eating:'3 meals + 1 protein shake, ~80 oz water\n[Supplements: Creatine Monohydrate, Protein Powder]', supplements:['Creatine Monohydrate','Protein Powder'], equipment:['Full Gym','Dumbbells Only'], days_per_week:4, parq_answers:{q1:'no',q2:'no',q3:'no',q4:'no',q5:'no',q6:'no',q7:'no'}, medical_clearance_required:false, parq_signature:'Jordan Lee', waiver_agreed:true, waiver_signature:'Jordan Lee', signed_at:new Date().toISOString(), created_at:new Date().toISOString() },
   ];
   S.clients.forEach(c => {
     const baseW = c.slug === 'emily' ? 125.2 : c.slug === 'scott' ? 198.4 : 193.5;
-    const chks = Array.from({ length: 10 }, (_, i) => ({
-      date: ymd(new Date(today - (10 - i) * DAY_MS)),
+    const chks = Array.from({ length: 14 }, (_, i) => ({
+      date: ymd(new Date(today - (14 - i) * DAY_MS)),
       weight: +(baseW + (c.slug === 'charles' ? -0.18 : 0.08) * i).toFixed(1),
       calories: c.targets.calories, protein: c.targets.protein, water_oz: c.targets.water, steps: c.targets.steps, sleep_hrs: 7.6, energy: 8, joint_comfort: 9, source: i % 2 ? 'apple_health' : 'manual', notes: ''
     }));
@@ -457,11 +526,24 @@ function loadDemo() {
         }
       });
     }
+    const supId = 'ds1-' + c.id;
+    const supStart = ymd(new Date(today - 12 * DAY_MS));
+    const supplements = [
+      { id: supId, client_id: c.id, name: 'Creatine Monohydrate', dosage: '5g', frequency: 'daily', timing: 'Morning', status: 'active', added_by: 'coach', coach_note: '5g daily with water for ATP saturation and rep recovery.', reminder_enabled: true, reminder_time: '08:30', started_at: supStart },
+    ];
+    if (c.slug === 'emily') {
+      supplements.push({ id: 'ds2-' + c.id, client_id: c.id, name: 'Magnesium Glycinate', dosage: '200mg', frequency: 'daily', timing: 'Evening', status: 'recommended', added_by: 'coach', coach_note: 'Take 30 mins before sleep for recovery.', reminder_enabled: true, reminder_time: '21:00', started_at: null });
+    }
+    const suppLogs = {};
+    for (let i = 12; i >= 1; i--) {
+      if (i !== 6) suppLogs[`${supId}|${ymd(new Date(today - i * DAY_MS))}`] = true;
+    }
     S.data[c.id] = {
       exercises: [{ id: 'ex1-' + c.id, day_name: c.slug === 'charles' ? 'Full Body A' : 'Legs', day_order: 1, exercise_order: 1, name: lift, sets: 4, target_reps: 8, rep_label: '8', rest_sec: 120, is_bodyweight: false, cue: 'Control the descent and brace core.', video_url: '' }],
       sets, checkins: chks,
       measurements: [{ date: ymd(new Date(today - 7 * DAY_MS)), waist_in: c.slug === 'emily' ? 27.2 : 35.8, chest_in: 41.5, hips_in: 39.2, arms_in: 15.1, thighs_in: 23.5, photo_url: '', notes: 'Week 2 check-in' }],
-      notes: [{ id: 'n-' + c.id, message: 'Strong week — keep tempo crisp on top sets.', pinned: true, created_at: new Date().toISOString() }],
+      notes: [{ id: 'n-' + c.id, message: 'Strong week · keep tempo crisp on top sets.', pinned: true, created_at: new Date().toISOString() }],
+      supplements, suppLogs,
     };
   });
   S.view = 'overview'; S.selId = null; S.editVideoId = null;
@@ -495,7 +577,7 @@ async function fetchAll() {
   S.templates = tplRes.error ? [] : (tplRes.data || []);
   const ids = S.clients.map(c => c.id);
   if (!ids.length) { S.data = {}; render(); return; }
-  const [exRes, setRes, chkRes, measRes, noteRes, msgRes, phRes] = await Promise.all([
+  const [exRes, setRes, chkRes, measRes, noteRes, msgRes, phRes, suppRes, slogRes] = await Promise.all([
     sb.from('program_exercises').select('*').in('client_id', ids).order('day_order').order('exercise_order'),
     sb.from('workout_sets').select('*').in('client_id', ids),
     sb.from('checkins').select('*').in('client_id', ids).order('date'),
@@ -503,15 +585,22 @@ async function fetchAll() {
     sb.from('coach_notes').select('*').in('client_id', ids).order('created_at', { ascending: false }),
     sb.from('messages').select('*').in('client_id', ids).order('created_at'),
     sb.from('progress_photos').select('*').in('client_id', ids).order('date'),
+    sb.from('client_supplements').select('*').in('client_id', ids).order('created_at'),
+    sb.from('supplement_logs').select('*').in('client_id', ids),
   ]);
+  S.suppTableReady = !suppRes.error;
   S.data = {};
-  ids.forEach(id => { S.data[id] = { exercises: [], sets: [], checkins: [], measurements: [], notes: [], messages: [], photos: [] }; });
+  ids.forEach(id => { S.data[id] = { exercises: [], sets: [], checkins: [], measurements: [], notes: [], messages: [], photos: [], supplements: [], suppLogs: {} }; });
   (exRes.data || []).forEach(r => S.data[r.client_id]?.exercises.push(r));
   (setRes.data || []).forEach(r => S.data[r.client_id]?.sets.push(r));
   (chkRes.data || []).forEach(r => S.data[r.client_id]?.checkins.push(r));
   (measRes.data || []).forEach(r => S.data[r.client_id]?.measurements.push(r));
   (noteRes.data || []).forEach(r => S.data[r.client_id]?.notes.push(r));
   (msgRes.error ? [] : (msgRes.data || [])).forEach(r => S.data[r.client_id]?.messages.push(r));
+  (suppRes.error ? [] : (suppRes.data || [])).forEach(r => S.data[r.client_id]?.supplements.push(r));
+  (slogRes.error ? [] : (slogRes.data || [])).forEach(r => {
+    if (r.taken && S.data[r.client_id]) S.data[r.client_id].suppLogs[`${r.supplement_id}|${r.date}`] = true;
+  });
   const allPhotos = phRes.error ? [] : (phRes.data || []);
   allPhotos.forEach(r => S.data[r.client_id]?.photos.push(r));
   S.photoUrls = {};
@@ -629,9 +718,9 @@ function linReg(pts) {
   return { m, b, at: x => m * x + b };
 }
 
-function svgTraj(pts, weeks, isAll) {
+function svgTraj(pts, weeks, isAll, c, d) {
   if (!pts.length) return '<div style="padding:70px 20px;text-align:center;color:var(--text-3)">No completed sets logged yet.</div>';
-  const W = 640, H = 220, P = { l: 44, r: 22, t: 18, b: 26 };
+  const W = 640, H = 220, P = { l: 44, r: 22, t: 20, b: 26 };
   const reg = linReg(pts), last = pts[pts.length - 1], proj = reg ? reg.at(weeks) : last.v;
   const vals = pts.map(p => p.v).concat(reg ? [proj] : []);
   let lo = Math.min(...vals), hi = Math.max(...vals);
@@ -641,11 +730,37 @@ function svgTraj(pts, weeks, isAll) {
   const ticks = [lo, (lo + hi) / 2, hi].map(v => Math.round(v));
   const line = pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.wk).toFixed(1)},${y(p.v).toFixed(1)}`).join('');
   const area = `${line} L${x(last.wk).toFixed(1)},${H - P.b} L${x(pts[0].wk).toFixed(1)},${H - P.b} Z`;
+  const actSupps = S.suppOverlay && c && d ? (d.supplements || []).filter(s => s.status === 'active') : [];
+  let suppBands = '', suppPins = '';
+  if (actSupps.length) {
+    for (let w = 1; w <= weeks; w++) {
+      const high = actSupps.some(s => { const p = coachSuppWkAdh(c, s, d.suppLogs, w); return p != null && p >= 85; });
+      if (high) {
+        const cx = x(w), bw = Math.min(44, (W - P.l - P.r) / Math.max(1, weeks));
+        suppBands += `<rect x="${(cx - bw / 2).toFixed(1)}" y="${P.t}" width="${bw.toFixed(1)}" height="${H - P.t - P.b}" rx="5" fill="rgba(251,191,36,.075)"/>`;
+      }
+    }
+    const byWk = new Map();
+    actSupps.forEach(s => {
+      const sw = coachSuppStartWk(c, s);
+      byWk.set(sw, (byWk.get(sw) || []).concat(s.name.split(/\s+/)[0]));
+    });
+    byWk.forEach((names, sw) => {
+      const px = x(sw);
+      const lbl = names.length > 1 ? `${names[0]} +${names.length - 1}` : `${names[0]} start`;
+      const anchor = sw >= weeks - 1 ? 'end' : 'start';
+      const tx = anchor === 'end' ? px - 5 : px + 5;
+      suppPins += `<line x1="${px.toFixed(1)}" x2="${px.toFixed(1)}" y1="${P.t}" y2="${H - P.b}" stroke="#FBBF24" stroke-opacity=".78" stroke-width="1.4" stroke-dasharray="4 3"/>` +
+        `<text x="${tx.toFixed(1)}" y="${P.t + 10}" text-anchor="${anchor}" font-size="10.5" fill="#FCD34D" font-family="Geist Mono,monospace">${esc(lbl)}</text>`;
+    });
+  }
   return `<svg viewBox="0 0 ${W} ${H}">
     <defs><linearGradient id="clf" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2DD4BF" stop-opacity=".16"/><stop offset="1" stop-color="#2DD4BF" stop-opacity="0"/></linearGradient></defs>
+    ${suppBands}
     ${ticks.map(t => `<line x1="${P.l}" x2="${W - P.r}" y1="${y(t)}" y2="${y(t)}" stroke="rgba(255,255,255,.06)"/><text x="${P.l - 10}" y="${y(t) + 3.5}" text-anchor="end" font-size="11" fill="#5F6B6B" font-family="Geist Mono,monospace">${isAll && t > 0 ? '+' + t + '%' : isAll ? t + '%' : t}</text>`).join('')}
     ${Array.from({ length: weeks }, (_, i) => `<text x="${x(i + 1)}" y="${H - 6}" text-anchor="middle" font-size="11" fill="#5F6B6B" font-family="Geist Mono,monospace">W${i + 1}</text>`).join('')}
     ${pts.length >= 2 ? `<path d="${area}" fill="url(#clf)"/>` : ''}
+    ${suppPins}
     ${reg && last.wk < weeks ? `<line x1="${x(last.wk)}" y1="${y(last.v)}" x2="${x(weeks)}" y2="${y(proj)}" stroke="#2DD4BF" stroke-opacity=".8" stroke-width="1.8" stroke-dasharray="5 4"/>
       <circle cx="${x(weeks)}" cy="${y(proj)}" r="4.2" fill="#0C1011" stroke="#2DD4BF" stroke-width="2"/>
       <text x="${x(weeks) - 8}" y="${Math.max(14, y(proj) - 8)}" text-anchor="end" font-size="11" font-weight="600" fill="#5EEAD4" font-family="Geist Mono,monospace">W${weeks}: ${isAll ? (proj >= 0 ? '+' : '') + fmt(proj, 1) + '%' : fmt(proj, 0) + ' lb'}</text>` : ''}
@@ -655,11 +770,11 @@ function svgTraj(pts, weeks, isAll) {
   </svg>`;
 }
 
-function svgWeight(c, chks) {
+function svgWeight(c, chks, d) {
   const start = parseYmd(c.start_date), total = (c.weeks || 8) * 7;
   const pts = chks.filter(r => r.weight != null).map(r => ({ i: Math.round((parseYmd(r.date) - start) / DAY_MS), v: Number(r.weight) })).filter(p => p.i >= 0 && p.i <= total);
   if (!pts.length) return '<div style="padding:70px 20px;text-align:center;color:var(--text-3)">No weigh-ins logged yet.</div>';
-  const W = 540, H = 220, P = { l: 42, r: 22, t: 18, b: 26 };
+  const W = 540, H = 220, P = { l: 42, r: 22, t: 20, b: 26 };
   const goal = c.targets?.weight;
   const vals = pts.map(p => p.v).concat(goal ? [goal] : []);
   const lo = Math.min(...vals) - 2, hi = Math.max(...vals) + 2;
@@ -668,14 +783,85 @@ function svgWeight(c, chks) {
   const ticks = [lo, (lo + hi) / 2, hi].map(v => Math.round(v));
   const path = pts.map((p, k) => `${k ? 'L' : 'M'}${x(p.i).toFixed(1)},${y(p.v).toFixed(1)}`).join('');
   const last = pts[pts.length - 1];
+  const actSupps = S.suppOverlay && d ? (d.supplements || []).filter(s => s.status === 'active' && s.started_at) : [];
+  let suppPins = '';
+  if (actSupps.length) {
+    const byDay = new Map();
+    actSupps.forEach(s => {
+      const di = Math.max(0, Math.min(total - 1, Math.round((parseYmd(s.started_at) - start) / DAY_MS)));
+      byDay.set(di, (byDay.get(di) || []).concat(s.name.split(/\s+/)[0]));
+    });
+    byDay.forEach((names, di) => {
+      const px = x(di);
+      const lbl = names.length > 1 ? `${names[0]} +${names.length - 1}` : `${names[0]} start`;
+      const anchor = di > total * 0.7 ? 'end' : 'start';
+      const tx = anchor === 'end' ? px - 5 : px + 5;
+      suppPins += `<line x1="${px.toFixed(1)}" x2="${px.toFixed(1)}" y1="${P.t}" y2="${H - P.b}" stroke="#FBBF24" stroke-opacity=".78" stroke-width="1.3" stroke-dasharray="4 3"/>` +
+        `<text x="${tx.toFixed(1)}" y="${P.t + 10}" text-anchor="${anchor}" font-size="10.5" fill="#FCD34D" font-family="Geist Mono,monospace">${esc(lbl)}</text>`;
+    });
+  }
   return `<svg viewBox="0 0 ${W} ${H}">
     ${ticks.map(t => `<line x1="${P.l}" x2="${W - P.r}" y1="${y(t)}" y2="${y(t)}" stroke="rgba(255,255,255,.06)"/><text x="${P.l - 10}" y="${y(t) + 3.5}" text-anchor="end" font-size="11" fill="#5F6B6B" font-family="Geist Mono,monospace">${t}</text>`).join('')}
     ${goal ? `<line x1="${P.l}" x2="${W - P.r}" y1="${y(goal)}" y2="${y(goal)}" stroke="#7F8C8B" stroke-dasharray="3 4"/><text x="${W - P.r}" y="${y(goal) - 6}" text-anchor="end" font-size="11" fill="#7F8C8B">Goal ${goal} lb</text>` : ''}
     ${Array.from({ length: c.weeks || 8 }, (_, w) => `<text x="${x(w * 7 + 3)}" y="${H - 6}" text-anchor="middle" font-size="11" fill="#5F6B6B" font-family="Geist Mono,monospace">W${w + 1}</text>`).join('')}
+    ${suppPins}
     <path d="${path}" fill="none" stroke="#2DD4BF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
     <circle cx="${x(last.i)}" cy="${y(last.v)}" r="4.5" fill="#2DD4BF" stroke="#0C1011" stroke-width="2"/>
     <text x="${x(last.i) + 8}" y="${y(last.v) + 4}" font-size="11" font-weight="600" fill="#ECF3F2" font-family="Geist Mono,monospace">${fmt(last.v, 1)}</text>
   </svg>`;
+}
+
+function renderCoachSuppImpact(c, d, trajPts, isAll) {
+  const act = (d.supplements || []).filter(s => s.status === 'active');
+  if (!act.length) return '';
+  const allWt = (d.checkins || []).filter(r => r.weight != null).sort((a, b) => a.date.localeCompare(b.date));
+  const unitLbl = isAll ? '%' : ' lb';
+  return `<div class="card card-pad" style="margin-top:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+      <div>
+        <span class="card-title">Supplement Adherence vs. Trendlines</span>
+        <span class="card-sub" style="margin-left:8px">Comparing pre-stack baseline against active adherence phases</span>
+      </div>
+      <button type="button" class="btn btn-sm" data-act="tab" data-v="supplements">Manage Stack →</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">
+      ${act.map(s => {
+        const sw = coachSuppStartWk(c, s);
+        const adh = coachSuppAdh(s, d.suppLogs, 28);
+        const streak = coachSuppStreak(s, d.suppLogs);
+        const onPts = (trajPts || []).filter(p => p.wk >= sw);
+        let strTxt = `Started W${sw} · Logging active weeks`;
+        if (onPts.length >= 2) {
+          const g = +(onPts[onPts.length - 1].v - onPts[0].v).toFixed(1);
+          const span = Math.max(1, onPts[onPts.length - 1].wk - onPts[0].wk);
+          const rate = +(g / span).toFixed(1);
+          strTxt = `${g >= 0 ? '+' : ''}${g}${unitLbl} since W${sw} (${rate >= 0 ? '+' : ''}${rate}${unitLbl}/wk)`;
+        }
+        let wtTxt = 'Awaiting weigh-ins';
+        if (s.started_at && allWt.length >= 2) {
+          const preW = allWt.filter(r => r.date < s.started_at);
+          const onW = allWt.filter(r => r.date >= s.started_at);
+          if (preW.length && onW.length) {
+            const pAvg = preW.reduce((sum, r) => sum + Number(r.weight), 0) / preW.length;
+            const latest = Number(onW[onW.length - 1].weight);
+            const diff = +(latest - pAvg).toFixed(1);
+            wtTxt = `Pre ${fmt(pAvg, 1)} lb -> Now ${fmt(latest, 1)} lb (${diff >= 0 ? '+' : ''}${diff} lb)`;
+          } else if (onW.length >= 2) {
+            const diff = +(Number(onW[onW.length - 1].weight) - Number(onW[0].weight)).toFixed(1);
+            wtTxt = `${diff >= 0 ? '+' : ''}${diff} lb since ${s.started_at}`;
+          }
+        }
+        return `<div style="padding:12px 14px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+            <strong style="font-size:13.5px">${esc(s.name)}${s.dosage ? ` · <span style="color:var(--accent)">${esc(s.dosage)}</span>` : ''}</strong>
+            <span class="tag ${adh >= 85 ? 'ok' : 'warn'}">${adh}% adherence${streak >= 2 ? ` · ${streak}d` : ''}</span>
+          </div>
+          <div style="margin-top:8px;font-size:12.5px;color:var(--text-2)"><b>Strength:</b> <span class="n">${esc(strTxt)}</span></div>
+          <div style="margin-top:4px;font-size:12.5px;color:var(--text-2)"><b>Bodyweight:</b> <span class="n">${esc(wtTxt)}</span></div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
 }
 
 /* Views */
@@ -727,6 +913,7 @@ function viewClient(c) {
   const d = a.d;
   const isAll = S.liftSel === 'all' || !a.liftMap[S.liftSel];
   const trajPts = isAll ? a.comp : a.liftMap[S.liftSel];
+  const hasActiveSupps = (d.supplements || []).some(s => s.status === 'active');
 
   let body = '';
   if (S.tab === 'overview') {
@@ -741,7 +928,7 @@ function viewClient(c) {
       <div class="grid g-2-1">
         <div class="card">
           <div class="card-head"><span class="card-title">Bodyweight</span><span class="card-sub">Daily weigh-ins &amp; Apple Health sync</span></div>
-          <div class="chart">${svgWeight(c, d.checkins)}</div>
+          <div class="chart">${svgWeight(c, d.checkins, d)}</div>
         </div>
         <div class="card">
           <div class="card-head"><span class="card-title">Coach notes (pinned to client app)</span></div>
@@ -763,17 +950,21 @@ function viewClient(c) {
       <div class="card" style="margin-top:16px">
         <div class="card-head" style="flex-wrap:wrap;gap:10px">
           <div><span class="card-title">Strength trajectory</span><span class="card-sub" style="margin-left:8px">Est. 1RM progression &amp; Week ${c.weeks} projection</span></div>
-          ${Object.keys(a.liftMap).length > 5 ? `<select id="coach-lift-jump" style="height:30px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:12.5px;color:var(--text)">
-            <option value="all" ${isAll ? 'selected' : ''}>All compounds (%)</option>
-            ${Object.keys(a.liftMap).map(l => `<option value="${esc(l)}" ${!isAll && S.liftSel === l ? 'selected' : ''}>${esc(l)}${a.extraLiftSet?.has(l) ? ' (Extra)' : ''}</option>`).join('')}
-          </select>` : ''}
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            ${hasActiveSupps ? `<button type="button" class="btn btn-sm ${S.suppOverlay ? 'btn-accent' : ''}" data-act="coach-supp-overlay">${S.suppOverlay ? 'Supplements Overlaid ✓' : 'Overlay Supplements'}</button>` : ''}
+            ${Object.keys(a.liftMap).length > 5 ? `<select id="coach-lift-jump" style="height:30px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:12.5px;color:var(--text)">
+              <option value="all" ${isAll ? 'selected' : ''}>All compounds (%)</option>
+              ${Object.keys(a.liftMap).map(l => `<option value="${esc(l)}" ${!isAll && S.liftSel === l ? 'selected' : ''}>${esc(l)}${a.extraLiftSet?.has(l) ? ' (Extra)' : ''}</option>`).join('')}
+            </select>` : ''}
+          </div>
         </div>
         <div class="lift-pills">
           <button class="lift-pill" data-act="lsel" data-v="all" aria-selected="${isAll}">All compounds (%)</button>
           ${Object.keys(a.liftMap).map(l => `<button class="lift-pill" data-act="lsel" data-v="${esc(l)}" aria-selected="${!isAll && S.liftSel === l}">${esc(l.replace(/^(Barbell|Banded|DB|Seated)\s+/i, ''))}${a.extraLiftSet?.has(l) ? ' · Extra' : ''}</button>`).join('')}
         </div>
-        <div class="chart">${svgTraj(trajPts, c.weeks, isAll)}</div>
+        <div class="chart">${svgTraj(trajPts, c.weeks, isAll, c, d)}</div>
       </div>
+      ${renderCoachSuppImpact(c, d, trajPts, isAll)}
     `;
   } else if (S.tab === 'program') {
     const cloneOpts = [
@@ -919,6 +1110,83 @@ function viewClient(c) {
         </tbody>
       </table></div>
     </div>`;
+  } else if (S.tab === 'supplements') {
+    const supps = d.supplements || [];
+    body = `
+      ${S.mode !== 'demo' && !S.suppTableReady ? `<div class="card card-pad" style="margin-top:20px;border-color:rgba(242,184,75,.45)">
+        <strong style="color:var(--warn)">Database Setup Needed</strong>
+        <div style="font-size:13px;color:var(--text-2);margin-top:4px">Run the Supplement Stack SQL migration in your Supabase SQL Editor to sync supplement recommendations and daily logs across devices.</div>
+      </div>` : ''}
+
+      <div class="card card-pad" style="margin-top:20px">
+        <div class="card-title">Recommend or Add Supplement for ${esc(c.full_name)}</div>
+        <div style="font-size:12.5px;color:var(--text-2);margin:4px 0 12px">Click a preset or type a custom supplement. Recommendations appear on ${esc(c.full_name)}'s Check-in screen so they can opt in and set a daily phone reminder.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+          ${COACH_SUPP_PRESETS.map((p, idx) => `<button type="button" class="btn btn-sm" data-act="preset-csupp" data-idx="${idx}">+ ${esc(p.name)} (${esc(p.dosage)})</button>`).join('')}
+        </div>
+        <form id="coach-supp-form">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
+            <label class="field" style="margin:0"><span>Supplement name</span><input id="cs-name" name="name" required placeholder="e.g. Creatine Monohydrate"></label>
+            <label class="field" style="margin:0"><span>Dosage</span><input id="cs-dose" name="dosage" placeholder="e.g. 5g"></label>
+            <label class="field" style="margin:0"><span>Timing</span>
+              <select id="cs-timing" name="timing" style="width:100%;height:38px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:13.5px;color:var(--text)">
+                <option value="Morning">Morning</option>
+                <option value="Pre-Workout">Pre-Workout</option>
+                <option value="Post-Workout">Post-Workout</option>
+                <option value="With Meals">With Meals</option>
+                <option value="Evening">Evening</option>
+                <option value="Anytime">Anytime</option>
+              </select>
+            </label>
+            <label class="field" style="margin:0"><span>Suggested reminder</span><input id="cs-rem" name="reminder_time" type="time" value="08:30"></label>
+            <label class="field" style="margin:0"><span>Delivery mode</span>
+              <select id="cs-status" name="status" style="width:100%;height:38px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:13.5px;color:var(--text)">
+                <option value="recommended">Recommend (Client opts in)</option>
+                <option value="active">Activate immediately</option>
+              </select>
+            </label>
+          </div>
+          <label class="field" style="margin-top:10px"><span>Coaching note (shown to client)</span><input id="cs-note" name="coach_note" placeholder="e.g. 5g daily with water for ATP saturation and rep recovery."></label>
+          <div style="display:flex;justify-content:flex-end;margin-top:12px">
+            <button type="submit" class="btn btn-accent">${ic('plus')}Send to ${esc(c.full_name)}'s Stack</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <div class="card-head"><span class="card-title">Client Supplement Stack (${supps.length})</span><span class="card-sub">Live adherence, daily streaks &amp; opt-in status</span></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Supplement</th><th>Dose &amp; Timing</th><th>Status</th><th>Start</th><th class="r">28d Adherence</th><th class="r">Streak</th><th>Reminder</th><th class="r">Actions</th></tr></thead>
+          <tbody>
+            ${supps.length ? supps.map(s => {
+              const isAct = s.status === 'active';
+              const adh = isAct ? coachSuppAdh(s, d.suppLogs, 28) : null;
+              const streak = isAct ? coachSuppStreak(s, d.suppLogs) : 0;
+              const stTag = isAct ? `<span class="tag ok">Active${s.added_by === 'client' ? ' · Client' : ''}</span>`
+                : s.status === 'recommended' ? '<span class="tag accent">Awaiting Opt-In</span>'
+                : '<span class="tag">Skipped</span>';
+              return `<tr>
+                <td><div style="font-weight:500">${esc(s.name)}</div>${s.coach_note ? `<div style="font-size:11.5px;color:var(--text-3);margin-top:2px">${esc(s.coach_note)}</div>` : ''}</td>
+                <td style="color:var(--text-2)">${esc(s.dosage || 'Standard')} · ${esc(s.timing || 'Daily')}</td>
+                <td>${stTag}</td>
+                <td class="n">${s.started_at ? `W${coachSuppStartWk(c, s)} (${esc(s.started_at)})` : 'Pending'}</td>
+                <td class="r n">${adh != null ? `<span style="color:${adh >= 85 ? 'var(--ok)' : 'var(--warn)'};font-weight:600">${adh}%</span>` : 'Pending'}</td>
+                <td class="r n">${isAct ? `${streak}d` : '0d'}</td>
+                <td class="n" style="color:var(--text-2)">${s.reminder_enabled && s.reminder_time ? esc(s.reminder_time) : 'Off'}</td>
+                <td class="r">
+                  <div style="display:inline-flex;gap:6px">
+                    ${!isAct ? `<button type="button" class="btn btn-sm" data-act="coach-act-supp" data-id="${esc(s.id)}">Activate</button>` : ''}
+                    <button type="button" class="btn btn-ghost btn-sm danger" data-act="coach-del-supp" data-id="${esc(s.id)}">Remove</button>
+                  </div>
+                </td>
+              </tr>`;
+            }).join('') : '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-3)">No supplements added or recommended yet. Use a preset above to send a recommendation.</td></tr>'}
+          </tbody>
+        </table></div>
+      </div>
+
+      ${renderCoachSuppImpact(c, d, trajPts, isAll)}
+    `;
   } else if (S.tab === 'measurements') {
     const photos = d.photos || [];
     body = `${photos.length ? `<div class="card card-pad" style="margin-top:20px">
@@ -1014,7 +1282,7 @@ function viewClient(c) {
     </div>
     ${cycleBanner}
     <div class="tabs">
-      ${[['overview','Overview'],['program',`Program Builder${a.extraLogged.length ? ` (+${a.extraLogged.length} extra)` : ''}`],['training','Training Log'],['nutrition','Nutrition & Health'],['measurements','Measurements & Photos'],['messages',`Messages${(d.messages?.length || 0) ? ` (${d.messages.length})` : ''}`]].map(([k, l]) =>
+      ${[['overview','Overview'],['program',`Program Builder${a.extraLogged.length ? ` (+${a.extraLogged.length} extra)` : ''}`],['training','Training Log'],['nutrition','Nutrition & Health'],['supplements',`Supplements${(d.supplements?.length || 0) ? ` (${d.supplements.length})` : ''}`],['measurements','Measurements & Photos'],['messages',`Messages${(d.messages?.length || 0) ? ` (${d.messages.length})` : ''}`]].map(([k, l]) =>
         `<button class="tab" data-act="tab" data-v="${k}" aria-selected="${S.tab === k}">${l}</button>`).join('')}
     </div>
     ${body}
@@ -1136,17 +1404,19 @@ function viewIntake() {
             <div style="font-size:11.5px;color:var(--text-3);margin-bottom:4px;font-weight:600">INJURIES / CHECK-ENGINE LIGHTS</div>
             <div style="color:var(--text)">${esc(inRow.injuries || 'None listed')}</div>
             <div style="font-size:11.5px;color:var(--text-3);margin:10px 0 4px;font-weight:600">TYPICAL DAY OF EATING</div>
-            <div style="color:var(--text-2)">${esc(inRow.typical_eating || '—')}</div>
+            <div style="color:var(--text-2)">${esc(cleanIntakeEating(inRow) || 'None listed')}</div>
+            ${parseIntakeSupps(inRow).length ? `<div style="font-size:11.5px;color:var(--text-3);margin:10px 0 4px;font-weight:600">CURRENT SUPPLEMENTS</div>
+            <div style="color:var(--accent)">${esc(parseIntakeSupps(inRow).join(', '))}</div>` : ''}
           </div>
           <div style="padding:12px 14px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line-soft);font-size:13px">
             <div style="font-size:11.5px;color:var(--text-3);margin-bottom:4px;font-weight:600">EQUIPMENT &amp; COMPLIANCE</div>
-            <div style="color:var(--text)">Equipment: ${esc((inRow.equipment || []).join(', ') || '—')}</div>
+            <div style="color:var(--text)">Equipment: ${esc((inRow.equipment || []).join(', ') || 'None')}</div>
             <div style="margin-top:6px;color:${yesQs.length ? 'var(--bad)' : 'var(--ok)'}">
               ${yesQs.length ? `PAR-Q+ Flags: ${esc(yesQs.join('; '))}` : 'PAR-Q+: All 7 questions answered No (Cleared)'}
             </div>
             <div style="margin-top:8px;font-size:12px;color:var(--text-3)">
-              PAR-Q+ Signed: <b style="color:var(--text-2)">${esc(inRow.parq_signature || '—')}</b><br>
-              Waiver Signed: <b style="color:var(--text-2)">${esc(inRow.waiver_signature || '—')}</b> (${inRow.signed_at ? new Date(inRow.signed_at).toLocaleString() : '—'})
+              PAR-Q+ Signed: <b style="color:var(--text-2)">${esc(inRow.parq_signature || 'N/A')}</b><br>
+              Waiver Signed: <b style="color:var(--text-2)">${esc(inRow.waiver_signature || 'N/A')}</b> (${inRow.signed_at ? new Date(inRow.signed_at).toLocaleString() : 'N/A'})
             </div>
           </div>
         </div>
@@ -1210,6 +1480,41 @@ document.addEventListener('click', async e => {
   else if (act === 'select') { S.view = 'client'; S.selId = btn.dataset.id; S.tab = 'overview'; S.liftSel = 'all'; S.editVideoId = null; render(); }
   else if (act === 'tab') { S.tab = btn.dataset.v; S.editVideoId = null; render(); }
   else if (act === 'lsel') { S.liftSel = btn.dataset.v; render(); }
+  else if (act === 'coach-supp-overlay') { S.suppOverlay = !S.suppOverlay; render(); }
+  else if (act === 'preset-csupp') {
+    const p = COACH_SUPP_PRESETS[Number(btn.dataset.idx)];
+    if (!p) return;
+    const setV = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+    setV('cs-name', p.name);
+    setV('cs-dose', p.dosage);
+    setV('cs-timing', p.timing);
+    setV('cs-rem', p.reminder_time);
+    setV('cs-note', p.note);
+  }
+  else if (act === 'coach-act-supp') {
+    const sid = String(btn.dataset.id);
+    const todayStr = ymd(new Date());
+    const row = S.data[S.selId]?.supplements?.find(x => String(x.id) === sid);
+    if (!row) return;
+    row.status = 'active';
+    row.started_at = row.started_at || todayStr;
+    if (S.mode !== 'demo' && S.suppTableReady) {
+      await sb.from('client_supplements').update({ status: 'active', started_at: row.started_at }).eq('id', sid);
+    }
+    toast(`${row.name} activated`);
+    render();
+  }
+  else if (act === 'coach-del-supp') {
+    const sid = String(btn.dataset.id);
+    const row = S.data[S.selId]?.supplements?.find(x => String(x.id) === sid);
+    if (!row || !confirm(`Remove "${row.name}" from this client's supplement stack?`)) return;
+    S.data[S.selId].supplements = (S.data[S.selId].supplements || []).filter(x => String(x.id) !== sid);
+    if (S.mode !== 'demo' && S.suppTableReady) {
+      await sb.from('client_supplements').delete().eq('id', sid);
+    }
+    toast(`Removed ${row.name}`);
+    render();
+  }
   else if (act === 'refresh') { await fetchAll(); toast('Refreshed from Supabase'); }
   else if (act === 'copy-apply') {
     const ok = await copyTextWithFallback(btn.dataset.url);
@@ -1221,24 +1526,46 @@ document.addEventListener('click', async e => {
     const fullName = `${row.first_name || ''} ${row.last_name || ''}`.trim();
     const slug = fullName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Math.floor(Math.random() * 90 + 10);
     const splitGuess = row.days_per_week >= 5 ? 'Push / Pull / Legs / Upper / Lower' : row.days_per_week === 4 ? 'Upper / Lower (4-Day)' : 'Full Body A / B / C';
-    const notes = `Equipment: ${(row.equipment || []).join(', ')}. Days/wk: ${row.days_per_week || '—'}. Injuries: ${row.injuries || 'None'}. Baseline: ${row.age || '?'}yo, ${row.height || '?'}, ${row.current_weight || '?'} lb → ${row.goal_weight || '?'} lb.`;
+    const inSupps = parseIntakeSupps(row);
+    const notes = `Equipment: ${(row.equipment || []).join(', ')}. Days/wk: ${row.days_per_week || '?'}. Injuries: ${row.injuries || 'None'}.${inSupps.length ? ' Supplements: ' + inSupps.join(', ') + '.' : ''} Baseline: ${row.age || '?'}yo, ${row.height || '?'}, ${row.current_weight || '?'} lb -> ${row.goal_weight || '?'} lb.`;
+    const todayStr = ymd(new Date());
     const payload = {
       coach_id: S.user?.id, slug, full_name: fullName, email: row.email || null,
       plan_type: row.selected_plan === 'monthly' ? 'monthly' : '8_week',
-      phase: 'Phase 1', split: splitGuess, start_date: ymd(new Date()), weeks: 8,
+      phase: 'Phase 1', split: splitGuess, start_date: todayStr, weeks: 8,
       targets: { weight: row.goal_weight || null, calories: 2200, protein: 160, water: 100, steps: 10000, sleep: 7.5 },
       program_notes: notes,
     };
+    const buildSeedSupps = cid => inSupps.map((spName, idx) => {
+      const preset = COACH_SUPP_PRESETS.find(p => spName.toLowerCase().includes(p.name.split(/\s+/)[0].toLowerCase()));
+      return {
+        client_id: cid,
+        name: spName,
+        dosage: preset?.dosage || '',
+        frequency: 'daily',
+        timing: preset?.timing || 'Morning',
+        status: 'active',
+        added_by: 'intake',
+        coach_note: '',
+        reminder_enabled: true,
+        reminder_time: preset?.reminder_time || '08:30',
+        started_at: todayStr,
+      };
+    });
     if (S.mode === 'demo') {
       const id = 'd-' + Date.now();
       S.clients.push({ id, health_sync_token: 'demo_tok', ...payload });
-      S.data[id] = { exercises: [], sets: [], checkins: [], measurements: [], notes: [] };
+      const seeded = buildSeedSupps(id).map((s, idx) => ({ id: 'ds-' + id + '-' + idx, ...s }));
+      S.data[id] = { exercises: [], sets: [], checkins: [], measurements: [], notes: [], messages: [], photos: [], supplements: seeded, suppLogs: {} };
       row.status = 'approved'; S.view = 'client'; S.selId = id; S.tab = 'program';
-      toast(`${fullName} onboarded (demo)`); render(); return;
+      toast(`${fullName} onboarded${seeded.length ? ` (+${seeded.length} supplements)` : ''} (demo)`); render(); return;
     }
     const { data: created, error } = await sb.from('clients').insert(payload).select().single();
     if (error) { toast('Onboard failed: ' + error.message); return; }
     await sb.from('intake_submissions').update({ status: 'approved', onboarded_client_id: created.id }).eq('id', row.id);
+    if (inSupps.length && S.suppTableReady) {
+      await sb.from('client_supplements').insert(buildSeedSupps(created.id));
+    }
     toast(`${fullName} added to roster!`);
     await fetchAll();
     S.view = 'client'; S.selId = created.id; S.tab = 'program'; render();
@@ -1490,6 +1817,41 @@ document.addEventListener('submit', async e => {
     if (error) toast('Failed: ' + error.message);
     else { toast('Exercise added'); await fetchAll(); }
   }
+  if (e.target.id === 'coach-supp-form') {
+    e.preventDefault();
+    if (!S.selId) return;
+    const f = Object.fromEntries(new FormData(e.target));
+    const cleanName = String(f.name || '').trim().slice(0, 80);
+    if (!cleanName) return;
+    const isImm = f.status === 'active';
+    const todayStr = ymd(new Date());
+    const payload = {
+      client_id: S.selId,
+      name: cleanName,
+      dosage: String(f.dosage || '').trim().slice(0, 40),
+      frequency: 'daily',
+      timing: f.timing || 'Morning',
+      status: isImm ? 'active' : 'recommended',
+      added_by: 'coach',
+      coach_note: String(f.coach_note || '').trim().slice(0, 240),
+      reminder_enabled: Boolean(f.reminder_time),
+      reminder_time: f.reminder_time || '08:30',
+      started_at: isImm ? todayStr : null,
+    };
+    if (S.mode === 'demo') {
+      S.data[S.selId].supplements = (S.data[S.selId].supplements || []).concat({ id: 'ds-' + Date.now(), ...payload });
+      e.target.reset();
+      toast(isImm ? `${cleanName} activated (demo)` : `Sent ${cleanName} recommendation (demo)`);
+      render(); return;
+    }
+    if (!S.suppTableReady) { toast('Please run the Supabase SQL migration first'); return; }
+    const { error } = await sb.from('client_supplements').insert(payload);
+    if (error) toast('Failed: ' + error.message);
+    else {
+      toast(isImm ? `${cleanName} activated` : `Recommended ${cleanName} to client`);
+      await fetchAll();
+    }
+  }
   if (e.target.id === 'client-form') {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
@@ -1505,7 +1867,7 @@ document.addEventListener('submit', async e => {
     document.getElementById('client-modal')?.close();
     if (S.mode === 'demo') {
       if (S.editClient?.id) Object.assign(S.editClient, payload);
-      else { const id = 'd-' + Date.now(); S.clients.push({ id, slug, health_sync_token: 'demo_tok', ...payload }); S.data[id] = { exercises: [], sets: [], checkins: [], measurements: [], notes: [] }; }
+      else { const id = 'd-' + Date.now(); S.clients.push({ id, slug, health_sync_token: 'demo_tok', ...payload }); S.data[id] = { exercises: [], sets: [], checkins: [], measurements: [], notes: [], supplements: [], suppLogs: {} }; }
       toast('Saved (demo)'); render(); return;
     }
     let error;
