@@ -379,6 +379,43 @@ dialog.sheet::backdrop{background:rgba(0,0,0,.65);-webkit-backdrop-filter:blur(4
 .btn-primary{box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 20px rgba(45,212,191,.2)}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 8px 26px rgba(45,212,191,.28)}
 
+/* Supplements, Reminders & Trendline Comparison */
+.supp-strip{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:11px 13px;border-radius:13px;background:linear-gradient(90deg,rgba(45,212,191,.13),rgba(20,184,166,.06));border:1px solid var(--accent-line);margin-bottom:14px;font-size:13px}
+.supp-strip b{color:var(--accent)}
+.supp-rec-card{padding:14px;border-radius:14px;background:linear-gradient(180deg,rgba(45,212,191,.09),rgba(12,16,17,.96));border:1px solid var(--accent-line);margin-bottom:14px}
+.supp-rec-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;font:600 11px/1 var(--mono);color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
+.supp-rec-item{padding-top:10px;margin-top:10px;border-top:1px solid var(--line)}
+.supp-rec-item:first-of-type{padding-top:0;margin-top:4px;border-top:0}
+.supp-rec-act{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.supp-time-in{height:34px;padding:0 9px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);color:var(--text);font:500 12.5px/1 var(--mono)}
+.supp-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.supp-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-radius:12px;background:var(--bg);border:1px solid var(--line);transition:border-color .18s,background .18s}
+.supp-row.is-taken{border-color:var(--accent-line);background:rgba(45,212,191,.06)}
+.supp-toggle{display:flex;align-items:center;gap:10px;border:0;background:transparent;color:inherit;padding:0;text-align:left;flex:1;min-width:0;cursor:pointer}
+.supp-chk{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--line-2);background:var(--surface-2);display:grid;place-items:center;flex-shrink:0;color:transparent;transition:all .16s var(--ease)}
+.supp-chk svg.i{width:14px;height:14px}
+.supp-row.is-taken .supp-chk{background:var(--accent);border-color:var(--accent);color:#02201D;box-shadow:0 2px 10px rgba(45,212,191,.28)}
+.supp-name{font-size:14px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.supp-sub{font-size:12px;color:var(--text-3);margin-top:2px}
+.supp-streak{font:600 10.5px/1 var(--mono);padding:3px 7px;border-radius:999px;background:rgba(251,191,36,.13);border:1px solid rgba(251,191,36,.34);color:#FCD34D}
+.supp-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.supp-mini{height:28px;padding:0 9px;border-radius:7px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--text-2);font:500 11.5px/1 var(--mono);display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.supp-mini:hover{color:var(--text);border-color:var(--accent-line)}
+.supp-form{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:9px}
+.supp-chips{display:flex;flex-wrap:wrap;gap:6px}
+.supp-chip{height:26px;padding:0 9px;border-radius:999px;border:1px solid var(--line-2);background:var(--bg);color:var(--text-2);font-size:11.5px;cursor:pointer}
+.supp-chip:hover{color:var(--accent);border-color:var(--accent-line)}
+.supp-form-grid{display:grid;grid-template-columns:1.3fr .8fr 1fr;gap:8px}
+@media (max-width:520px){.supp-form-grid{grid-template-columns:1fr 1fr}}
+.supp-partner-hint{margin-top:8px;font-size:12px;color:var(--text-3)}
+.supp-partner-hint a{color:var(--accent);text-decoration:underline}
+.supp-impact-row{padding:11px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:5px}
+.supp-impact-row:first-child{padding-top:0;border-top:0}
+.supp-impact-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.supp-impact-stat{padding:8px 10px;border-radius:9px;background:var(--bg);border:1px solid var(--line);font-size:12px}
+.supp-impact-stat span{display:block;font-size:10.5px;color:var(--text-3);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px}
+.supp-note-callout{font-size:12px;color:var(--text-2);padding:8px 10px;border-radius:9px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.24);margin-top:4px}
+
 /* Tablets & Landscape Web/Tablets — prevent header slicing & floating bottom nav */
 @media (min-width:700px),(orientation:landscape) and (min-width:560px){
   .app{max-width:100%;border:0;padding-bottom:calc(36px + env(safe-area-inset-bottom))}
@@ -763,12 +800,18 @@ function makeDemoState() {
     { date: ymd(new Date(today.getTime() - 7 * DAY_MS)), waist_in: 36.0, chest_in: 42.1, arms_in: 15.3, hips_in: 39.8, thighs_in: 24.0, photo_url: '', notes: 'Week 2' },
   ];
   const notes = [{ id: 'demo-n1', message: 'Great consistency on the 3-second eccentrics this week! Push Goblet Squats to 55 lb on Full Body C if all 3 sets feel crisp.', pinned: true, created_at: new Date(today.getTime() - DAY_MS).toISOString() }];
-  return { client, exercises, sets, checkins, measurements, notes };
+  const supplements = [
+    { id: 'demo-s1', client_id: client.id, name: 'Creatine Monohydrate', dosage: '5g', frequency: 'daily', timing: 'Morning', status: 'active', added_by: 'coach', coach_note: '5g daily with water for ATP saturation and rep recovery.', reminder_enabled: true, reminder_time: '08:30', started_at: ymd(new Date(today.getTime() - 8 * DAY_MS)) },
+    { id: 'demo-s2', client_id: client.id, name: 'Electrolytes', dosage: '1 scoop', frequency: 'daily', timing: 'Pre-Workout', status: 'recommended', added_by: 'coach', coach_note: 'Take 20 mins before training for hydration, sodium balance, and pump.', reminder_enabled: true, reminder_time: '16:00', started_at: null },
+  ];
+  const suppLogs = {};
+  for (let i = 8; i >= 1; i--) {
+    suppLogs[`demo-s1|${ymd(new Date(today.getTime() - i * DAY_MS))}`] = true;
+  }
+  return { client, exercises, sets, checkins, measurements, notes, supplements, suppLogs };
 }
 
-/* ------------------------------------------------------------------ *
- * App State
- * ------------------------------------------------------------------ */
+/* App State */
 const S = {
   mode: 'loading', // 'auth' | 'app' | 'demo'
   authTab: 'password', // 'password' | 'magic'
@@ -786,6 +829,11 @@ const S = {
   photos: [],
   photoUrls: {},
   photoPose: 'Front',
+  supplements: [],
+  suppLogs: {}, // key: `${suppId}|${ymd}` -> boolean
+  suppTableReady: true,
+  showSuppForm: false,
+  suppOverlay: true,
   tab: 'train',
   week: 1,
   day: '',
@@ -807,6 +855,166 @@ const S = {
 let restInt = null;
 const setKey = (w, d, ex, n) => `${w}|${d}|${ex}|${n}`;
 const bonusKey = (w, d, ex) => `${w}|${d}|${ex}`;
+const suppKey = (id, d) => `${id}|${d}`;
+
+const SUPP_QUICK_PRESETS = [
+  { name: 'Creatine Monohydrate', dosage: '5g', timing: 'Morning' },
+  { name: 'Protein Powder', dosage: '1 scoop', timing: 'Post-Workout' },
+  { name: 'Electrolytes', dosage: '1 scoop', timing: 'Pre-Workout' },
+  { name: 'Omega-3 Fish Oil', dosage: '2g', timing: 'With Meals' },
+  { name: 'Vitamin D3 + K2', dosage: '5000 IU', timing: 'Morning' },
+  { name: 'Magnesium Glycinate', dosage: '200mg', timing: 'Evening' },
+  { name: 'Pre-Workout', dosage: '1 scoop', timing: 'Pre-Workout' },
+];
+
+function isNativeApp() {
+  const cap = window.Capacitor;
+  if (!cap) return false;
+  if (typeof cap.isNativePlatform === 'function') return !!cap.isNativePlatform();
+  return Boolean(cap.platform && cap.platform !== 'web');
+}
+
+function fmtTime12(hhmm) {
+  const m = String(hhmm || '08:30').match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return '8:30 AM';
+  let h = Number(m[1]);
+  const min = m[2];
+  const ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${h}:${min} ${ap}`;
+}
+
+function loadLocalSuppFallback(clientId) {
+  try {
+    const raw = JSON.parse(localStorage.getItem('clf_supp_local_' + clientId) || 'null');
+    if (raw && Array.isArray(raw.supplements)) return { supplements: raw.supplements, suppLogs: raw.suppLogs || {} };
+  } catch (_) {}
+  return { supplements: [], suppLogs: {} };
+}
+
+function saveLocalSuppFallback() {
+  if (!S.client?.id || S.mode === 'demo') return;
+  try {
+    localStorage.setItem('clf_supp_local_' + S.client.id, JSON.stringify({ supplements: S.supplements, suppLogs: S.suppLogs }));
+  } catch (_) {}
+}
+
+const activeSupplements = () => S.supplements.filter(s => s.status === 'active');
+const recommendedSupplements = () => S.supplements.filter(s => s.status === 'recommended');
+
+function suppStreak(suppId, refDateStr) {
+  const baseDate = parseYmd(refDateStr || ymd(new Date()));
+  let count = 0;
+  let offset = S.suppLogs[suppKey(suppId, ymd(baseDate))] ? 0 : 1;
+  for (let i = offset; i < 365; i++) {
+    const dStr = ymd(new Date(baseDate.getTime() - i * DAY_MS));
+    if (S.suppLogs[suppKey(suppId, dStr)]) count++;
+    else break;
+  }
+  return count;
+}
+
+function suppStartWeek(supp) {
+  if (!supp?.started_at || !S.client?.start_date) return 1;
+  const diffDays = Math.floor((parseYmd(supp.started_at) - parseYmd(S.client.start_date)) / DAY_MS);
+  return Math.max(1, Math.min(S.client.weeks || 8, Math.floor(diffDays / 7) + 1));
+}
+
+function suppWeekAdherence(supp, wk) {
+  if (!S.client?.start_date) return 0;
+  const wkStart = parseYmd(S.client.start_date).getTime() + (wk - 1) * 7 * DAY_MS;
+  const todayMs = parseYmd(ymd(new Date())).getTime();
+  const sStartMs = supp.started_at ? parseYmd(supp.started_at).getTime() : wkStart;
+  let eligible = 0, taken = 0;
+  for (let i = 0; i < 7; i++) {
+    const dayMs = wkStart + i * DAY_MS;
+    if (dayMs > todayMs || dayMs < sStartMs) continue;
+    eligible++;
+    if (S.suppLogs[suppKey(supp.id, ymd(new Date(dayMs)))]) taken++;
+  }
+  return eligible ? Math.round((taken / eligible) * 100) : null;
+}
+
+function suppOverallAdherence(supp, maxDays = 28) {
+  const todayMs = parseYmd(ymd(new Date())).getTime();
+  const startMs = supp.started_at ? parseYmd(supp.started_at).getTime() : todayMs;
+  const earliest = Math.max(startMs, todayMs - (maxDays - 1) * DAY_MS);
+  let eligible = 0, taken = 0;
+  for (let ms = earliest; ms <= todayMs; ms += DAY_MS) {
+    eligible++;
+    if (S.suppLogs[suppKey(supp.id, ymd(new Date(ms)))]) taken++;
+  }
+  return eligible ? Math.round((taken / eligible) * 100) : 100;
+}
+
+async function syncNativeSuppReminders() {
+  const ln = window.Capacitor?.Plugins?.LocalNotifications;
+  if (!ln) return;
+  try {
+    const perm = await ln.requestPermissions();
+    if (perm?.display !== 'granted') return;
+    const pending = await ln.getPending().catch(() => ({ notifications: [] }));
+    const oldIds = (pending?.notifications || []).filter(n => Number(n.id) >= 4400 && Number(n.id) < 4600).map(n => ({ id: n.id }));
+    if (oldIds.length) await ln.cancel({ notifications: oldIds });
+    const activeRem = activeSupplements().filter(s => s.reminder_enabled && s.reminder_time);
+    if (!activeRem.length) return;
+    const notifications = activeRem.map((s, idx) => {
+      const [hh, mm] = String(s.reminder_time || '08:30').split(':').map(Number);
+      return {
+        id: 4400 + idx,
+        title: 'CLF Protocol · Daily Supplement',
+        body: `Time to take ${s.name}${s.dosage ? ' (' + s.dosage + ')' : ''}. Tap to check it off!`,
+        schedule: { on: { hour: Number.isFinite(hh) ? hh : 8, minute: Number.isFinite(mm) ? mm : 30 }, repeats: true, allowWhileIdle: true },
+      };
+    });
+    await ln.schedule({ notifications });
+  } catch (_) {}
+}
+
+function downloadSuppIcs(supp) {
+  const [hh, mm] = String(supp.reminder_time || '08:30').split(':').map(Number);
+  const now = new Date();
+  const dt = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Number.isFinite(hh) ? hh : 8, Number.isFinite(mm) ? mm : 30, 0);
+  const pad = n => String(n).padStart(2, '0');
+  const dtLocal = `${dt.getFullYear()}${pad(dt.getMonth() + 1)}${pad(dt.getDate())}T${pad(dt.getHours())}${pad(dt.getMinutes())}00`;
+  const title = `Take ${supp.name}${supp.dosage ? ' (' + supp.dosage + ')' : ''} · CLF Protocol`;
+  const desc = (supp.coach_note || 'Daily supplement habit from CLF Protocol.').replace(/\r?\n/g, ' ');
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Clash Lab Fitness//CLF Protocol//EN',
+    'BEGIN:VEVENT',
+    `UID:clf-supp-${supp.id}@clashlabfitness.com`,
+    `DTSTAMP:${dtLocal}Z`,
+    `DTSTART:${dtLocal}`,
+    'DURATION:PT10M',
+    'RRULE:FREQ=DAILY',
+    `SUMMARY:${title}`,
+    `DESCRIPTION:${desc}`,
+    'BEGIN:VALARM',
+    'TRIGGER:-PT0M',
+    'ACTION:DISPLAY',
+    `DESCRIPTION:${title}`,
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `clf-${supp.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-reminder.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1800);
+}
+
+function partnerHintHtml(name) {
+  if (isNativeApp()) return '';
+  if (!/creatine|electrolyte|pre[- ]?workout|protein|whey/i.test(String(name || ''))) return '';
+  return `<div class="supp-partner-hint">Need a third-party tested option? <a href="index.html#partners" target="_blank" rel="noopener sponsored">View Official CLF Partners (code clashlab10) ↗</a></div>`;
+}
 
 const EXTRA_SUGGESTIONS = [
   'Hip Abduction', 'Hip Adduction', 'Cable Glute Kickbacks', 'Barbell Hip Thrust',
@@ -1019,7 +1227,7 @@ async function loadClientBundle(clientRow) {
   S.syncState = 'syncing';
   render();
   try {
-    const [exRes, setRes, chkRes, measRes, noteRes, msgRes, phRes] = await Promise.all([
+    const [exRes, setRes, chkRes, measRes, noteRes, msgRes, phRes, suppRes, slogRes] = await Promise.all([
       sb.from('program_exercises').select('*').eq('client_id', clientRow.id).order('day_order').order('exercise_order'),
       sb.from('workout_sets').select('*').eq('client_id', clientRow.id),
       sb.from('checkins').select('*').eq('client_id', clientRow.id).order('date'),
@@ -1027,6 +1235,8 @@ async function loadClientBundle(clientRow) {
       sb.from('coach_notes').select('*').eq('client_id', clientRow.id).order('created_at', { ascending: false }).limit(10),
       sb.from('messages').select('*').eq('client_id', clientRow.id).order('created_at'),
       sb.from('progress_photos').select('*').eq('client_id', clientRow.id).order('date'),
+      sb.from('client_supplements').select('*').eq('client_id', clientRow.id).order('created_at'),
+      sb.from('supplement_logs').select('*').eq('client_id', clientRow.id),
     ]);
     S.exercises = exRes.data || [];
     S.setsMap = {};
@@ -1037,6 +1247,17 @@ async function loadClientBundle(clientRow) {
     S.notes = noteRes.data || [];
     S.messages = msgRes.error ? [] : (msgRes.data || []);
     S.photos = phRes.error ? [] : (phRes.data || []);
+    if (suppRes.error) {
+      S.suppTableReady = false;
+      const loc = loadLocalSuppFallback(clientRow.id);
+      S.supplements = loc.supplements;
+      S.suppLogs = loc.suppLogs;
+    } else {
+      S.suppTableReady = true;
+      S.supplements = suppRes.data || [];
+      S.suppLogs = {};
+      (slogRes.data || []).forEach(r => { if (r.taken) S.suppLogs[suppKey(r.supplement_id, r.date)] = true; });
+    }
     S.photoUrls = {};
     if (S.photos.length) {
       await Promise.all(S.photos.map(async p => {
@@ -1047,12 +1268,150 @@ async function loadClientBundle(clientRow) {
     const ds = daysList();
     S.day = ds[0] || '';
     S.openEx = null;
+    S.showSuppForm = false;
     S.syncState = 'ok';
+    syncNativeSuppReminders();
   } catch (err) {
     S.syncState = 'error';
     toast('Sync error: ' + err.message);
   }
   render();
+}
+
+async function toggleSuppTaken(suppId, dateStr) {
+  const supp = S.supplements.find(x => String(x.id) === String(suppId));
+  if (!supp) return;
+  const k = suppKey(supp.id, dateStr);
+  const next = !S.suppLogs[k];
+  if (next) S.suppLogs[k] = true;
+  else delete S.suppLogs[k];
+  render();
+  const st = suppStreak(supp.id, dateStr);
+  if (next) toast(`${supp.name} logged${st >= 2 ? ` · ${st}-day streak!` : ''}`);
+  if (S.mode === 'demo' || !S.suppTableReady) {
+    saveLocalSuppFallback();
+    return;
+  }
+  S.syncState = 'syncing'; updateChip();
+  const { error } = next
+    ? await sb.from('supplement_logs').upsert({ client_id: S.client.id, supplement_id: supp.id, date: dateStr, taken: true }, { onConflict: 'supplement_id,date' })
+    : await sb.from('supplement_logs').delete().eq('supplement_id', supp.id).eq('date', dateStr);
+  S.syncState = error ? 'error' : 'ok';
+  updateChip();
+  if (error) toast('Sync warning: ' + error.message);
+}
+
+async function acceptSuppRecommendation(suppId, remTime) {
+  const supp = S.supplements.find(x => String(x.id) === String(suppId));
+  if (!supp) return;
+  const todayStr = ymd(new Date());
+  supp.status = 'active';
+  supp.started_at = supp.started_at || todayStr;
+  supp.reminder_enabled = Boolean(remTime);
+  supp.reminder_time = remTime || supp.reminder_time || '08:30';
+  render();
+  syncNativeSuppReminders();
+  toast(`${supp.name} added to your daily stack!`);
+  if (S.mode === 'demo' || !S.suppTableReady) {
+    saveLocalSuppFallback();
+    return;
+  }
+  const { error } = await sb.from('client_supplements').update({
+    status: 'active',
+    started_at: supp.started_at,
+    reminder_enabled: supp.reminder_enabled,
+    reminder_time: supp.reminder_time,
+  }).eq('id', supp.id);
+  if (error) toast('Update failed: ' + error.message);
+}
+
+async function skipSuppRecommendation(suppId) {
+  const supp = S.supplements.find(x => String(x.id) === String(suppId));
+  if (!supp) return;
+  supp.status = 'skipped';
+  render();
+  toast(`Skipped ${supp.name}`);
+  if (S.mode === 'demo' || !S.suppTableReady) { saveLocalSuppFallback(); return; }
+  await sb.from('client_supplements').update({ status: 'skipped' }).eq('id', supp.id);
+}
+
+async function createClientSupp({ name, dosage, timing, reminder_time }) {
+  const cleanName = String(name || '').trim().slice(0, 80);
+  if (!cleanName) { toast('Enter a supplement name'); return; }
+  const dup = S.supplements.find(s => s.name.toLowerCase() === cleanName.toLowerCase());
+  const todayStr = ymd(new Date());
+  if (dup) {
+    dup.status = 'active';
+    dup.dosage = dosage || dup.dosage;
+    dup.timing = timing || dup.timing;
+    dup.reminder_enabled = Boolean(reminder_time);
+    dup.reminder_time = reminder_time || dup.reminder_time || '08:30';
+    dup.started_at = dup.started_at || todayStr;
+    S.showSuppForm = false;
+    render();
+    syncNativeSuppReminders();
+    if (S.mode !== 'demo' && S.suppTableReady) {
+      await sb.from('client_supplements').update({
+        status: 'active', dosage: dup.dosage, timing: dup.timing,
+        reminder_enabled: dup.reminder_enabled, reminder_time: dup.reminder_time, started_at: dup.started_at
+      }).eq('id', dup.id);
+    } else saveLocalSuppFallback();
+    toast(`${dup.name} activated`);
+    return;
+  }
+  const payload = {
+    client_id: S.client.id,
+    name: cleanName,
+    dosage: String(dosage || '').trim().slice(0, 40),
+    frequency: 'daily',
+    timing: timing || 'Morning',
+    status: 'active',
+    added_by: 'client',
+    coach_note: '',
+    reminder_enabled: Boolean(reminder_time),
+    reminder_time: reminder_time || '08:30',
+    started_at: todayStr,
+  };
+  if (S.mode === 'demo' || !S.suppTableReady) {
+    S.supplements.push({ id: 'loc-' + Date.now(), ...payload });
+    S.showSuppForm = false;
+    saveLocalSuppFallback();
+    syncNativeSuppReminders();
+    toast(`Added ${cleanName} to your stack`);
+    render();
+    return;
+  }
+  const { data, error } = await sb.from('client_supplements').insert(payload).select().single();
+  if (error) { toast('Could not add supplement: ' + error.message); return; }
+  S.supplements.push(data);
+  S.showSuppForm = false;
+  syncNativeSuppReminders();
+  toast(`Added ${cleanName} to your stack`);
+  render();
+}
+
+async function updateClientSuppTime(suppId, newTime) {
+  const supp = S.supplements.find(x => String(x.id) === String(suppId));
+  if (!supp) return;
+  supp.reminder_enabled = Boolean(newTime);
+  supp.reminder_time = newTime || '';
+  render();
+  syncNativeSuppReminders();
+  toast(newTime ? `Reminder set for ${fmtTime12(newTime)}` : 'Reminder paused');
+  if (S.mode === 'demo' || !S.suppTableReady) { saveLocalSuppFallback(); return; }
+  await sb.from('client_supplements').update({ reminder_enabled: supp.reminder_enabled, reminder_time: supp.reminder_time }).eq('id', supp.id);
+}
+
+async function removeClientSupp(suppId) {
+  const supp = S.supplements.find(x => String(x.id) === String(suppId));
+  if (!supp) return;
+  if (!confirm(`Remove "${supp.name}" from your daily supplement stack?`)) return;
+  S.supplements = S.supplements.filter(x => String(x.id) !== String(suppId));
+  render();
+  syncNativeSuppReminders();
+  toast(`Removed ${supp.name}`);
+  if (S.mode === 'demo' || !S.suppTableReady) { saveLocalSuppFallback(); return; }
+  await sb.from('client_supplements').delete().eq('id', supp.id);
 }
 
 async function uploadProgressPhoto(file, pose) {
@@ -1467,7 +1826,7 @@ function linReg(pts) {
 
 function renderLiftChart(pts, weeks, isAll) {
   if (!pts.length) return '<div class="empty">Log completed sets to see your strength trajectory.</div>';
-  const W = 440, H = 166, P = { l: 38, r: 16, t: 14, b: 22 };
+  const W = 440, H = 166, P = { l: 38, r: 16, t: 16, b: 22 };
   const reg = linReg(pts);
   const last = pts[pts.length - 1];
   const projEnd = reg ? reg.at(weeks) : last.v;
@@ -1479,11 +1838,38 @@ function renderLiftChart(pts, weeks, isAll) {
   const ticks = [lo, (lo + hi) / 2, hi].map(v => Math.round(v));
   const line = pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.wk).toFixed(1)},${y(p.v).toFixed(1)}`).join('');
   const area = `${line} L${x(last.wk).toFixed(1)},${H - P.b} L${x(pts[0].wk).toFixed(1)},${H - P.b} Z`;
+  const actSupps = S.suppOverlay ? activeSupplements() : [];
+  let suppBands = '', suppPins = '';
+  if (actSupps.length) {
+    for (let w = 1; w <= weeks; w++) {
+      const highAdh = actSupps.some(s => { const pct = suppWeekAdherence(s, w); return pct != null && pct >= 85; });
+      if (highAdh) {
+        const cx = x(w), bw = Math.min(34, (W - P.l - P.r) / Math.max(1, weeks));
+        suppBands += `<rect x="${(cx - bw / 2).toFixed(1)}" y="${P.t}" width="${bw.toFixed(1)}" height="${H - P.t - P.b}" rx="4" fill="rgba(251,191,36,.075)"/>`;
+      }
+    }
+    const byWk = new Map();
+    actSupps.forEach(s => {
+      const sw = suppStartWeek(s);
+      const shortN = s.name.split(/\s+/)[0];
+      byWk.set(sw, (byWk.get(sw) || []).concat(shortN));
+    });
+    byWk.forEach((names, sw) => {
+      const px = x(sw);
+      const lbl = names.length > 1 ? `${names[0]} +${names.length - 1}` : `${names[0]} start`;
+      const anchor = sw >= weeks - 1 ? 'end' : 'start';
+      const tx = anchor === 'end' ? px - 4 : px + 4;
+      suppPins += `<line x1="${px.toFixed(1)}" x2="${px.toFixed(1)}" y1="${P.t}" y2="${H - P.b}" stroke="#FBBF24" stroke-opacity=".75" stroke-width="1.2" stroke-dasharray="3 3"/>` +
+        `<text x="${tx.toFixed(1)}" y="${P.t + 9}" text-anchor="${anchor}" font-size="9.5" fill="#FCD34D" font-family="Geist Mono,monospace">${esc(lbl)}</text>`;
+    });
+  }
   return `<svg viewBox="0 0 ${W} ${H}">
     <defs><linearGradient id="lf" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2DD4BF" stop-opacity=".18"/><stop offset="1" stop-color="#2DD4BF" stop-opacity="0"/></linearGradient></defs>
+    ${suppBands}
     ${ticks.map(t => `<line x1="${P.l}" x2="${W - P.r}" y1="${y(t)}" y2="${y(t)}" stroke="rgba(255,255,255,.06)"/><text x="${P.l - 7}" y="${y(t) + 3.5}" text-anchor="end" font-size="10" fill="#5F6B6B" font-family="Geist Mono,monospace">${isAll && t > 0 ? '+' + t + '%' : isAll ? t + '%' : t}</text>`).join('')}
     ${Array.from({ length: weeks }, (_, i) => `<text x="${x(i + 1)}" y="${H - 4}" text-anchor="middle" font-size="10" fill="#5F6B6B" font-family="Geist Mono,monospace">W${i + 1}</text>`).join('')}
     ${pts.length >= 2 ? `<path d="${area}" fill="url(#lf)"/>` : ''}
+    ${suppPins}
     ${reg && last.wk < weeks ? `<line x1="${x(last.wk)}" y1="${y(last.v)}" x2="${x(weeks)}" y2="${y(projEnd)}" stroke="#2DD4BF" stroke-opacity=".75" stroke-width="1.75" stroke-dasharray="4 4"/>
       <circle cx="${x(weeks)}" cy="${y(projEnd)}" r="3.8" fill="#0C1011" stroke="#2DD4BF" stroke-width="1.8"/>
       <text x="${x(weeks) - 6}" y="${Math.max(12, y(projEnd) - 8)}" text-anchor="end" font-size="10" fill="#9AA7A6" font-family="Geist Mono,monospace">${isAll ? (projEnd >= 0 ? '+' : '') + fmt(projEnd, 1) + '%' : fmt(projEnd, 0) + ' lb'}</text>` : ''}
@@ -1500,7 +1886,7 @@ function renderWeightChart() {
     i: Math.round((parseYmd(r.date) - start) / DAY_MS), v: Number(r.weight)
   })).filter(p => p.i >= 0 && p.i <= totalDays).sort((a, b) => a.i - b.i);
   if (!pts.length) return '<div class="empty">Log daily weigh-ins (or sync Apple Health) to see your weight trend.</div>';
-  const W = 440, H = 150, P = { l: 38, r: 14, t: 14, b: 22 };
+  const W = 440, H = 150, P = { l: 38, r: 14, t: 16, b: 22 };
   const goal = c.targets?.weight;
   const vals = pts.map(p => p.v).concat(goal ? [goal] : []);
   let lo = Math.min(...vals) - 2, hi = Math.max(...vals) + 2;
@@ -1509,13 +1895,184 @@ function renderWeightChart() {
   const ticks = [lo, (lo + hi) / 2, hi].map(v => Math.round(v));
   const path = pts.map((p, k) => `${k ? 'L' : 'M'}${x(p.i).toFixed(1)},${y(p.v).toFixed(1)}`).join('');
   const last = pts[pts.length - 1];
+  const actSupps = S.suppOverlay ? activeSupplements() : [];
+  let suppPins = '';
+  if (actSupps.length) {
+    const byDay = new Map();
+    actSupps.forEach(s => {
+      if (!s.started_at) return;
+      const di = Math.max(0, Math.min(totalDays - 1, Math.round((parseYmd(s.started_at) - start) / DAY_MS)));
+      byDay.set(di, (byDay.get(di) || []).concat(s.name.split(/\s+/)[0]));
+    });
+    byDay.forEach((names, di) => {
+      const px = x(di);
+      const lbl = names.length > 1 ? `${names[0]} +${names.length - 1}` : `${names[0]} start`;
+      const anchor = di > totalDays * 0.72 ? 'end' : 'start';
+      const tx = anchor === 'end' ? px - 4 : px + 4;
+      suppPins += `<line x1="${px.toFixed(1)}" x2="${px.toFixed(1)}" y1="${P.t}" y2="${H - P.b}" stroke="#FBBF24" stroke-opacity=".75" stroke-width="1.2" stroke-dasharray="3 3"/>` +
+        `<text x="${tx.toFixed(1)}" y="${P.t + 9}" text-anchor="${anchor}" font-size="9.5" fill="#FCD34D" font-family="Geist Mono,monospace">${esc(lbl)}</text>`;
+    });
+  }
   return `<svg viewBox="0 0 ${W} ${H}">
     ${ticks.map(t => `<line x1="${P.l}" x2="${W - P.r}" y1="${y(t)}" y2="${y(t)}" stroke="rgba(255,255,255,.06)"/><text x="${P.l - 7}" y="${y(t) + 3.5}" text-anchor="end" font-size="10" fill="#5F6B6B" font-family="Geist Mono,monospace">${t}</text>`).join('')}
     ${goal ? `<line x1="${P.l}" x2="${W - P.r}" y1="${y(goal)}" y2="${y(goal)}" stroke="#9AA7A6" stroke-dasharray="3 4" stroke-width="1"/><text x="${W - P.r}" y="${y(goal) - 5}" text-anchor="end" font-size="10" fill="#9AA7A6">Goal ${goal} lb</text>` : ''}
     ${Array.from({ length: c.weeks || 8 }, (_, w) => `<text x="${x(w * 7 + 3)}" y="${H - 4}" text-anchor="middle" font-size="10" fill="#5F6B6B" font-family="Geist Mono,monospace">W${w + 1}</text>`).join('')}
+    ${suppPins}
     <path d="${path}" fill="none" stroke="#2DD4BF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
     <circle cx="${x(last.i)}" cy="${y(last.v)}" r="4" fill="#2DD4BF" stroke="#0C1011" stroke-width="2"/>
   </svg>`;
+}
+
+function renderDueSuppStrip() {
+  const todayStr = ymd(new Date());
+  const now = new Date();
+  const nowHm = `${z(now.getHours())}:${z(now.getMinutes())}`;
+  const due = activeSupplements().filter(s => {
+    if (S.suppLogs[suppKey(s.id, todayStr)]) return false;
+    if (!s.reminder_enabled) return false;
+    return S.mode === 'demo' || !s.reminder_time || nowHm >= s.reminder_time;
+  });
+  if (!due.length) return '';
+  const first = due[0];
+  return `<div class="supp-strip" role="status">
+    <span><b>Daily Reminder</b> · Take ${esc(first.name)}${first.dosage ? ` (${esc(first.dosage)})` : ''}${due.length > 1 ? ` + ${due.length - 1} more` : ''}</span>
+    <button type="button" class="btn btn-primary btn-sm" data-act="toggle-supp" data-id="${esc(first.id)}" data-date="${todayStr}">Mark Taken ✓</button>
+  </div>`;
+}
+
+function renderCoachSuppRecs() {
+  const recs = recommendedSupplements();
+  if (!recs.length) return '';
+  return `<div class="supp-rec-card">
+    <div class="supp-rec-top"><span>Coach Recommended Supplement${recs.length > 1 ? 's' : ''}</span><span>Opt-In</span></div>
+    ${recs.map(r => `<div class="supp-rec-item">
+      <div style="font-weight:600;font-size:14.5px">${esc(r.name)}${r.dosage ? ` · <span class="num" style="color:var(--accent)">${esc(r.dosage)}</span>` : ''}${r.timing ? ` <span style="font-size:12px;color:var(--text-3);font-weight:400">(${esc(r.timing)})</span>` : ''}</div>
+      ${r.coach_note ? `<div style="font-size:12.5px;color:var(--text-2);margin-top:4px">${esc(r.coach_note)}</div>` : ''}
+      ${partnerHintHtml(r.name)}
+      <div class="supp-rec-act">
+        <label style="font-size:12px;color:var(--text-3);display:inline-flex;align-items:center;gap:6px">
+          Daily reminder
+          <input type="time" class="supp-time-in" id="rec-time-${esc(r.id)}" value="${esc(r.reminder_time || '08:30')}">
+        </label>
+        <button type="button" class="btn btn-primary btn-sm" data-act="accept-supp" data-id="${esc(r.id)}">Accept &amp; Add to Stack</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-act="skip-supp" data-id="${esc(r.id)}">Skip</button>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderSuppCheckinCard(dateStr) {
+  const act = activeSupplements();
+  const takenCount = act.filter(s => S.suppLogs[suppKey(s.id, dateStr)]).length;
+  return `<div class="card" style="margin-top:14px">
+    <div class="card-head">
+      <div>
+        <span class="card-title">Daily supplement stack</span>
+        <span class="card-meta num" style="margin-left:8px">${act.length ? `${takenCount}/${act.length} taken` : 'None active'}</span>
+      </div>
+      <button type="button" class="btn btn-secondary btn-sm" data-act="toggle-supp-form">${S.showSuppForm ? 'Close' : '+ Add supplement'}</button>
+    </div>
+    ${act.length ? `<div class="supp-list">
+      ${act.map(s => {
+        const taken = !!S.suppLogs[suppKey(s.id, dateStr)];
+        const streak = suppStreak(s.id, dateStr);
+        const adh = suppOverallAdherence(s, 28);
+        return `<div class="supp-row ${taken ? 'is-taken' : ''}">
+          <button type="button" class="supp-toggle" data-act="toggle-supp" data-id="${esc(s.id)}" data-date="${dateStr}">
+            <span class="supp-chk">${ic('tick')}</span>
+            <span style="min-width:0">
+              <span class="supp-name">
+                <span>${esc(s.name)}</span>
+                ${s.dosage ? `<span class="num" style="font-size:12px;color:var(--text-2);font-weight:500">${esc(s.dosage)}</span>` : ''}
+                ${streak >= 2 ? `<span class="supp-streak">${streak}d streak</span>` : ''}
+              </span>
+              <span class="supp-sub">${esc(s.timing || 'Daily')} · ${adh}% consistency${s.reminder_enabled && s.reminder_time ? ` · Reminder ${fmtTime12(s.reminder_time)}` : ''}</span>
+            </span>
+          </button>
+          <div class="supp-actions">
+            <button type="button" class="supp-mini" data-act="supp-alarm" data-id="${esc(s.id)}" title="Add recurring daily phone alarm">Alarm</button>
+            <button type="button" class="supp-mini" data-act="del-supp" data-id="${esc(s.id)}" title="Remove from stack">×</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>` : `<div class="card-meta">Tap <b>+ Add supplement</b> to track daily Creatine, Protein, Electrolytes, or vitamins and set a phone reminder.</div>`}
+    ${S.showSuppForm ? `<form id="client-supp-form" class="supp-form">
+      <div class="supp-chips">
+        ${SUPP_QUICK_PRESETS.map(p => `<button type="button" class="supp-chip" data-act="preset-supp" data-name="${esc(p.name)}" data-dose="${esc(p.dosage)}" data-timing="${esc(p.timing)}">+ ${esc(p.name)}</button>`).join('')}
+      </div>
+      <div class="supp-form-grid">
+        <input class="text-input" style="margin:0;height:40px" id="csupp-name" name="name" required placeholder="Supplement (e.g. Creatine Monohydrate)">
+        <input class="text-input" style="margin:0;height:40px" id="csupp-dose" name="dosage" placeholder="Dose (e.g. 5g)">
+        <select class="text-input" style="margin:0;height:40px" id="csupp-timing" name="timing">
+          <option value="Morning">Morning</option>
+          <option value="Pre-Workout">Pre-Workout</option>
+          <option value="Post-Workout">Post-Workout</option>
+          <option value="With Meals">With Meals</option>
+          <option value="Evening">Evening</option>
+          <option value="Anytime">Anytime</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <label style="font-size:12.5px;color:var(--text-2);display:inline-flex;align-items:center;gap:8px">
+          Daily phone reminder
+          <input type="time" class="supp-time-in" name="reminder_time" value="08:30">
+        </label>
+        <button type="submit" class="btn btn-primary btn-sm" style="height:36px;padding:0 14px">Save to Stack</button>
+      </div>
+    </form>` : ''}
+  </div>`;
+}
+
+function renderSuppImpactCard(pts, isAll) {
+  const act = activeSupplements();
+  if (!act.length) return '';
+  const allWt = Object.values(S.checkins).filter(r => r.weight != null).sort((a, b) => a.date.localeCompare(b.date));
+  const unitLbl = isAll ? '%' : ' lb';
+  return `<div class="section-label"><span>Supplement stack vs. trendlines</span><span>${act.length} active</span></div>
+  <div class="card">
+    ${act.map(s => {
+      const sw = suppStartWeek(s);
+      const adh = suppOverallAdherence(s, 28);
+      const streak = suppStreak(s.id, ymd(new Date()));
+      const prePts = pts.filter(p => p.wk <= sw);
+      const onPts = pts.filter(p => p.wk >= sw);
+      let strText = 'Log 2+ weeks to compare';
+      if (onPts.length >= 2) {
+        const gainOn = +(onPts[onPts.length - 1].v - onPts[0].v).toFixed(1);
+        const spanWks = Math.max(1, onPts[onPts.length - 1].wk - onPts[0].wk);
+        const rateOn = +(gainOn / spanWks).toFixed(1);
+        strText = `${gainOn >= 0 ? '+' : ''}${gainOn}${unitLbl} since W${sw} (${rateOn >= 0 ? '+' : ''}${rateOn}${unitLbl}/wk)`;
+      } else if (pts.length >= 1) {
+        strText = `Started W${sw} · Tracking active phase`;
+      }
+      let wtText = 'Log weigh-ins to compare';
+      if (s.started_at && allWt.length >= 2) {
+        const preW = allWt.filter(r => r.date < s.started_at);
+        const onW = allWt.filter(r => r.date >= s.started_at);
+        if (preW.length && onW.length) {
+          const preAvg = preW.reduce((a, r) => a + Number(r.weight), 0) / preW.length;
+          const onLast = Number(onW[onW.length - 1].weight);
+          const diff = +(onLast - preAvg).toFixed(1);
+          wtText = `Pre: ${fmt(preAvg, 1)} lb -> Now: ${fmt(onLast, 1)} lb (${diff >= 0 ? '+' : ''}${diff} lb)`;
+        } else if (onW.length >= 2) {
+          const diff = +(Number(onW[onW.length - 1].weight) - Number(onW[0].weight)).toFixed(1);
+          wtText = `${diff >= 0 ? '+' : ''}${diff} lb since starting (${s.started_at})`;
+        }
+      }
+      const isCreatine = /creatine/i.test(s.name);
+      return `<div class="supp-impact-row">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <div style="font-weight:600;font-size:14px">${esc(s.name)}${s.dosage ? ` · <span class="num" style="color:var(--accent)">${esc(s.dosage)}</span>` : ''}</div>
+          <div class="num" style="font-size:12px;color:var(--text-2)">Started W${sw} · <b>${adh}%</b> adherence${streak >= 2 ? ` · ${streak}d streak` : ''}</div>
+        </div>
+        <div class="supp-impact-grid">
+          <div class="supp-impact-stat"><span>Strength Trajectory</span><strong class="num">${esc(strText)}</strong></div>
+          <div class="supp-impact-stat"><span>Bodyweight Trend</span><strong class="num">${esc(wtText)}</strong></div>
+        </div>
+        ${isCreatine ? `<div class="supp-note-callout">Creatine insight: Daily 5g intake draws water inside muscle cells (often +1 to 2.5 lb of lean intracellular hydration in Weeks 1 to 3) while supporting higher rep volume and e1RM progression.</div>` : ''}
+      </div>`;
+    }).join('')}
+  </div>`;
 }
 
 /* ------------------------------------------------------------------ *
@@ -1588,6 +2145,8 @@ function viewTrain() {
       <span><b>Previewing Week ${S.week}</b> · Current is Week ${curWk}</span>
       <button type="button" class="future-jump" data-act="wk-cur">Go to Wk ${curWk}</button>
     </div>` : ''}
+
+    ${renderDueSuppStrip()}
 
     ${pinned ? `<div class="coach-note">
       <div class="coach-note-head">COACH NOTE <span>${new Date(pinned.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric' })}</span></div>
@@ -1751,6 +2310,9 @@ function viewCheckin() {
       <div class="pips">${hits.map(h => `<i class="${h ? 'on' : ''}"></i>`).join('')}</div>
     </div>
 
+    <div style="margin-top:14px">${renderCoachSuppRecs()}</div>
+    ${renderSuppCheckinCard(d)}
+
     <div class="card" style="margin-top:14px">
       ${metricRow('weight', 'Morning bodyweight', 'lb', 0.2, T.weight)}
       ${metricRow('calories', 'Calories', 'kcal', 50, T.calories)}
@@ -1815,6 +2377,7 @@ function viewProgress() {
   const proj = reg ? reg.at(c.weeks || 8) : last?.v;
   const gain = last && base ? last.v - base.v : null;
   const prRows = liftPrRows();
+  const hasSupps = activeSupplements().length > 0;
   const posePhotos = S.photos.filter(p => p.pose === S.photoPose);
   const firstPh = posePhotos[0], lastPh = posePhotos.length > 1 ? posePhotos[posePhotos.length - 1] : null;
 
@@ -1823,11 +2386,14 @@ function viewProgress() {
     <h1>Progress</h1>
     <p class="lede">${Object.keys(S.checkins).length} check-ins logged · ${Object.values(S.setsMap).filter(r => r.done).length} sets completed</p>
 
-    <div class="section-label" id="traj-top">
+    <div class="section-label" id="traj-top" style="flex-wrap:wrap;gap:8px">
       <span>Strength trajectory</span>
-      <div class="mode-switch">
-        <button data-act="lmode" data-v="e1rm" aria-pressed="${S.liftMode === 'e1rm'}">Est. 1RM</button>
-        <button data-act="lmode" data-v="weight" aria-pressed="${S.liftMode === 'weight'}">Working lb</button>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        ${hasSupps ? `<div class="mode-switch"><button type="button" data-act="supp-overlay" aria-pressed="${S.suppOverlay}">Overlay Supps</button></div>` : ''}
+        <div class="mode-switch">
+          <button data-act="lmode" data-v="e1rm" aria-pressed="${S.liftMode === 'e1rm'}">Est. 1RM</button>
+          <button data-act="lmode" data-v="weight" aria-pressed="${S.liftMode === 'weight'}">Working lb</button>
+        </div>
       </div>
     </div>
     <div class="card">
@@ -1847,9 +2413,10 @@ function viewProgress() {
         </div>
       </div>` : ''}
       <div class="chart tall">${renderLiftChart(pts, c.weeks || 8, isAll)}</div>
-      <div class="legend">
+      <div class="legend" style="flex-wrap:wrap">
         <span><i class="line" style="background:var(--accent)"></i>Logged</span>
         <span><i class="line" style="background:repeating-linear-gradient(90deg,#2DD4BF 0 4px,transparent 4px 7px)"></i>Trajectory to W${c.weeks || 8}</span>
+        ${hasSupps && S.suppOverlay ? `<span><i class="line" style="background:#FBBF24"></i>Supplement start &amp; &ge;85% wks</span>` : ''}
       </div>
     </div>
 
@@ -1875,6 +2442,8 @@ function viewProgress() {
     <div class="card">
       <div class="chart">${renderWeightChart()}</div>
     </div>
+
+    ${renderSuppImpactCard(pts, isAll)}
 
     ${S.photos.length ? `<div class="section-label">
       <span>Progress photos (private)</span>
@@ -2106,6 +2675,7 @@ document.addEventListener('click', async e => {
     S.mode = 'demo'; S.client = d.client; S.exercises = d.exercises; S.setsMap = {};
     d.sets.forEach(r => { S.setsMap[setKey(r.week, r.day_name, r.exercise_name, r.set_num)] = r; });
     S.checkins = d.checkins; S.measurements = d.measurements; S.notes = d.notes;
+    S.supplements = d.supplements; S.suppLogs = d.suppLogs; S.showSuppForm = false; S.suppOverlay = true;
     S.confirmedFutureWeeks = {}; S.pendingFutureFn = null; S.pendingFutureCancel = null;
     S.showExtraForm = false; S.bonusDrafts = {}; S.requestedExtras = {};
     S.week = 3; S.day = 'Full Body A'; S.openEx = d.exercises[0].name;
@@ -2293,6 +2863,34 @@ document.addEventListener('click', async e => {
   }
   else if (act === 'scale') { persistCheckin(S.checkDate, { [btn.dataset.k]: Number(v) }); render(); }
   else if (act === 'toggle-meas') { S.showMeasForm = !S.showMeasForm; render(); }
+  else if (act === 'toggle-supp') { await toggleSuppTaken(btn.dataset.id, btn.dataset.date || S.checkDate); }
+  else if (act === 'accept-supp') {
+    const timeEl = document.getElementById('rec-time-' + btn.dataset.id);
+    await acceptSuppRecommendation(btn.dataset.id, timeEl ? timeEl.value : '08:30');
+  }
+  else if (act === 'skip-supp') { await skipSuppRecommendation(btn.dataset.id); }
+  else if (act === 'toggle-supp-form') {
+    S.showSuppForm = !S.showSuppForm;
+    render();
+    if (S.showSuppForm) document.getElementById('csupp-name')?.focus();
+  }
+  else if (act === 'preset-supp') {
+    const nEl = document.getElementById('csupp-name');
+    const dEl = document.getElementById('csupp-dose');
+    const tEl = document.getElementById('csupp-timing');
+    if (nEl) nEl.value = btn.dataset.name || '';
+    if (dEl) dEl.value = btn.dataset.dose || '';
+    if (tEl && btn.dataset.timing) tEl.value = btn.dataset.timing;
+  }
+  else if (act === 'supp-alarm') {
+    const supp = S.supplements.find(x => String(x.id) === String(btn.dataset.id));
+    if (supp) {
+      downloadSuppIcs(supp);
+      toast(`Daily ${fmtTime12(supp.reminder_time)} alarm file ready`);
+    }
+  }
+  else if (act === 'del-supp') { await removeClientSupp(btn.dataset.id); }
+  else if (act === 'supp-overlay') { S.suppOverlay = !S.suppOverlay; render(); }
   else if (act === 'lsel') { S.liftSel = v; render(); }
   else if (act === 'lmode') { S.liftMode = v; render(); }
   else if (act === 'pose') { S.photoPose = v; render(); }
@@ -2436,6 +3034,16 @@ document.addEventListener('submit', async e => {
   if (e.target.id === 'meas-form') {
     e.preventDefault();
     await saveMeasurement(e.target);
+  }
+  if (e.target.id === 'client-supp-form') {
+    e.preventDefault();
+    const f = e.target;
+    await createClientSupp({
+      name: f.elements.name?.value,
+      dosage: f.elements.dosage?.value,
+      timing: f.elements.timing?.value,
+      reminder_time: f.elements.reminder_time?.value,
+    });
   }
   if (e.target.id === 'chat-form') {
     e.preventDefault();
