@@ -169,6 +169,7 @@ const SUPABASE_URL = 'https://rvktkrodnkfktvpbleib.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_XZPmucPNraOaPCYXy-fjGQ_6xakqTNS';
 const STRIPE_8WEEK = 'https://buy.stripe.com/9B63cvct3fQS0TReVDaR200';
 const STRIPE_MONTHLY = 'https://buy.stripe.com/aFa28r1Opawy9qn5l3aR201';
+const BF_PROMO = Date.now() < Date.parse('2026-12-01T08:00:00Z') ? 'LAB25' : '';
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 const EQUIPMENT = ['Full Gym', 'Garage Gym', 'Dumbbells Only', 'Resistance Bands', 'None of the above'];
@@ -218,18 +219,23 @@ function renderStep1() {
     <h1>Client Intake Form</h1>
     <p class="lede">Choose your coaching plan and share your baseline stats so we can engineer your custom protocol.</p>
 
+    ${BF_PROMO ? `<div class="callout accent" style="margin-bottom:18px">
+      <strong>Black Friday Offer Active &middot; Code ${BF_PROMO} ($25 Off)</strong>
+      Limited to 5 spots through Cyber Monday night. Your $25 discount applies automatically on the final Stripe checkout step ($75 for the 8-Week Intensive, or $25 for Month 1 of Ongoing Coaching).
+    </div>` : ''}
+
     <div class="field" style="margin-bottom:18px">
       <label>Select Your Coaching Plan<span class="req">*</span></label>
       <div class="plan-pick">
         <button type="button" class="plan-opt" data-plan="8_week" aria-pressed="${F.selected_plan === '8_week'}">
-          <div class="plan-opt-top"><span>8-Week Intensive</span><span class="mono" style="font-size:11px;color:var(--text-3)">ONE-TIME</span></div>
-          <div class="plan-opt-price">$100</div>
+          <div class="plan-opt-top"><span>8-Week Intensive</span><span class="mono" style="font-size:11px;color:${BF_PROMO ? 'var(--accent)' : 'var(--text-3)'}">${BF_PROMO ? 'SAVE $25' : 'ONE-TIME'}</span></div>
+          <div class="plan-opt-price">${BF_PROMO ? '<span style="text-decoration:line-through;color:var(--text-3);font-size:14px;margin-right:6px">$100</span>$75' : '$100'}</div>
           <div class="plan-opt-sub">Fixed 8-week custom split, macro plan &amp; full app access.</div>
         </button>
         <button type="button" class="plan-opt" data-plan="monthly" aria-pressed="${F.selected_plan === 'monthly'}">
-          <div class="plan-opt-top"><span>Ongoing Membership</span><span class="mono" style="font-size:11px;color:var(--accent)">POPULAR</span></div>
-          <div class="plan-opt-price">$50 / mo</div>
-          <div class="plan-opt-sub">Continuous 8-week Phase Gate reviews, updates &amp; coaching. Cancel anytime.</div>
+          <div class="plan-opt-top"><span>Ongoing Membership</span><span class="mono" style="font-size:11px;color:var(--accent)">${BF_PROMO ? '50% OFF MO 1' : 'POPULAR'}</span></div>
+          <div class="plan-opt-price">${BF_PROMO ? '<span style="text-decoration:line-through;color:var(--text-3);font-size:14px;margin-right:6px">$50</span>$25 first mo' : '$50 / mo'}</div>
+          <div class="plan-opt-sub">${BF_PROMO ? 'Then $50/mo starting Month 2. Continuous Phase Gate updates. Cancel anytime.' : 'Continuous 8-week Phase Gate reviews, updates &amp; coaching. Cancel anytime.'}</div>
         </button>
       </div>
     </div>
@@ -392,21 +398,31 @@ function renderDone() {
   const flagged = hasMedFlag();
   const isMo = F.selected_plan === 'monthly';
   const basePay = isMo ? STRIPE_MONTHLY : STRIPE_8WEEK;
-  const payUrl = F.email ? `${basePay}?prefilled_email=${encodeURIComponent(F.email.trim())}` : basePay;
+  const params = new URLSearchParams();
+  if (F.email) params.set('prefilled_email', F.email.trim());
+  if (BF_PROMO) params.set('prefilled_promo_code', BF_PROMO);
+  const qs = params.toString();
+  const payUrl = qs ? `${basePay}?${qs}` : basePay;
+  const priceLabel = BF_PROMO
+    ? (isMo ? '$25 first month (then $50/mo)' : '$75.00 Black Friday enrollment')
+    : (isMo ? '$50/month subscription' : '$100.00 one-time enrollment');
+  const btnLabel = BF_PROMO
+    ? (isMo ? 'Start for $25 First Month →' : 'Complete $75 Enrollment →')
+    : (isMo ? 'Start $50/mo Membership →' : 'Complete $100 Enrollment →');
   return `<div class="card">
     <div class="done-icon ${flagged ? 'warn' : ''}">${flagged ? '!' : '✓'}</div>
-    <h1>${flagged ? 'Application Received — Medical Clearance Needed' : 'Application Received — Complete Enrollment'}</h1>
+    <h1>${flagged ? 'Application Received: Medical Clearance Needed' : 'Application Received: Complete Enrollment'}</h1>
     <p class="lede">Thanks, ${esc(F.first_name || F.last_name)}. Your Clash Lab Fitness onboarding packet has been securely logged for Kyle to review.</p>
     ${flagged ? `<div class="callout warn">
       <strong>Next Step: Doctor's Clearance Letter</strong>
       Because you answered "Yes" on the PAR-Q+ health screening, please ask your physician for a brief note clearing you for <i>"unsupervised, vigorous physical activity and resistance training"</i> and email it to <a href="mailto:support@clashlabfitness.com">support@clashlabfitness.com</a>. Once received, Kyle will send your enrollment link and unlock your protocol.
     </div>` : `<div class="callout accent">
-      <strong>Final Step: ${isMo ? 'Start Your $50/mo Coaching Membership' : 'Reserve Your 8-Week Protocol ($100)'}</strong>
-      1. Complete your ${isMo ? '$50/month subscription' : '$100.00 one-time enrollment'} below via secure Stripe Checkout.<br>
-      2. Watch your inbox (<b>${esc(F.email)}</b>) for your 3-day food log and your CLF Protocol app invite within 3–5 business days.
+      <strong>Final Step: ${isMo ? (BF_PROMO ? 'Start Your Coaching Membership ($25 Month 1)' : 'Start Your $50/mo Coaching Membership') : (BF_PROMO ? 'Reserve Your 8-Week Protocol ($75)' : 'Reserve Your 8-Week Protocol ($100)')}</strong>
+      1. Complete your ${priceLabel} below via secure Stripe Checkout${BF_PROMO ? ` (code <b>${BF_PROMO}</b> is pre-applied)` : ''}.<br>
+      2. Watch your inbox (<b>${esc(F.email)}</b>) for your 3-day food log and your CLF Protocol app invite within 3 to 5 business days.
     </div>
     <div class="nav-row" style="margin-top:18px">
-      <a class="btn btn-primary" href="${esc(payUrl)}" style="text-decoration:none;flex:1">${isMo ? 'Start $50/mo Membership →' : 'Complete $100 Enrollment →'}</a>
+      <a class="btn btn-primary" href="${esc(payUrl)}" style="text-decoration:none;flex:1">${btnLabel}</a>
     </div>`}
     <div class="nav-row" style="margin-top:12px">
       <a class="btn btn-secondary" href="index.html" style="text-decoration:none">Back to CLF Protocol</a>
