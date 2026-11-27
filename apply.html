@@ -173,6 +173,7 @@ const BF_PROMO = Date.now() < Date.parse('2026-12-01T08:00:00Z') ? 'LAB25' : '';
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 const EQUIPMENT = ['Full Gym', 'Garage Gym', 'Dumbbells Only', 'Resistance Bands', 'None of the above'];
+const SUPPLEMENTS = ['Creatine Monohydrate', 'Protein Powder', 'Pre-Workout', 'Electrolytes', 'Omega-3 / Fish Oil', 'Vitamin D3 / Multivitamin', 'Magnesium', 'None currently'];
 const PARQ = [
   { id: 'q1', text: 'Has your doctor ever said that you have a heart condition OR high blood pressure?' },
   { id: 'q2', text: 'Do you feel pain in your chest at rest, during daily activities, or during physical activity?' },
@@ -193,6 +194,7 @@ const F = {
   err: '',
   first_name: '', last_name: '', email: '', age: '', height: '', current_weight: '', goal_weight: '',
   injuries: '', typical_eating: '',
+  supplements: [], supplements_other: '',
   equipment: [],
   days_per_week: null,
   parq_answers: {}, // q1..q7 -> 'yes' | 'no'
@@ -272,6 +274,14 @@ function renderStep1() {
     <div class="field">
       <label>Briefly describe a typical day of eating. Include total meals and water intake.<span class="req">*</span></label>
       <textarea data-f="typical_eating" placeholder="Breakfast, lunch, dinner, snacks, and roughly how many oz of water per day…">${esc(F.typical_eating)}</textarea>
+    </div>
+    <div class="field" style="margin-top:16px">
+      <label>Current supplements (optional)</label>
+      <span class="hint">Select anything you already take so we can track consistency in your CLF Protocol app.</span>
+      <div class="pills">
+        ${SUPPLEMENTS.map(sp => `<button type="button" class="pill" data-supp="${esc(sp)}" aria-pressed="${F.supplements.includes(sp)}">${esc(sp)}</button>`).join('')}
+      </div>
+      <input type="text" data-f="supplements_other" value="${esc(F.supplements_other)}" placeholder="Any other supplements or dosages? (e.g. Creatine 5g, Collagen)" style="margin-top:10px">
     </div>
   </div>
 
@@ -419,7 +429,7 @@ function renderDone() {
     </div>` : `<div class="callout accent">
       <strong>Final Step: ${isMo ? (BF_PROMO ? 'Start Your Coaching Membership ($25 Month 1)' : 'Start Your $50/mo Coaching Membership') : (BF_PROMO ? 'Reserve Your 8-Week Protocol ($75)' : 'Reserve Your 8-Week Protocol ($100)')}</strong>
       1. Complete your ${priceLabel} below via secure Stripe Checkout${BF_PROMO ? ` (code <b>${BF_PROMO}</b> is pre-applied)` : ''}.<br>
-      2. Watch your inbox (<b>${esc(F.email)}</b>) for your 3-day food log and your CLF Protocol app invite within 3 to 5 business days.
+      2. Check your inbox (<b>${esc(F.email)}</b>) for your Clash Lab Fitness confirmation email and reply with your 3-day food log. You will receive your CLF Protocol app invite within 3 to 5 business days.
     </div>
     <div class="nav-row" style="margin-top:18px">
       <a class="btn btn-primary" href="${esc(payUrl)}" style="text-decoration:none;flex:1">${btnLabel}</a>
@@ -433,13 +443,13 @@ function renderDone() {
 function renderPaid() {
   return `<div class="card">
     <div class="done-icon">✓</div>
-    <h1>Payment Confirmed — Welcome to CLF Protocol!</h1>
+    <h1>Payment Confirmed · Welcome to CLF Protocol!</h1>
     <p class="lede">Your Clash Lab Fitness coaching enrollment is officially active.</p>
     <div class="callout accent">
       <strong>What Happens Next</strong>
-      1. Kyle is reviewing your intake stats, equipment, and injury history.<br>
-      2. Send your 3-day food log to <a href="mailto:support@clashlabfitness.com">support@clashlabfitness.com</a> if you haven't already.<br>
-      3. You'll receive your CLF Protocol app invite within 3–5 business days so you can start Week 1.
+      1. Kyle is reviewing your intake stats, equipment, supplements, and injury history.<br>
+      2. Reply to your confirmation email (or send to <a href="mailto:kyle@clashlabfitness.com">kyle@clashlabfitness.com</a>) with your 3-day food log.<br>
+      3. You will receive your CLF Protocol app invite within 3 to 5 business days so you can start Week 1.
     </div>
     <div class="nav-row">
       <a class="btn btn-secondary" href="index.html" style="text-decoration:none">Back to Home</a>
@@ -477,6 +487,18 @@ document.addEventListener('click', async e => {
     }
     render(); return;
   }
+
+  const suppBtn = e.target.closest('[data-supp]');
+  if (suppBtn) {
+    const v = suppBtn.dataset.supp;
+    if (v === 'None currently') F.supplements = F.supplements.includes(v) ? [] : [v];
+    else {
+      F.supplements = F.supplements.filter(x => x !== 'None currently');
+      F.supplements = F.supplements.includes(v) ? F.supplements.filter(x => x !== v) : F.supplements.concat(v);
+    }
+    render(); return;
+  }
+
   const dayBtn = e.target.closest('[data-days]');
   if (dayBtn) { F.days_per_week = Number(dayBtn.dataset.days); render(); return; }
 
@@ -506,13 +528,21 @@ document.addEventListener('click', async e => {
     if (!F.waiver_agreed) { F.err = 'Please check the box agreeing to the Liability Waiver & Terms.'; render(); return; }
     if (!F.waiver_signature.trim()) { F.err = 'Please type your full legal name to sign the waiver.'; render(); return; }
     if (!sb) { F.err = 'Connection unavailable. Please refresh and try again.'; render(); return; }
+    const pickedSupps = F.supplements.filter(x => x !== 'None currently');
+    const customSupps = F.supplements_other.split(',').map(s => s.trim()).filter(Boolean);
+    const allSupps = Array.from(new Set(pickedSupps.concat(customSupps)));
+    const eatingBase = F.typical_eating.replace(/\n*\[Supplements:[^\]]*\]\s*$/i, '').trim();
+    const eatingWithSupps = allSupps.length
+      ? `${eatingBase}\n[Supplements: ${allSupps.join(', ')}]`
+      : (F.supplements.includes('None currently') ? `${eatingBase}\n[Supplements: None currently]` : eatingBase);
     F.submitting = true; render();
     const { error } = await sb.rpc('submit_client_intake', {
       p_data: {
         selected_plan: F.selected_plan,
         first_name: F.first_name, last_name: F.last_name, email: F.email,
         age: F.age, height: F.height, current_weight: F.current_weight, goal_weight: F.goal_weight,
-        injuries: F.injuries, typical_eating: F.typical_eating,
+        injuries: F.injuries, typical_eating: eatingWithSupps,
+        supplements: allSupps,
         equipment: F.equipment, days_per_week: F.days_per_week,
         parq_answers: F.parq_answers, medical_clearance_required: hasMedFlag(),
         parq_signature: F.parq_signature, waiver_agreed: F.waiver_agreed, waiver_signature: F.waiver_signature,
