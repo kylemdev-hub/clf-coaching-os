@@ -60,7 +60,7 @@ a{color:inherit;text-decoration:none}
   box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 2px 10px rgba(45,212,191,.2)}
 .brand-name{font-size:15px;font-weight:600;letter-spacing:-.015em}
 .brand-sub{font-size:11.5px;color:var(--text-3);margin-top:-1px}
-.nav-links{display:flex;align-items:center;gap:24px;font-size:13.5px;color:var(--text-2)}
+.nav-links{display:flex;align-items:center;gap:20px;font-size:13.5px;color:var(--text-2)}
 .nav-links a{transition:color .15s}
 .nav-links a:hover{color:var(--text)}
 .nav-act{display:flex;align-items:center;gap:10px}
@@ -233,13 +233,37 @@ footer{margin-top:52px;padding:42px 0 36px;border-top:1px solid var(--line);font
 .t-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 8px 26px rgba(0,0,0,.32)}
 .t-card .t-quote{font-size:15px;line-height:1.62;color:var(--text-2)}
 
+/* Official Partners */
+.p-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.p-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;gap:18px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 8px 26px rgba(0,0,0,.32);transition:transform .25s var(--ease),border-color .2s,background .2s,box-shadow .25s}
+.p-card:hover{transform:translateY(-2px);border-color:var(--accent-line);background:var(--surface-2);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 14px 34px rgba(0,0,0,.44)}
+.p-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.p-ic{width:40px;height:40px;border-radius:11px;background:var(--accent-tint);border:1px solid var(--accent-line);color:var(--accent);display:grid;place-items:center;flex-shrink:0}
+.p-ic svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.p-tag{font:600 10.5px/1 var(--mono);padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.035);border:1px solid var(--line-2);color:var(--text-2);letter-spacing:.04em;text-transform:uppercase}
+.p-head-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+.p-card h3{font-size:17.5px;font-weight:600;letter-spacing:-.015em;margin:0;color:var(--text)}
+.p-main-link::after{content:"";position:absolute;inset:0;z-index:1;border-radius:18px}
+.p-code{position:relative;z-index:2;display:inline-flex;align-items:center;gap:5px;height:27px;padding:0 10px;border-radius:8px;background:var(--accent-tint);border:1px solid var(--accent-line);color:var(--accent-text);font:600 11.5px/1 var(--mono);cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+.p-code:hover{background:rgba(45,212,191,.18);border-color:var(--accent)}
+.p-code:active{transform:scale(.97)}
+.p-code span{font-weight:400;opacity:.8}
+.p-code svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.p-card p{font-size:13.5px;color:var(--text-2);margin:0;line-height:1.58}
+.p-foot{padding-top:14px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12.5px}
+.p-dom{font:500 11.5px/1 var(--mono);color:var(--text-3)}
+.p-cta{font-weight:600;color:var(--accent-text);display:inline-flex;align-items:center;gap:5px;transition:transform .2s var(--ease)}
+.p-card:hover .p-cta{transform:translateX(2px)}
+.p-disc{margin:14px 0 0;font-size:12px;color:var(--text-3);line-height:1.55}
+
 @media (max-width:880px){
   .nl-band,.nl-form{grid-template-columns:1fr}
   .nl-band{padding:26px 20px}
   .nav-links{display:none}
   .menu-btn{display:grid}
   .hero{grid-template-columns:1fr;padding:48px 0 36px;gap:34px}
-  .bento,.steps,.pricing,.coach-band,.foot-grid,.t-feature,.t-grid{grid-template-columns:1fr}
+  .bento,.steps,.pricing,.coach-band,.foot-grid,.t-feature,.t-grid,.p-grid{grid-template-columns:1fr}
   .t-feature{padding:18px;gap:20px}
   .t-body{padding:2px}
   .nav-act .btn-ghost{display:none}
@@ -286,6 +310,7 @@ html.bf-live .bf-hide{display:none}
         <a href="index.html" style="color:var(--accent-text);font-weight:500">Home</a>
         <a href="#results">Results</a>
         <a href="#plans">Programs</a>
+        <a href="#partners">Partners</a>
         <a href="about.html">About</a>
         <a href="#faq">FAQ</a>
         <a href="contact.html">Contact</a>
@@ -302,6 +327,7 @@ html.bf-live .bf-hide{display:none}
       <a href="index.html" class="active">Home</a>
       <a href="#results">Client Results</a>
       <a href="#plans">Programs &amp; Pricing</a>
+      <a href="#partners">Official Partners</a>
       <a href="about.html">About Coach Kyle</a>
       <a href="#faq">FAQ</a>
       <a href="contact.html">Contact Us</a>
@@ -529,6 +555,87 @@ html.bf-live .bf-hide{display:none}
       </div>
     </section>
 
+    <section class="sec" id="partners" style="padding-top:20px">
+      <div class="sec-head">
+        <div class="sec-kicker">Official Partnerships</div>
+        <h2>Trusted gear, nutrition tracking &amp; lab partners.</h2>
+        <p class="sec-sub">Vetted brands we use alongside the CLF Protocol for supplementation, joint support, precision macro tracking, and laboratory research.</p>
+      </div>
+      <div class="p-grid">
+        <div class="p-card">
+          <div>
+            <div class="p-top">
+              <div class="p-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></div>
+              <span class="p-tag">Supplements &amp; Apparel</span>
+            </div>
+            <div class="p-head-row">
+              <h3><a class="p-main-link" href="https://ekkovision.com/?ref=Clashlab" target="_blank" rel="noopener sponsored">Ekkovision</a></h3>
+              <button type="button" class="p-code" data-copy-code="clashlab10" aria-label="Copy discount code clashlab10"><span>Code:</span><b>clashlab10</b><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+            </div>
+            <p>Third-party tested pre-workouts, micronized creatine, protein, electrolytes, lifting straps, and gym apparel.</p>
+          </div>
+          <div class="p-foot">
+            <span class="p-dom">ekkovision.com</span>
+            <span class="p-cta">Shop Ekkovision &nearr;</span>
+          </div>
+        </div>
+
+        <div class="p-card">
+          <div>
+            <div class="p-top">
+              <div class="p-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+              <span class="p-tag">Wraps, Sleeves &amp; Belts</span>
+            </div>
+            <div class="p-head-row">
+              <h3><a class="p-main-link" href="https://goblingear.com/?sca_ref=10572039.rUE3jzrERv" target="_blank" rel="noopener sponsored">Goblin Gear</a></h3>
+              <button type="button" class="p-code" data-copy-code="clashlab" aria-label="Copy discount code clashlab"><span>Code:</span><b>clashlab</b><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+            </div>
+            <p>Heavy-duty wrist wraps, elbow wraps, super-padded sleeves, and lifting belts built for serious pressing and joint stability.</p>
+          </div>
+          <div class="p-foot">
+            <span class="p-dom">goblingear.com</span>
+            <span class="p-cta">Shop Goblin Gear &nearr;</span>
+          </div>
+        </div>
+
+        <div class="p-card">
+          <div>
+            <div class="p-top">
+              <div class="p-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg></div>
+              <span class="p-tag">Macro &amp; Micro Tracker</span>
+            </div>
+            <div class="p-head-row">
+              <h3><a class="p-main-link" href="https://cronometer.com/signup/?tid=awin-2766828&amp;sv1=affiliate&amp;sv_campaign_id=2766828&amp;source=aw&amp;sscid=89125_1795807910_6e82976b7ef2d7df6f99cf320249ba90&amp;awc=89125_1795807910_6e82976b7ef2d7df6f99cf320249ba90" target="_blank" rel="noopener sponsored">Cronometer</a></h3>
+            </div>
+            <p>Precision calorie, macro, and micronutrient tracking backed by verified nutrition data and seamless Apple Health sync.</p>
+          </div>
+          <div class="p-foot">
+            <span class="p-dom">cronometer.com</span>
+            <span class="p-cta">Sign Up Free &nearr;</span>
+          </div>
+        </div>
+
+        <div class="p-card">
+          <div>
+            <div class="p-top">
+              <div class="p-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 3h6"/><path d="M10 3v5.4L5.2 17a2.5 2.5 0 0 0 2.2 3.7h9.2a2.5 2.5 0 0 0 2.2-3.7L14 8.4V3"/><path d="M7.5 14h9"/></svg></div>
+              <span class="p-tag">Research Compounds &middot; 21+</span>
+            </div>
+            <div class="p-head-row">
+              <h3><a class="p-main-link" href="https://novapeptidesupply.com/?ref=Clashlab" target="_blank" rel="noopener sponsored">Nova Peptides</a></h3>
+              <button type="button" class="p-code" data-copy-code="clashlab" aria-label="Copy discount code clashlab"><span>Code:</span><b>clashlab</b><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+            </div>
+            <p>Batch-verified COA compounds strictly for laboratory and in-vitro research use only (21+). Not for human consumption.</p>
+          </div>
+          <div class="p-foot">
+            <span class="p-dom">novapeptidesupply.com</span>
+            <span class="p-cta">Visit Nova Peptides &nearr;</span>
+          </div>
+        </div>
+      </div>
+      <p class="p-disc">Partner links above are official Clash Lab Fitness referral links, and we may earn a commission on qualifying orders at no extra cost to you. Research partner links are strictly for laboratory use only (21+).</p>
+    </section>
+
     <section class="sec" id="faq" style="padding-top:20px">
       <div class="sec-head">
         <div class="sec-kicker">FAQ</div>
@@ -608,6 +715,7 @@ html.bf-live .bf-hide{display:none}
             <li><a href="index.html">Home</a></li>
             <li><a href="#results">Client Results</a></li>
             <li><a href="#plans">Programs &amp; Pricing</a></li>
+            <li><a href="#partners">Official Partners</a></li>
             <li><a href="about.html">About Coach Kyle</a></li>
             <li><a href="#faq">FAQ</a></li>
             <li><a href="contact.html">Contact Us</a></li>
@@ -710,6 +818,29 @@ html.bf-live .bf-hide{display:none}
         }
       });
     })();
+
+    document.querySelectorAll('[data-copy-code]').forEach(btn => {
+      const orig = btn.innerHTML;
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const code = btn.dataset.copyCode;
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.top = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch (_) {}
+        document.body.removeChild(ta);
+        if (!ok && navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).catch(() => {});
+        }
+        btn.innerHTML = '<b>Copied: ' + code + ' &#10003;</b>';
+        setTimeout(() => { btn.innerHTML = orig; }, 1800);
+      });
+    });
 
   </script>
 </body>
