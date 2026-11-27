@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050707">
+<title>Clash Lab Fitness | Free 60-Second Macro &amp; Split Audit</title>
+<meta name="description" content="Calculate your custom daily calories, protein, carbs, fats, hydration, and recommended weekly training split in 60 seconds with Clash Lab Fitness.">
+<link rel="icon" type="image/png" href="email-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#030404;color-scheme:dark}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:#2DD4BF;text-decoration:none}
+
+.page{
+  --bg:#050707; --surface:#0C1011; --surface-2:#111617; --surface-3:#192021;
+  --line:rgba(255,255,255,.07); --line-2:rgba(255,255,255,.13);
+  --text:#ECF3F2; --text-2:#9AA7A6; --text-3:#5F6B6B;
+  --accent:#2DD4BF; --accent-text:#5EEAD4; --accent-tint:rgba(45,212,191,.10); --accent-line:rgba(45,212,191,.36); --on-accent:#022320;
+  --ok:#4ADE80; --bad:#F2706A; --bad-tint:rgba(242,112,106,.11); --bad-line:rgba(242,112,106,.35);
+  --font:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  min-height:100dvh;
+  background:radial-gradient(960px 440px at 50% -160px,rgba(45,212,191,.11),transparent 70%) no-repeat,var(--bg);
+  color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;padding:24px 16px 68px;
+}
+.wrap{max-width:680px;margin:0 auto}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;color:var(--text)}
+.mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(160deg,#5EEAD4,#14B8A6);color:var(--on-accent);
+  display:grid;place-items:center;font:700 11px/1 var(--mono);letter-spacing:.04em}
+.brand-name{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.brand-sub{font-size:12px;color:var(--text-3)}
+.pill-badge{font:500 11.5px/1 var(--mono);color:var(--accent-text);background:var(--accent-tint);border:1px solid var(--accent-line);padding:6px 11px;border-radius:999px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px 22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 8px 30px rgba(0,0,0,.4)}
+.card + .card{margin-top:14px}
+h1{font-size:27px;font-weight:600;letter-spacing:-.03em;margin:0 0 6px;line-height:1.15}
+h2{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0 0 6px}
+.lede{font-size:14px;color:var(--text-2);margin:0 0 18px;line-height:1.55}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:560px){
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .grid-4{grid-template-columns:1fr 1fr}
+}
+
+.field{display:block;margin-top:14px}
+.field:first-child,.grid-2 .field,.grid-3 .field{margin-top:0}
+.grid-2 + .grid-2,.grid-2 + .field,.field + .grid-2,.grid-3 + .field,.field + .grid-3{margin-top:14px}
+.field label{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px}
+.req{color:var(--accent);margin-left:2px}
+.field input,.field select{
+  width:100%;height:44px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);
+  padding:0 13px;font-size:15px;outline:none;transition:border-color .15s,box-shadow .15s}
+.field input:focus,.field select:focus{border-color:var(--accent-line);box-shadow:0 0 0 3px rgba(45,212,191,.10)}
+
+.pills{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+@media(max-width:560px){.pills{grid-template-columns:1fr}}
+.pill{padding:11px 12px;border-radius:12px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--text-2);text-align:left;transition:all .15s}
+.pill strong{display:block;font-size:13.5px;color:var(--text);margin-bottom:2px}
+.pill span{display:block;font-size:11.5px;color:var(--text-3);line-height:1.35}
+.pill[aria-pressed=true]{background:var(--accent-tint);border-color:var(--accent-line)}
+.pill[aria-pressed=true] strong{color:var(--accent-text)}
+
+.days-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:6px}
+.day-pill{height:40px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--text-2);font:600 13.5px/1 var(--mono)}
+.day-pill[aria-pressed=true]{background:var(--accent-tint);border-color:var(--accent-line);color:var(--accent-text)}
+
+.btn{height:46px;padding:0 20px;border-radius:11px;border:1px solid transparent;font-size:14.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
+.btn-primary{background:var(--accent);color:var(--on-accent);width:100%}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-secondary{background:var(--surface-2);border-color:var(--line-2);color:var(--text)}
+.btn-secondary:hover{border-color:rgba(255,255,255,.24)}
+.btn-sm{height:36px;padding:0 13px;font-size:12.5px;border-radius:9px}
+
+.stat-tile{padding:14px 12px;border-radius:13px;background:var(--surface-2);border:1px solid var(--line-2);text-align:center}
+.stat-tile.hi{border-color:var(--accent-line);background:var(--accent-tint)}
+.stat-k{font:600 11px/1 var(--mono);color:var(--text-3);text-transform:uppercase;letter-spacing:.05em}
+.stat-v{font:700 26px/1.15 var(--mono);color:var(--text);margin-top:6px}
+.stat-tile.hi .stat-v{color:var(--accent-text)}
+.stat-u{font-size:12px;color:var(--text-2);margin-top:2px}
+
+.callout{padding:14px 16px;border-radius:13px;background:var(--surface-2);border:1px solid var(--line-2);font-size:13.5px;color:var(--text-2);margin-top:14px;line-height:1.55}
+.callout.accent{border-color:var(--accent-line);box-shadow:inset 3px 0 0 var(--accent)}
+.callout.err{background:var(--bad-tint);border-color:var(--bad-line);color:var(--text)}
+.callout strong{color:var(--text);display:block;margin-bottom:3px}
+
+.foot-bar{margin-top:24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--text-3)}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.78);display:grid;place-items:center;padding:18px;z-index:50}
+.modal-card{max-width:420px;width:100%;background:var(--surface);border:1px solid var(--accent-line);border-radius:20px;padding:24px;text-align:center}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="wrap">
+    <header class="header">
+      <a class="brand" href="index.html">
+        <span class="mark">CLF</span>
+        <div>
+          <div class="brand-name">Clash Lab Fitness</div>
+          <div class="brand-sub">CLF Protocol &middot; Custom Macro &amp; Split Lab</div>
+        </div>
+      </a>
+      <span class="pill-badge" id="hdr-badge">FREE 60-SEC AUDIT</span>
+    </header>
+
+    <div id="stage"></div>
+
+    <footer class="foot-bar">
+      <span>Coach Kyle de Vroede &middot; ISSA CPT &middot; USAF Vet</span>
+      <div style="display:flex;gap:12px;align-items:center">
+        <button type="button" class="btn btn-secondary btn-sm" id="qr-btn">Booth QR Sign</button>
+        <a href="index.html">Main Site &rarr;</a>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<div id="qr-modal" style="display:none"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  const SUPABASE_URL = 'https://rvktkrodnkfktvpbleib.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_XZPmucPNraOaPCYXy-fjGQ_6xakqTNS';
+  const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+  const EXPO_QR = ["11111110110100111000001111111","10000010011001001111001000001","10111010010110010111001011101","10111010111110001000101011101","10111010110111111110001011101","10000010101101100101001000001","11111110101010101010101111111","00000000111100010100100000000","10001011101001101101111111001","11111101010000111010001111111","00011011001101111000010010001","10010101110001011111111101011","10100010000011010100110100010","10100000111111111110001111111","01001110110100011010000001101","10010100110110100110111100011","10011010001111110101010000010","10101000000010010110001111011","00111110111101110110111100101","00001001011001000110001010011","11010011111111010110111111001","00000000110101111111100010001","11111110101110011011101011101","10000010001100111111100010001","10111010100101101101111111010","10111010011001011011010000001","10111010011100011111010001111","10000010011100111110111011011","11111110110010011100101011010"];
+
+  const qp = new URLSearchParams(location.search);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+
+  const S = {
+    kiosk: qp.get('kiosk') === '1',
+    source: qp.get('utm_source') || (qp.get('kiosk') === '1' ? 'booth_kiosk' : 'expo_qr'),
+    goal: 'cut',
+    sex: 'male',
+    age: '',
+    feet: '5',
+    inches: '10',
+    weight_lb: '',
+    goal_weight_lb: '',
+    activity: 'moderate',
+    days: 4,
+    first_name: '',
+    email: '',
+    err: '',
+    busy: false,
+    result: null,
+    emailed: false,
+  };
+
+  if (S.kiosk) document.getElementById('hdr-badge').textContent = 'BOOTH KIOSK MODE';
+
+  function computeBlueprint() {
+    const wt = Number(S.weight_lb);
+    const age = Number(S.age);
+    const totalIn = Number(S.feet) * 12 + Number(S.inches || 0);
+    const cm = totalIn * 2.54;
+    const kg = wt * 0.45359237;
+    const bmr = S.sex === 'female'
+      ? (10 * kg + 6.25 * cm - 5 * age - 161)
+      : (10 * kg + 6.25 * cm - 5 * age + 5);
+
+    const multMap = { light: 1.375, moderate: 1.52, active: 1.68, athlete: 1.82 };
+    const tdee = bmr * (multMap[S.activity] || 1.52);
+
+    let cal = tdee;
+    if (S.goal === 'cut') cal = Math.max(S.sex === 'female' ? 1350 : 1650, tdee - 475);
+    else if (S.goal === 'bulk') cal = tdee + 260;
+    else cal = tdee - 100;
+    cal = Math.round(cal / 10) * 10;
+
+    const refWt = S.goal_weight_lb && Number(S.goal_weight_lb) > 85
+      ? (wt * 0.55 + Number(S.goal_weight_lb) * 0.45)
+      : wt;
+    const rawProt = refWt * (S.goal === 'cut' ? 1.02 : 0.95);
+    const protein_g = Math.round(Math.max(105, Math.min(255, rawProt)) / 5) * 5;
+    const fats_g = Math.round(Math.max(48, Math.min(105, wt * 0.31)) / 5) * 5;
+    const remCal = Math.max(240, cal - protein_g * 4 - fats_g * 9);
+    const carbs_g = Math.round((remCal / 4) / 5) * 5;
+    const finalCal = protein_g * 4 + carbs_g * 4 + fats_g * 9;
+    const water_oz = Math.round(Math.max(80, Math.min(160, wt * 0.55)) / 5) * 5;
+
+    let split = '4-Day Upper / Lower Progressive Overload';
+    let splitNote = '2 Upper + 2 Lower sessions/wk hitting every muscle group 2x/week with optimal CNS recovery.';
+    if (S.days <= 3) {
+      split = '3-Day Full Body Hypertrophy (A / B / C)';
+      splitNote = 'High-efficiency compound sessions hitting every primary movement pattern 3x/week.';
+    } else if (S.days === 5) {
+      split = '5-Day Push / Pull / Legs + Upper / Lower';
+      splitNote = 'Hybrid hypertrophy & strength split with dedicated volume for lagging muscle groups.';
+    } else if (S.days >= 6) {
+      split = '6-Day Push / Pull / Legs (2x Frequency)';
+      splitNote = 'High-frequency split with autoregulated RIR volume management.';
+    }
+
+    const goalLabel = S.goal === 'cut' ? 'Fat Loss & Muscle Retention' : S.goal === 'bulk' ? 'Lean Strength & Hypertrophy' : 'Body Recomposition';
+
+    return {
+      calories: finalCal,
+      protein_g,
+      carbs_g,
+      fats_g,
+      water_oz,
+      tdee: Math.round(tdee),
+      split,
+      splitNote,
+      goalLabel,
+      height_label: `${S.feet}'${S.inches || 0}"`,
+    };
+  }
+
+  function renderForm() {
+    return `<form class="card" id="expo-form" novalidate>
+      <h1>60-Second Custom Macro &amp; Split Audit</h1>
+      <p class="lede">Get your exact daily calorie target, protein/carb/fat breakdown, and optimal weekly lifting split emailed directly to your phone.</p>
+
+      ${S.err ? `<div class="callout err" style="margin:0 0 14px"><strong>Quick check:</strong> ${esc(S.err)}</div>` : ''}
+
+      <div class="field">
+        <label>1. Primary Goal<span class="req">*</span></label>
+        <div class="pills">
+          <button type="button" class="pill" data-goal="cut" aria-pressed="${S.goal === 'cut'}">
+            <strong>Lose Fat &amp; Keep Strength</strong>
+            <span>450 to 500 kcal deficit + high protein retention</span>
+          </button>
+          <button type="button" class="pill" data-goal="recomp" aria-pressed="${S.goal === 'recomp'}">
+            <strong>Body Recomposition</strong>
+            <span>Drop waist size while building lean tissue</span>
+          </button>
+          <button type="button" class="pill" data-goal="bulk" aria-pressed="${S.goal === 'bulk'}">
+            <strong>Lean Bulk &amp; PRs</strong>
+            <span>Controlled surplus for strength &amp; size</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="field">
+          <label>Sex<span class="req">*</span></label>
+          <select data-f="sex">
+            <option value="male" ${S.sex === 'male' ? 'selected' : ''}>Male</option>
+            <option value="female" ${S.sex === 'female' ? 'selected' : ''}>Female</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Age<span class="req">*</span></label>
+          <input type="number" data-f="age" min="14" max="95" placeholder="e.g. 32" value="${esc(S.age)}">
+        </div>
+        <div class="field">
+          <label>Height<span class="req">*</span></label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <select data-f="feet" aria-label="Feet">
+              ${[4,5,6,7].map(ft => `<option value="${ft}" ${String(S.feet) === String(ft) ? 'selected' : ''}>${ft} ft</option>`).join('')}
+            </select>
+            <select data-f="inches" aria-label="Inches">
+              ${[0,1,2,3,4,5,6,7,8,9,10,11].map(inc => `<option value="${inc}" ${String(S.inches) === String(inc) ? 'selected' : ''}>${inc} in</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="field">
+          <label>Current Weight (lb)<span class="req">*</span></label>
+          <input type="number" step="0.5" data-f="weight_lb" min="80" max="500" placeholder="e.g. 190" value="${esc(S.weight_lb)}">
+        </div>
+        <div class="field">
+          <label>Goal Weight (lb)</label>
+          <input type="number" step="0.5" data-f="goal_weight_lb" min="80" max="500" placeholder="e.g. 175" value="${esc(S.goal_weight_lb)}">
+        </div>
+        <div class="field">
+          <label>Daily Activity</label>
+          <select data-f="activity">
+            <option value="light" ${S.activity === 'light' ? 'selected' : ''}>Desk Job (5k steps)</option>
+            <option value="moderate" ${S.activity === 'moderate' ? 'selected' : ''}>Active (7k to 10k steps)</option>
+            <option value="active" ${S.activity === 'active' ? 'selected' : ''}>Very Active (10k+ steps)</option>
+            <option value="athlete" ${S.activity === 'athlete' ? 'selected' : ''}>Physical Job + Lifting</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Days You Can Lift Per Week<span class="req">*</span></label>
+        <div class="days-row">
+          ${[2,3,4,5,6].map(d => `<button type="button" class="day-pill" data-days="${d}" aria-pressed="${S.days === d}">${d}d / wk</button>`).join('')}
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>First Name<span class="req">*</span></label>
+          <input type="text" data-f="first_name" placeholder="First name" value="${esc(S.first_name)}" autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label>Best Email (to send your Blueprint)<span class="req">*</span></label>
+          <input type="email" data-f="email" placeholder="you@example.com" value="${esc(S.email)}" autocomplete="email">
+        </div>
+      </div>
+
+      <div style="margin-top:20px">
+        <button type="submit" class="btn btn-primary" ${S.busy ? 'disabled' : ''}>
+          ${S.busy ? 'Calculating Your Protocol...' : 'Unlock My Custom Macro & Split Blueprint ->'}
+        </button>
+        <div style="text-align:center;font-size:12px;color:var(--text-3);margin-top:8px">
+          Includes free access to <b>The CLF Dispatch</b> every Sunday. Unsubscribe anytime.
+        </div>
+      </div>
+    </form>`;
+  }
+
+  function renderResult() {
+    const r = S.result;
+    const applyParams = new URLSearchParams({
+      first_name: S.first_name,
+      email: S.email,
+      age: S.age,
+      height: r.height_label,
+      weight: S.weight_lb,
+      goal_weight: S.goal_weight_lb || S.weight_lb,
+      days: String(S.days),
+    });
+    const applyHref = `apply.html?${applyParams.toString()}`;
+
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <span class="pill-badge">${esc(r.goalLabel.toUpperCase())}</span>
+        <span class="mono" style="font-size:12px;color:var(--text-3)">Est. Maintenance: ${r.tdee} kcal</span>
+      </div>
+      <h1>${esc(S.first_name)}'s CLF Starting Blueprint</h1>
+      <p class="lede">
+        ${S.emailed
+          ? `Sent a copy to <b>${esc(S.email)}</b> so you have these numbers saved in your inbox.`
+          : `Saved for <b>${esc(S.email)}</b>. Screenshot or tap below to build your full custom program with Coach Kyle.`}
+      </p>
+
+      <div class="grid-4">
+        <div class="stat-tile hi">
+          <div class="stat-k">Daily Calories</div>
+          <div class="stat-v">${r.calories}</div>
+          <div class="stat-u">kcal / day</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-k">Protein</div>
+          <div class="stat-v">${r.protein_g}g</div>
+          <div class="stat-u">${Math.round((r.protein_g * 4 / r.calories) * 100)}% of kcal</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-k">Carbs</div>
+          <div class="stat-v">${r.carbs_g}g</div>
+          <div class="stat-u">Training fuel</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-k">Fats</div>
+          <div class="stat-v">${r.fats_g}g</div>
+          <div class="stat-u">Hormone floor</div>
+        </div>
+      </div>
+
+      <div class="callout accent">
+        <strong>Recommended CLF Split: ${esc(r.split)}</strong>
+        ${esc(r.splitNote)}<br>
+        <span class="mono" style="font-size:12px;color:var(--accent-text)">Daily Baseline Stack: ${r.water_oz} oz water &middot; 8,500 to 10,000 steps &middot; 5g Creatine Monohydrate</span>
+      </div>
+
+      <div class="callout">
+        <strong>Want Coach Kyle to Build Your Exact 8-Week Program &amp; App?</strong>
+        Stop guessing exercise selection, progression, and weekly macro adjustments. Get a custom split built around your exact gym equipment, weekly check-ins, supplement tracking, and full <b>CLF Protocol</b> app access.
+        <div style="display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px">
+          <a class="btn btn-primary" href="${esc(applyHref)}">Apply for 1-on-1 Coaching (Stats Pre-Filled) &rarr;</a>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a class="btn btn-secondary btn-sm" href="index.html#partners" style="flex:1">View CLF Supplement Partners</a>
+            <button type="button" class="btn btn-secondary btn-sm" id="reset-btn" style="flex:1">${S.kiosk ? 'Reset for Next Booth Visitor' : 'Recalculate Numbers'}</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function render() {
+    document.getElementById('stage').innerHTML = S.result ? renderResult() : renderForm();
+  }
+
+  document.addEventListener('input', e => {
+    const k = e.target.dataset.f;
+    if (k) S[k] = e.target.value;
+  });
+  document.addEventListener('change', e => {
+    const k = e.target.dataset.f;
+    if (k) S[k] = e.target.value;
+  });
+
+  document.addEventListener('click', e => {
+    const gBtn = e.target.closest('[data-goal]');
+    if (gBtn) { S.goal = gBtn.dataset.goal; render(); return; }
+
+    const dBtn = e.target.closest('[data-days]');
+    if (dBtn) { S.days = Number(dBtn.dataset.days); render(); return; }
+
+    if (e.target.id === 'reset-btn') {
+      if (S.kiosk) {
+        S.age = ''; S.weight_lb = ''; S.goal_weight_lb = ''; S.first_name = ''; S.email = '';
+      }
+      S.result = null; S.err = ''; S.emailed = false;
+      render();
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    if (e.target.id === 'qr-btn') {
+      openQrModal();
+      return;
+    }
+    if (e.target.id === 'close-qr' || e.target.id === 'qr-backdrop') {
+      document.getElementById('qr-modal').style.display = 'none';
+      return;
+    }
+    if (e.target.id === 'dl-tent-btn') {
+      downloadBoothPoster();
+    }
+  });
+
+  document.addEventListener('submit', async e => {
+    if (e.target.id !== 'expo-form') return;
+    e.preventDefault();
+    S.err = '';
+    const email = S.email.trim().toLowerCase();
+    if (!S.first_name.trim() || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      S.err = 'Please enter your first name and a valid email address.';
+      render(); return;
+    }
+    const age = Number(S.age), wt = Number(S.weight_lb);
+    if (!age || age < 14 || age > 95 || !wt || wt < 80 || wt > 500) {
+      S.err = 'Please enter a valid age (14 to 95) and current weight (80 to 500 lb).';
+      render(); return;
+    }
+
+    S.busy = true; render();
+    const r = computeBlueprint();
+    const leadPayload = {
+      first_name: S.first_name.trim(),
+      email,
+      sex: S.sex,
+      age,
+      height_label: r.height_label,
+      weight_lb: wt,
+      goal_weight_lb: S.goal_weight_lb ? Number(S.goal_weight_lb) : null,
+      goal: S.goal,
+      activity: S.activity,
+      days_per_week: S.days,
+      calories: r.calories,
+      protein_g: r.protein_g,
+      carbs_g: r.carbs_g,
+      fats_g: r.fats_g,
+      water_oz: r.water_oz,
+      recommended_split: r.split,
+      source: S.source,
+    };
+
+    try {
+      if (sb) {
+        await Promise.allSettled([
+          sb.rpc('submit_expo_lead', { p_data: leadPayload }),
+          sb.rpc('subscribe_newsletter', { p_email: email }),
+        ]);
+      }
+      const fnRes = await fetch(`${SUPABASE_URL}/functions/v1/clf-automations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+        body: JSON.stringify({ action: 'expo_macro_audit', lead: leadPayload }),
+      });
+      if (fnRes.ok) S.emailed = true;
+    } catch (_) {}
+
+    S.busy = false;
+    S.result = r;
+    render();
+    window.scrollTo(0, 0);
+  });
+
+  function drawQrToCanvas(canvas, size) {
+    canvas.width = size;
+    canvas.height = size;
+    const c = canvas.getContext('2d');
+    c.fillStyle = '#FFFFFF';
+    c.fillRect(0, 0, size, size);
+    const n = EXPO_QR.length;
+    const pad = Math.round(size * 0.08);
+    const cell = (size - pad * 2) / n;
+    c.fillStyle = '#050707';
+    for (let r = 0; r < n; r++) {
+      for (let col = 0; col < n; col++) {
+        if (EXPO_QR[r][col] === '1') {
+          c.fillRect(Math.floor(pad + col * cell), Math.floor(pad + r * cell), Math.ceil(cell), Math.ceil(cell));
+        }
+      }
+    }
+  }
+
+  function openQrModal() {
+    const host = document.getElementById('qr-modal');
+    host.style.display = 'block';
+    host.innerHTML = `<div class="modal-backdrop" id="qr-backdrop">
+      <div class="modal-card">
+        <div class="pill-badge" style="display:inline-block;margin-bottom:10px">CLASH LAB FITNESS BOOTH</div>
+        <h2 style="font-size:21px;margin-bottom:4px">Scan for Free 60-Sec Macro &amp; Split Audit</h2>
+        <p style="font-size:13px;color:var(--text-2);margin:0 0 14px">Instant custom calories, protein &amp; weekly lifting split.</p>
+        <div style="background:#fff;padding:12px;border-radius:16px;display:inline-block">
+          <canvas id="qr-live-cv" width="260" height="260" style="display:block;width:240px;height:240px"></canvas>
+        </div>
+        <div class="mono" style="font-size:12px;color:var(--accent-text);margin-top:10px">clashlabfitness.com/expo.html</div>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <button type="button" class="btn btn-primary btn-sm" id="dl-tent-btn" style="flex:1">Download Booth Sign PNG</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="close-qr">Close</button>
+        </div>
+      </div>
+    </div>`;
+    drawQrToCanvas(document.getElementById('qr-live-cv'), 520);
+  }
+
+  function downloadBoothPoster() {
+    const W = 1500, H = 2100;
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const c = cv.getContext('2d');
+    c.fillStyle = '#050807';
+    c.fillRect(0, 0, W, H);
+    c.fillStyle = '#25D6B2';
+    c.fillRect(0, 0, W, 32);
+    c.fillRect(0, H - 32, W, 32);
+
+    c.textAlign = 'center';
+    c.font = '700 40px monospace';
+    c.fillStyle = '#25D6B2';
+    c.fillText('CLASH LAB FITNESS  ·  FREE BOOTH AUDIT', W / 2, 175);
+
+    c.font = '800 94px sans-serif';
+    c.fillStyle = '#F4F7F6';
+    c.fillText('Stop guessing.', W / 2, 325);
+    c.fillStyle = '#25D6B2';
+    c.fillText('Get your numbers.', W / 2, 435);
+
+    c.font = '500 42px sans-serif';
+    c.fillStyle = '#9FB2AE';
+    c.fillText('Scan for your free 60-second custom Macro & Split Blueprint', W / 2, 535);
+
+    const qSize = 940;
+    const qx = (W - qSize) / 2, qy = 635;
+    c.fillStyle = '#FFFFFF';
+    c.beginPath();
+    c.roundRect(qx, qy, qSize, qSize, 42);
+    c.fill();
+
+    const n = EXPO_QR.length;
+    const pad = 74;
+    const cell = (qSize - pad * 2) / n;
+    c.fillStyle = '#050807';
+    for (let r = 0; r < n; r++) {
+      for (let col = 0; col < n; col++) {
+        if (EXPO_QR[r][col] === '1') {
+          c.fillRect(Math.floor(qx + pad + col * cell), Math.floor(qy + pad + r * cell), Math.ceil(cell), Math.ceil(cell));
+        }
+      }
+    }
+
+    c.font = '700 44px monospace';
+    c.fillStyle = '#25D6B2';
+    c.fillText('CLASHLABFITNESS.COM/EXPO.HTML', W / 2, 1705);
+
+    c.font = '500 36px sans-serif';
+    c.fillStyle = '#C7D6D3';
+    c.fillText('Coach Kyle de Vroede  ·  ISSA CPT  ·  USAF Vet', W / 2, 1805);
+    c.font = '400 32px sans-serif';
+    c.fillStyle = '#7E9490';
+    c.fillText('Daily Calories · Protein/Carbs/Fats · Optimal Lifting Split', W / 2, 1875);
+
+    cv.toBlob(blob => {
+      const u = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = u;
+      a.download = 'clf-booth-table-sign-5x7-300dpi.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(u), 3000);
+    }, 'image/png');
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
