@@ -450,6 +450,13 @@ function loadDemo() {
     }));
     const lift = c.slug === 'charles' ? 'Banded Goblet Squats' : 'Barbell Back Squat';
     const sets = [1, 2, 3].map(w => ({ week: w, day_name: c.slug === 'charles' ? 'Full Body A' : 'Legs', exercise_name: lift, set_num: 1, weight: (c.slug === 'emily' ? 105 : c.slug === 'charles' ? 45 : 185) + w * 5, reps: 8, rpe: 8, done: true }));
+    if (c.slug === 'emily') {
+      [1, 2, 3].forEach(w => {
+        for (let s = 1; s <= 3; s++) {
+          sets.push({ week: w, day_name: 'Legs', exercise_name: 'Hip Abduction', set_num: s, weight: 85 + w * 5, reps: 15, rpe: 8, done: true, note: 'extra' });
+        }
+      });
+    }
     S.data[c.id] = {
       exercises: [{ id: 'ex1-' + c.id, day_name: c.slug === 'charles' ? 'Full Body A' : 'Legs', day_order: 1, exercise_order: 1, name: lift, sets: 4, target_reps: 8, rep_label: '8', rest_sec: 120, is_bodyweight: false, cue: 'Control the descent and brace core.', video_url: '' }],
       sets, checkins: chks,
@@ -460,6 +467,20 @@ function loadDemo() {
   S.view = 'overview'; S.selId = null; S.editVideoId = null;
   render();
 }
+
+const COACH_EX_SUGGESTIONS = [
+  'Hip Abduction', 'Hip Adduction', 'Cable Glute Kickbacks', 'Barbell Hip Thrust',
+  'Barbell Back Squat', 'Front Squat', 'Hack Squat', 'Leg Press', 'Leg Extension',
+  'Seated Leg Curl', 'Lying Leg Curl', 'Barbell Romanian Deadlift', 'DB Romanian Deadlift',
+  'DB Bulgarian Split Squat', 'DB Walking Lunges', 'Standing Calf Raises', 'Seated Calf Raises',
+  'Barbell Bench Press', 'Incline DB Bench Press', 'Flat DB Bench Press', 'Cable Chest Fly', 'Pec Deck Fly',
+  'Barbell Overhead Press', 'Seated DB Shoulder Press', 'DB Lateral Raises', 'Cable Lateral Raises',
+  'Cable Face Pulls', 'Rear Delt Machine Fly', 'Lat Pulldown', 'Seated Cable Row',
+  'Chest-Supported DB Row', 'Barbell Row', 'Assisted or BW Pull-Ups',
+  'DB Bicep Curls', 'Incline DB Curls', 'DB Hammer Curls', 'Preacher Curls',
+  'Cable Tricep Pushdowns', 'Overhead Cable Tricep Ext.', 'Skull Crushers', 'Tricep Dips',
+  'Hanging Knee Raises', 'Cable Crunch',
+];
 
 async function fetchAll() {
   if (S.mode === 'demo') return;
@@ -520,19 +541,69 @@ function clientAnalytics(c) {
   const lastChk = chks[chks.length - 1];
   const latestWt = [...chks].reverse().find(x => x.weight != null)?.weight ?? null;
   const doneSetsWk = d.sets.filter(s => s.done && s.week === wk).length;
-  const lifts = [...new Set(d.exercises.filter(e => !e.is_bodyweight && !/curl|tricep|calf|lateral|face pull|shrug|woodchop|plank|knee raise/i.test(e.name)).map(e => e.name))];
+  const prescribedLowMap = new Map();
+  const prescribedDayLow = new Set();
+  d.exercises.forEach(e => {
+    const low = String(e.name || '').toLowerCase();
+    if (!prescribedLowMap.has(low)) prescribedLowMap.set(low, e.name);
+    prescribedDayLow.add(`${String(e.day_name || '').toLowerCase()}|${low}`);
+  });
+  const compSet = new Set(
+    d.exercises
+      .filter(e => !e.is_bodyweight && !/curl|tricep|calf|lateral|face pull|shrug|woodchop|plank|knee raise|abduction|adduction|kickback/i.test(e.name))
+      .map(e => e.name.toLowerCase())
+  );
+  const allNameByLow = new Map();
+  d.exercises.filter(e => !e.is_bodyweight).forEach(e => {
+    const low = e.name.toLowerCase();
+    if (!allNameByLow.has(low)) allNameByLow.set(low, e.name);
+  });
+  d.sets.forEach(s => {
+    if (!s.done || !s.exercise_name || !Number(s.weight)) return;
+    const low = s.exercise_name.toLowerCase();
+    if (!allNameByLow.has(low)) allNameByLow.set(low, prescribedLowMap.get(low) || s.exercise_name);
+  });
   const liftMap = {};
-  lifts.forEach(name => {
+  const extraLiftSet = new Set();
+  allNameByLow.forEach((canonName, low) => {
     const byWk = new Map();
-    d.sets.filter(s => s.done && s.exercise_name === name && s.weight).forEach(s => {
+    d.sets.filter(s => s.done && String(s.exercise_name || '').toLowerCase() === low && s.weight).forEach(s => {
       const val = e1rm(Number(s.weight), Number(s.reps || 0));
       if (val && (!byWk.has(s.week) || val > byWk.get(s.week))) byWk.set(s.week, val);
     });
     const pts = [...byWk.entries()].sort((a, b) => a[0] - b[0]).map(([w, v]) => ({ wk: w, v }));
-    if (pts.length) liftMap[name] = pts;
+    if (pts.length) {
+      liftMap[canonName] = pts;
+      if (!prescribedLowMap.has(low)) extraLiftSet.add(canonName);
+    }
   });
+  const extraMap = new Map();
+  d.sets.forEach(s => {
+    if (!s.done || !s.exercise_name || !s.day_name) return;
+    const dKey = `${s.day_name.toLowerCase()}|${s.exercise_name.toLowerCase()}`;
+    if (prescribedDayLow.has(dKey)) return;
+    const cur = extraMap.get(dKey) || {
+      day_name: s.day_name, name: s.exercise_name, sets: 0, reps: 12,
+      is_bodyweight: true, bestE1: 0, bestSet: null, weeks: new Set(),
+    };
+    if (s.set_num > cur.sets) cur.sets = s.set_num;
+    if (Number(s.weight) > 0) cur.is_bodyweight = false;
+    cur.weeks.add(s.week);
+    const est = Number(s.weight) > 0 ? e1rm(Number(s.weight), Number(s.reps || 0)) : null;
+    if (est && est > cur.bestE1) { cur.bestE1 = est; cur.bestSet = s; cur.reps = Number(s.reps) || 12; }
+    else if (!est && Number(s.reps) > (cur.bestSet?.reps || 0)) { cur.bestSet = s; cur.reps = Number(s.reps) || 12; }
+    extraMap.set(dKey, cur);
+  });
+  const extraLogged = [...extraMap.values()].map(x => ({
+    ...x,
+    sets: Math.max(x.sets || 3, 1),
+    bestText: x.bestSet ? (x.is_bodyweight ? `${x.bestSet.reps} reps (BW)` : `${x.bestSet.weight} lb × ${x.bestSet.reps}`) : '',
+    weekCount: x.weeks.size,
+  }));
+  const compEntries = Object.entries(liftMap).filter(([n]) => compSet.has(n.toLowerCase()));
+  const compSource = compEntries.length ? compEntries.map(([, p]) => p) : Object.values(liftMap);
   const byWkPct = new Map();
-  Object.values(liftMap).forEach(pts => {
+  compSource.forEach(pts => {
     const base = pts[0].v;
     pts.forEach(p => {
       if (!byWkPct.has(p.wk)) byWkPct.set(p.wk, []);
@@ -545,7 +616,7 @@ function clientAnalytics(c) {
   const flags = [];
   if (daysSince == null || daysSince >= 3) flags.push({ bad: daysSince == null || daysSince >= 5, title: daysSince == null ? 'No check-ins logged yet' : `No check-in for ${daysSince} days`, body: lastChk ? `Last logged ${lastChk.date}` : 'Client has not submitted their first check-in.' });
   if (lastChk?.joint_comfort && lastChk.joint_comfort <= 5) flags.push({ bad: true, title: `Low ${c.joint_label || 'joint comfort'} (${lastChk.joint_comfort}/10)`, body: lastChk.notes || 'Check in before next session.' });
-  return { d, wk, lastChk, latestWt, doneSetsWk, lifts, liftMap, comp, strPct, flags };
+  return { d, wk, lastChk, latestWt, doneSetsWk, lifts: Object.keys(liftMap), liftMap, extraLiftSet, extraLogged, comp, strPct, flags, prescribedDayLow };
 }
 
 function linReg(pts) {
@@ -690,10 +761,16 @@ function viewClient(c) {
       </div>
 
       <div class="card" style="margin-top:16px">
-        <div class="card-head"><span class="card-title">Strength trajectory</span><span class="card-sub">Est. 1RM progression &amp; Week ${c.weeks} projection</span></div>
+        <div class="card-head" style="flex-wrap:wrap;gap:10px">
+          <div><span class="card-title">Strength trajectory</span><span class="card-sub" style="margin-left:8px">Est. 1RM progression &amp; Week ${c.weeks} projection</span></div>
+          ${Object.keys(a.liftMap).length > 5 ? `<select id="coach-lift-jump" style="height:30px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:12.5px;color:var(--text)">
+            <option value="all" ${isAll ? 'selected' : ''}>All compounds (%)</option>
+            ${Object.keys(a.liftMap).map(l => `<option value="${esc(l)}" ${!isAll && S.liftSel === l ? 'selected' : ''}>${esc(l)}${a.extraLiftSet?.has(l) ? ' (Extra)' : ''}</option>`).join('')}
+          </select>` : ''}
+        </div>
         <div class="lift-pills">
           <button class="lift-pill" data-act="lsel" data-v="all" aria-selected="${isAll}">All compounds (%)</button>
-          ${Object.keys(a.liftMap).map(l => `<button class="lift-pill" data-act="lsel" data-v="${esc(l)}" aria-selected="${!isAll && S.liftSel === l}">${esc(l.replace(/^(Barbell|Banded|DB|Seated)\s+/i, ''))}</button>`).join('')}
+          ${Object.keys(a.liftMap).map(l => `<button class="lift-pill" data-act="lsel" data-v="${esc(l)}" aria-selected="${!isAll && S.liftSel === l}">${esc(l.replace(/^(Barbell|Banded|DB|Seated)\s+/i, ''))}${a.extraLiftSet?.has(l) ? ' · Extra' : ''}</button>`).join('')}
         </div>
         <div class="chart">${svgTraj(trajPts, c.weeks, isAll)}</div>
       </div>
@@ -703,7 +780,28 @@ function viewClient(c) {
       ...S.templates.map(t => `<option value="tpl:${t.id}">Template: ${esc(t.name)} (${(t.exercises || []).length} ex)</option>`),
       ...S.clients.filter(x => x.id !== c.id && (S.data[x.id]?.exercises?.length || 0) > 0).map(x => `<option value="cli:${x.id}">Clone ${esc(x.full_name)} (${S.data[x.id].exercises.length} ex)</option>`),
     ];
-    body = `<div class="card" style="margin-top:20px">
+    const exSuggestions = [...new Set([...d.sets.map(s => s.exercise_name).filter(Boolean), ...COACH_EX_SUGGESTIONS])];
+    const extraBanner = a.extraLogged.length ? `<div class="card card-pad" style="margin-top:20px;border-color:var(--accent-line)">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+        <div>
+          <strong style="color:var(--accent);font-size:13.5px">Client-Logged Extra Exercises (${a.extraLogged.length})</strong>
+          <div style="font-size:12.5px;color:var(--text-2);margin-top:2px">${esc(c.full_name)} logged off-plan sets on these movements. Click <b>+ Add to Program</b> to make any of them permanent on their split.</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${a.extraLogged.map(ex => `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:10px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line)">
+          <div>
+            <div style="font-weight:500;font-size:13.5px">${esc(ex.name)} <span class="tag" style="margin-left:6px">${esc(ex.day_name)}</span></div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px">${ex.sets} sets · ${ex.bestText ? `Best: ${esc(ex.bestText)} · ` : ''}${ex.weekCount} week${ex.weekCount === 1 ? '' : 's'} logged</div>
+          </div>
+          <div class="actions">
+            ${!ex.is_bodyweight && a.liftMap[ex.name] ? `<button type="button" class="btn btn-sm" data-act="jump-traj" data-v="${esc(ex.name)}">View Trajectory</button>` : ''}
+            <button type="button" class="btn btn-accent btn-sm" data-act="promote-ex" data-day="${esc(ex.day_name)}" data-ex="${esc(ex.name)}" data-sets="${ex.sets}" data-reps="${ex.reps}" data-bw="${ex.is_bodyweight ? '1' : '0'}">${ic('plus')}Add to Program</button>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>` : '';
+    body = `${extraBanner}<div class="card" style="margin-top:20px">
       <div class="card-head">
         <div><span class="card-title">Program Builder (${d.exercises.length} exercises)</span><div class="card-sub">Changes sync instantly to ${esc(c.full_name)}'s app</div></div>
         <div class="actions">
@@ -752,9 +850,10 @@ function viewClient(c) {
         </tbody>
       </table></div>
       <form id="ex-form">
+        <datalist id="coach-ex-list">${exSuggestions.map(s => `<option value="${esc(s)}">`).join('')}</datalist>
         <div class="builder-form">
           <div class="f-in"><label>Day name</label><input name="day_name" required placeholder="Push / Full Body A" value="${esc(d.exercises[d.exercises.length - 1]?.day_name || 'Day 1')}"></div>
-          <div class="f-in"><label>Exercise name</label><input name="name" required placeholder="e.g. Incline DB Press"></div>
+          <div class="f-in"><label>Exercise name</label><input name="name" list="coach-ex-list" required placeholder="e.g. Hip Abduction / Incline DB Press" autocomplete="off"></div>
           <div class="f-in"><label>Sets</label><input name="sets" type="number" value="3" min="1" max="15"></div>
           <div class="f-in"><label>Reps label</label><input name="rep_label" value="10" placeholder="8–12 / AMRAP"></div>
           <div class="f-in"><label>Rest (s)</label><input name="rest_sec" type="number" value="90"></div>
@@ -769,17 +868,30 @@ function viewClient(c) {
     </div>`;
   } else if (S.tab === 'training') {
     const doneSets = d.sets.filter(s => s.done).sort((x, y) => y.week - x.week || x.day_name.localeCompare(y.day_name));
-    body = `<div class="card" style="margin-top:20px">
+    const extraTrainBanner = a.extraLogged.length ? `<div class="card card-pad" style="margin-top:20px;border-color:var(--accent-line)">
+      <div style="font-weight:600;font-size:13.5px;color:var(--accent);margin-bottom:8px">Extra Off-Plan Movements Logged (${a.extraLogged.length})</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${a.extraLogged.map(ex => `<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);font-size:12.5px">
+          <span><b>${esc(ex.name)}</b> · ${esc(ex.day_name)}${ex.bestText ? ` (${esc(ex.bestText)})` : ''}</span>
+          <button type="button" class="btn btn-accent btn-sm" style="height:26px;padding:0 8px;font-size:11.5px" data-act="promote-ex" data-day="${esc(ex.day_name)}" data-ex="${esc(ex.name)}" data-sets="${ex.sets}" data-reps="${ex.reps}" data-bw="${ex.is_bodyweight ? '1' : '0'}">${ic('plus')}Add to Split</button>
+        </div>`).join('')}
+      </div>
+    </div>` : '';
+    body = `${extraTrainBanner}<div class="card" style="margin-top:20px">
       <div class="card-head"><span class="card-title">Logged sets (${doneSets.length})</span></div>
       <div class="table-wrap"><table>
         <thead><tr><th>Week</th><th>Day</th><th>Exercise</th><th>Set</th><th class="r">Weight</th><th class="r">Reps</th><th class="r">RPE</th><th class="r">Est. 1RM</th></tr></thead>
         <tbody>
-          ${doneSets.length ? doneSets.slice(0, 60).map(s => `<tr>
-            <td class="n">W${s.week}</td><td>${esc(s.day_name)}</td><td style="font-weight:500">${esc(s.exercise_name)}</td>
-            <td class="n">${s.set_num}</td><td class="r n">${s.weight != null ? s.weight + ' lb' : 'BW'}</td>
-            <td class="r n">${s.reps ?? '—'}</td><td class="r n">${s.rpe ?? '—'}</td>
-            <td class="r n" style="color:var(--accent)">${e1rm(Number(s.weight), Number(s.reps)) ? fmt(e1rm(Number(s.weight), Number(s.reps)), 1) : '—'}</td>
-          </tr>`).join('') : '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-3)">No sets logged yet.</td></tr>'}
+          ${doneSets.length ? doneSets.slice(0, 80).map(s => {
+            const isExtraRow = !a.prescribedDayLow.has(`${String(s.day_name || '').toLowerCase()}|${String(s.exercise_name || '').toLowerCase()}`);
+            return `<tr>
+              <td class="n">W${s.week}</td><td>${esc(s.day_name)}</td>
+              <td style="font-weight:500">${esc(s.exercise_name)}${isExtraRow ? ' <span class="tag accent">Extra</span>' : ''}</td>
+              <td class="n">${s.set_num}</td><td class="r n">${s.weight != null ? s.weight + ' lb' : 'BW'}</td>
+              <td class="r n">${s.reps ?? '—'}</td><td class="r n">${s.rpe ?? '—'}</td>
+              <td class="r n" style="color:var(--accent)">${e1rm(Number(s.weight), Number(s.reps)) ? fmt(e1rm(Number(s.weight), Number(s.reps)), 1) : '—'}</td>
+            </tr>`;
+          }).join('') : '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-3)">No sets logged yet.</td></tr>'}
         </tbody>
       </table></div>
     </div>`;
@@ -902,7 +1014,7 @@ function viewClient(c) {
     </div>
     ${cycleBanner}
     <div class="tabs">
-      ${[['overview','Overview'],['program','Program Builder'],['training','Training Log'],['nutrition','Nutrition & Health'],['measurements','Measurements & Photos'],['messages',`Messages${(d.messages?.length || 0) ? ` (${d.messages.length})` : ''}`]].map(([k, l]) =>
+      ${[['overview','Overview'],['program',`Program Builder${a.extraLogged.length ? ` (+${a.extraLogged.length} extra)` : ''}`],['training','Training Log'],['nutrition','Nutrition & Health'],['measurements','Measurements & Photos'],['messages',`Messages${(d.messages?.length || 0) ? ` (${d.messages.length})` : ''}`]].map(([k, l]) =>
         `<button class="tab" data-act="tab" data-v="${k}" aria-selected="${S.tab === k}">${l}</button>`).join('')}
     </div>
     ${body}
@@ -1185,6 +1297,52 @@ document.addEventListener('click', async e => {
     toast('Reset to curated form video');
     render();
   }
+  else if (act === 'jump-traj') {
+    S.tab = 'overview';
+    S.liftSel = btn.dataset.v || 'all';
+    render();
+  }
+  else if (act === 'promote-ex') {
+    if (!S.selId) return;
+    const dayName = String(btn.dataset.day || 'Day 1').trim();
+    const exName = String(btn.dataset.ex || '').trim();
+    const sets = Math.max(1, Math.min(15, Number(btn.dataset.sets) || 3));
+    const reps = Math.max(1, Math.min(100, Number(btn.dataset.reps) || 12));
+    const isBw = btn.dataset.bw === '1';
+    if (!exName) return;
+    const cur = S.data[S.selId]?.exercises || [];
+    if (cur.some(x => x.day_name.toLowerCase() === dayName.toLowerCase() && x.name.toLowerCase() === exName.toLowerCase())) {
+      toast(`${exName} is already on ${dayName}`);
+      render();
+      return;
+    }
+    const days = [...new Set(cur.map(x => x.day_name))];
+    const matchDay = days.find(d => d.toLowerCase() === dayName.toLowerCase()) || dayName;
+    const dayOrder = days.includes(matchDay) ? days.indexOf(matchDay) + 1 : days.length + 1;
+    const payload = {
+      client_id: S.selId,
+      day_name: matchDay,
+      day_order: dayOrder,
+      exercise_order: cur.filter(x => x.day_name === matchDay).length + 1,
+      name: exName,
+      sets,
+      target_reps: reps,
+      rep_label: String(reps),
+      rest_sec: 75,
+      is_bodyweight: isBw,
+      cue: '',
+      video_url: '',
+    };
+    if (S.mode === 'demo') {
+      S.data[S.selId].exercises.push({ id: 'd-' + Date.now(), ...payload });
+      toast(`Added ${exName} to ${matchDay} (demo)`);
+      render();
+      return;
+    }
+    const { error } = await sb.from('program_exercises').insert(payload);
+    if (error) toast('Add failed: ' + error.message);
+    else { toast(`Added ${exName} to ${matchDay}!`); await fetchAll(); }
+  }
   else if (act === 'del-ex') {
     const id = btn.dataset.id;
     if (S.mode !== 'demo') await sb.from('program_exercises').delete().eq('id', id);
@@ -1238,6 +1396,13 @@ document.addEventListener('click', async e => {
   else if (act === 'signout') {
     if (S.mode !== 'demo' && sb) await sb.auth.signOut();
     S.mode = 'auth'; S.user = null; S.view = 'overview'; S.selId = null; S.editVideoId = null; S.authMsg = ''; render();
+  }
+});
+
+document.addEventListener('change', e => {
+  if (e.target.id === 'coach-lift-jump') {
+    S.liftSel = e.target.value;
+    render();
   }
 });
 
