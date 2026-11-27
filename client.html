@@ -39,8 +39,9 @@ input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appear
   background:radial-gradient(120% 420px at 50% -160px,rgba(45,212,191,.075),transparent 70%) no-repeat,var(--bg);
   color:var(--text);font-family:var(--font);font-size:15px;line-height:1.45;
   -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
-  padding-bottom:calc(88px + env(safe-area-inset-bottom));
+  padding-bottom:calc(96px + env(safe-area-inset-bottom));
 }
+.app:has(.dock){padding-bottom:calc(172px + env(safe-area-inset-bottom))}
 @media (min-width:560px){.app{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
 .mono,.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
@@ -178,7 +179,28 @@ dialog.confirm-modal::backdrop{background:rgba(0,0,0,.68);-webkit-backdrop-filte
 .set-check:active{transform:scale(.94)}
 .set.is-done .set-check{background:var(--accent);border-color:transparent;color:var(--on-accent)}
 .set-check svg.i{width:18px;height:18px;stroke-width:2.4}
-.ex-foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12.5px;color:var(--text-3)}
+.ex-foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:12.5px;color:var(--text-3)}
+.ex-foot-actions{display:inline-flex;align-items:center;flex-wrap:wrap;gap:6px}
+.mini-act{height:28px;padding:0 9px;border-radius:7px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--text-2);font-size:11.5px;font-weight:500;display:inline-flex;align-items:center;gap:4px}
+.mini-act:hover{background:var(--surface-3);color:var(--text)}
+.mini-act.accent{border-color:var(--accent-line);background:var(--accent-tint);color:var(--accent)}
+.mini-act.danger{color:var(--bad)}
+.extra-badge{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:5px;background:var(--surface-3);border:1px solid var(--line-2);color:var(--text-2);font:600 9.5px/1 var(--mono);letter-spacing:.04em;flex:none}
+.extra-zone{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.extra-quick{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:12px;color:var(--text-3)}
+.extra-chip{height:30px;padding:0 10px;border-radius:8px;border:1px solid var(--accent-line);background:var(--accent-tint);color:var(--accent);font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:4px}
+.extra-chip svg.i{width:13px;height:13px}
+.extra-card{background:var(--surface);border:1px solid var(--line-2);border-radius:16px;padding:15px;animation:enter .2s var(--ease) both}
+.extra-grid{display:grid;grid-template-columns:1fr 90px 124px;gap:8px;margin-top:10px}
+@media(max-width:480px){.extra-grid{grid-template-columns:1fr 1fr}.extra-grid .span-2{grid-column:1/-1}}
+.extra-field{min-width:0}
+.extra-field label{display:block;font-size:11.5px;color:var(--text-3);margin-bottom:4px}
+.extra-field input,.extra-field select{width:100%;height:42px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface-2);padding:0 11px;font-size:16px;color:var(--text);outline:none}
+.extra-field input:focus,.extra-field select:focus{border-color:var(--accent-line);background:var(--surface-3)}
+.extra-chk{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:var(--text-2);cursor:pointer;user-select:none}
+.extra-chk input{width:16px;height:16px;accent-color:var(--accent);flex:none}
+.lift-jump{width:100%;height:36px;margin-bottom:10px;border-radius:9px;border:1px solid var(--line-2);background:var(--surface-2);padding:0 10px;font-size:13px;color:var(--text);outline:none}
+.lift-jump:focus{border-color:var(--accent-line)}
 .text-input{width:100%;margin-top:12px;height:42px;border-radius:10px;border:1px solid var(--line);background:transparent;padding:0 12px;font-size:14px;outline:none}
 .text-input:focus{border-color:var(--accent-line);background:var(--surface-2)}
 .text-input::placeholder{color:var(--text-3)}
@@ -725,6 +747,11 @@ function makeDemoState() {
         sets.push({ week: w, day_name: ex.day_name, exercise_name: ex.name, set_num: s, weight: baseW, reps: ex.target_reps || 14 + w, rpe: 8, done: w < 3 || ex.day_name === 'Full Body A', note: '' });
       }
     });
+    if (w <= 2) {
+      for (let s = 1; s <= 3; s++) {
+        sets.push({ week: w, day_name: 'Full Body A', exercise_name: 'Hip Abduction', set_num: s, weight: 85 + (w - 1) * 5, reps: 15, rpe: 8, done: true, note: 'extra' });
+      }
+    }
   }
   const checkins = {};
   for (let i = 14; i >= 1; i--) {
@@ -763,6 +790,9 @@ const S = {
   week: 1,
   day: '',
   openEx: null,
+  showExtraForm: false,
+  bonusDrafts: {}, // key: `${wk}|${day}|${ex}` -> { name, sets, is_bodyweight, rest_sec }
+  requestedExtras: {}, // key: `${day}|${exLower}` -> true
   checkDate: ymd(new Date()),
   showMeasForm: false,
   liftSel: 'all',
@@ -776,6 +806,51 @@ const S = {
 
 let restInt = null;
 const setKey = (w, d, ex, n) => `${w}|${d}|${ex}|${n}`;
+const bonusKey = (w, d, ex) => `${w}|${d}|${ex}`;
+
+const EXTRA_SUGGESTIONS = [
+  'Hip Abduction', 'Hip Adduction', 'Cable Glute Kickbacks', 'Barbell Hip Thrust',
+  'Barbell Back Squat', 'Front Squat', 'Hack Squat', 'Leg Press', 'Leg Extension',
+  'Seated Leg Curl', 'Lying Leg Curl', 'Barbell Romanian Deadlift', 'DB Romanian Deadlift',
+  'DB Bulgarian Split Squat', 'DB Walking Lunges', 'Standing Calf Raises', 'Seated Calf Raises',
+  'Barbell Bench Press', 'Incline DB Bench Press', 'Flat DB Bench Press', 'Cable Chest Fly', 'Pec Deck Fly',
+  'Barbell Overhead Press', 'Seated DB Shoulder Press', 'DB Lateral Raises', 'Cable Lateral Raises',
+  'Cable Face Pulls', 'Rear Delt Machine Fly', 'Lat Pulldown', 'Seated Cable Row',
+  'Chest-Supported DB Row', 'Barbell Row', 'Assisted or BW Pull-Ups',
+  'DB Bicep Curls', 'Incline DB Curls', 'DB Hammer Curls', 'Preacher Curls',
+  'Cable Tricep Pushdowns', 'Overhead Cable Tricep Ext.', 'Skull Crushers', 'Tricep Dips',
+  'Hanging Knee Raises', 'Cable Crunch',
+];
+
+function loadBonusDrafts(cid) {
+  if (!cid) return {};
+  try {
+    const raw = localStorage.getItem('clf_bonus_' + cid);
+    return raw ? JSON.parse(raw) || {} : {};
+  } catch { return {}; }
+}
+
+function saveBonusDrafts() {
+  if (!S.client?.id || S.mode === 'demo') return;
+  try { localStorage.setItem('clf_bonus_' + S.client.id, JSON.stringify(S.bonusDrafts)); } catch {}
+}
+
+function exerciseSuggestions() {
+  const seen = new Set();
+  const out = [];
+  const push = n => {
+    const clean = String(n || '').trim();
+    if (!clean) return;
+    const low = clean.toLowerCase();
+    if (seen.has(low)) return;
+    seen.add(low);
+    out.push(clean);
+  };
+  Object.values(S.setsMap).forEach(r => { if (r.done) push(r.exercise_name); });
+  S.exercises.forEach(e => push(e.name));
+  EXTRA_SUGGESTIONS.forEach(push);
+  return out;
+}
 
 function currentWeek(c) {
   if (!c?.start_date) return 1;
@@ -810,11 +885,75 @@ function requireFutureWeekConfirm(onConfirm, onCancel) {
 function daysList() {
   const seen = new Map();
   S.exercises.forEach(e => { if (!seen.has(e.day_name)) seen.set(e.day_name, e.day_order ?? 0); });
-  return [...seen.entries()].sort((a, b) => a[1] - b[1]).map(x => x[0]);
+  if (seen.size) return [...seen.entries()].sort((a, b) => a[1] - b[1]).map(x => x[0]);
+  const fromSets = [...new Set(Object.values(S.setsMap).map(r => r.day_name).filter(Boolean))];
+  return fromSets.length ? fromSets : ['Workout'];
 }
 
 function dayExercises(day) {
   return S.exercises.filter(e => e.day_name === day).sort((a, b) => (a.exercise_order ?? 0) - (b.exercise_order ?? 0));
+}
+
+function extraDayExercises(wk, day) {
+  const prescribedLow = new Set(dayExercises(day).map(e => e.name.toLowerCase()));
+  const byName = new Map();
+  Object.values(S.setsMap).forEach(r => {
+    if (r.week !== wk || r.day_name !== day || !r.exercise_name) return;
+    if (prescribedLow.has(r.exercise_name.toLowerCase())) return;
+    if (!r.done && r.weight == null && r.reps == null) return;
+    const cur = byName.get(r.exercise_name) || { name: r.exercise_name, maxSet: 0, bwHint: false };
+    if (r.set_num > cur.maxSet) cur.maxSet = r.set_num;
+    if (r.note === 'bw') cur.bwHint = true;
+    byName.set(r.exercise_name, cur);
+  });
+  Object.entries(S.bonusDrafts).forEach(([k, d]) => {
+    if (!d || !d.name) return;
+    const prefix = `${wk}|${day}|`;
+    if (!k.startsWith(prefix)) return;
+    if (prescribedLow.has(d.name.toLowerCase())) return;
+    const cur = byName.get(d.name) || { name: d.name, maxSet: 0, bwHint: false };
+    cur.draft = d;
+    byName.set(d.name, cur);
+  });
+  return [...byName.values()].map(item => {
+    const priorAnyBw = Object.values(S.setsMap).some(r => r.exercise_name === item.name && r.note === 'bw');
+    const isBw = item.draft ? !!item.draft.is_bodyweight : (item.bwHint || priorAnyBw);
+    const sets = Math.max(item.draft?.sets || 0, item.maxSet || 0, 3);
+    return {
+      name: item.name,
+      day_name: day,
+      sets: item.draft?.sets ? Math.max(item.draft.sets, item.maxSet) : (item.maxSet || 3),
+      target_reps: null,
+      rep_label: 'Extra',
+      rest_sec: item.draft?.rest_sec || 75,
+      is_bodyweight: isBw,
+      cue: '',
+      video_url: '',
+      is_extra: true,
+    };
+  });
+}
+
+function priorDayExtraNames(wk, day) {
+  const activeLow = new Set([
+    ...dayExercises(day).map(e => e.name.toLowerCase()),
+    ...extraDayExercises(wk, day).map(e => e.name.toLowerCase()),
+  ]);
+  const found = new Map();
+  Object.values(S.setsMap).forEach(r => {
+    if (!r.done || r.day_name !== day || r.week === wk || !r.exercise_name) return;
+    const low = r.exercise_name.toLowerCase();
+    if (activeLow.has(low)) return;
+    const prev = found.get(low);
+    if (!prev || r.set_num > prev.sets) {
+      found.set(low, { name: r.exercise_name, sets: Math.max(prev?.sets || 3, r.set_num), is_bodyweight: r.note === 'bw' || (prev?.is_bodyweight ?? false) });
+    }
+  });
+  return [...found.values()];
+}
+
+function findDayExercise(day, exName, wk = S.week) {
+  return dayExercises(day).find(x => x.name === exName) || extraDayExercises(wk, day).find(x => x.name === exName) || null;
 }
 
 function getSet(w, d, ex, n) {
@@ -823,7 +962,8 @@ function getSet(w, d, ex, n) {
 
 /* Prior-week performance, PR detection, and Next-Session Target suggestion */
 function priorSetsFor(exName, beforeWeek) {
-  return Object.values(S.setsMap).filter(r => r.exercise_name === exName && r.done && r.week < beforeWeek);
+  const low = String(exName || '').toLowerCase();
+  return Object.values(S.setsMap).filter(r => String(r.exercise_name || '').toLowerCase() === low && r.done && r.week < beforeWeek);
 }
 
 function bestPrior(exName, beforeWeek) {
@@ -859,7 +999,7 @@ function nextTargetHint(ex, wk) {
   if (!w) return null;
   const hitTarget = ex.target_reps ? r >= ex.target_reps : true;
   if (hitTarget) {
-    const bump = /squat|deadlift|hip thrust/i.test(ex.name) ? 5 : 2.5;
+    const bump = /squat|deadlift|hip thrust|leg press/i.test(ex.name) ? 5 : 2.5;
     return `Next target: ${w + bump} lb × ${ex.target_reps || r}`;
   }
   return `Next target: ${w} lb × ${r + 1}`;
@@ -873,6 +1013,9 @@ async function loadClientBundle(clientRow) {
   S.mode = 'app';
   S.week = currentWeek(clientRow);
   S.confirmedFutureWeeks = {};
+  S.showExtraForm = false;
+  S.bonusDrafts = loadBonusDrafts(clientRow.id);
+  S.requestedExtras = {};
   S.syncState = 'syncing';
   render();
   try {
@@ -1220,26 +1363,80 @@ function renderDock() {
 /* ------------------------------------------------------------------ *
  * Strength Trajectory & Charts
  * ------------------------------------------------------------------ */
+function isPrescribedLift(name) {
+  const low = String(name || '').toLowerCase();
+  return S.exercises.some(e => e.name.toLowerCase() === low);
+}
+
 function compoundLifts() {
   const map = new Map();
   S.exercises.forEach(e => {
     if (e.is_bodyweight) return;
-    if (/curl|tricep|calf|lateral|face pull|shrug|woodchop|plank|knee raise/i.test(e.name)) return;
-    if (!map.has(e.name)) map.set(e.name, e.name);
+    if (/curl|tricep|calf|lateral|face pull|shrug|woodchop|plank|knee raise|abduction|adduction|kickback/i.test(e.name)) return;
+    const low = e.name.toLowerCase();
+    if (!map.has(low)) map.set(low, e.name);
   });
-  return [...map.keys()].slice(0, 8);
+  const base = [...map.values()];
+  return base.length ? base : trackedLifts();
+}
+
+function trackedLifts() {
+  const byLow = new Map();
+  const loggedLow = new Set();
+  S.exercises.forEach(e => {
+    if (!e.is_bodyweight) {
+      const low = e.name.toLowerCase();
+      if (!byLow.has(low)) byLow.set(low, e.name);
+    }
+  });
+  Object.values(S.setsMap).forEach(r => {
+    if (!r.done || !r.exercise_name || !Number(r.weight)) return;
+    const low = r.exercise_name.toLowerCase();
+    loggedLow.add(low);
+    if (!byLow.has(low)) byLow.set(low, r.exercise_name);
+  });
+  return [...byLow.entries()]
+    .sort((a, b) => (loggedLow.has(b[0]) ? 1 : 0) - (loggedLow.has(a[0]) ? 1 : 0))
+    .map(x => x[1]);
 }
 
 function liftSeries(name) {
+  const low = String(name || '').toLowerCase();
   const byWk = new Map();
   Object.values(S.setsMap).forEach(r => {
-    if (!r.done || r.exercise_name !== name || !r.weight) return;
+    if (!r.done || String(r.exercise_name || '').toLowerCase() !== low || !r.weight) return;
     const w = Number(r.weight), reps = Number(r.reps || 0);
     const val = S.liftMode === 'e1rm' ? e1rm(w, reps) : w;
     if (!val) return;
     if (!byWk.has(r.week) || val > byWk.get(r.week)) byWk.set(r.week, val);
   });
   return [...byWk.entries()].sort((a, b) => a[0] - b[0]).map(([wk, v]) => ({ wk, v }));
+}
+
+function liftPrRows() {
+  const map = new Map();
+  Object.values(S.setsMap).forEach(r => {
+    if (!r.done || !r.exercise_name) return;
+    const low = r.exercise_name.toLowerCase();
+    const w = Number(r.weight || 0), reps = Number(r.reps || 0);
+    const est = w > 0 ? e1rm(w, reps) : null;
+    const cur = map.get(low) || {
+      name: S.exercises.find(e => e.name.toLowerCase() === low)?.name || r.exercise_name,
+      isExtra: !isPrescribedLift(r.exercise_name),
+      isBw: w <= 0,
+      bestE1: 0, bestSet: null, firstE1: null, firstWk: 999, lastWk: 0, sessions: new Set(),
+    };
+    cur.sessions.add(`${r.week}|${r.day_name}`);
+    if (w > 0) cur.isBw = false;
+    if (est && r.week <= cur.firstWk) {
+      if (r.week < cur.firstWk || est > (cur.firstE1 || 0)) { cur.firstWk = r.week; cur.firstE1 = est; }
+    }
+    if (est && est > cur.bestE1) { cur.bestE1 = est; cur.bestSet = r; }
+    else if (!est && reps > (cur.bestSet?.reps || 0)) { cur.bestSet = r; }
+    if (r.week > cur.lastWk) cur.lastWk = r.week;
+    map.set(low, cur);
+  });
+  return [...map.values()].sort((a, b) => (b.isBw === a.isBw ? b.bestE1 - a.bestE1 : (a.isBw ? 1 : -1)));
 }
 
 function compositeSeries(lifts) {
@@ -1355,12 +1552,21 @@ function viewTrain() {
   const ds = daysList();
   if (!ds.includes(S.day)) S.day = ds[0] || '';
   const exs = dayExercises(S.day);
-  let totalSets = 0, doneSets = 0;
+  const extras = extraDayExercises(S.week, S.day);
+  const allExs = [...exs, ...extras];
+  const priorExtras = priorDayExtraNames(S.week, S.day);
+  let totalSets = 0, doneSets = 0, extraTotalSets = 0, extraDoneSets = 0;
   exs.forEach(ex => {
     totalSets += ex.sets;
     for (let s = 1; s <= ex.sets; s++) if (getSet(S.week, S.day, ex.name, s).done) doneSets++;
   });
-  const pct = totalSets ? Math.round((doneSets / totalSets) * 100) : 0;
+  extras.forEach(ex => {
+    extraTotalSets += ex.sets;
+    for (let s = 1; s <= ex.sets; s++) if (getSet(S.week, S.day, ex.name, s).done) extraDoneSets++;
+  });
+  const baseTotal = totalSets || extraTotalSets;
+  const baseDone = totalSets ? doneSets : extraDoneSets;
+  const pct = baseTotal ? Math.round((baseDone / baseTotal) * 100) : 0;
   const pinned = S.notes.find(n => n.pinned);
   const many = ds.length >= 5 || ds.some(d => d.length > 9);
   const curWk = currentWeek(c);
@@ -1376,7 +1582,7 @@ function viewTrain() {
         <button class="stepper-btn" data-act="wk-next" ${S.week >= (c.weeks || 8) ? 'disabled' : ''}>${ic('right')}</button>
       </div>
     </div>
-    <p class="lede">${exs.length} exercises · ${totalSets} sets</p>
+    <p class="lede">${exs.length} exercises${extras.length ? ` + ${extras.length} extra` : ''} · ${totalSets + extraTotalSets} sets</p>
 
     ${futureWk ? `<div class="future-banner" role="status">
       <span><b>Previewing Week ${S.week}</b> · Current is Week ${curWk}</span>
@@ -1397,12 +1603,12 @@ function viewTrain() {
     </div>
 
     <div class="progress">
-      <div class="progress-meta"><span>${doneSets} of ${totalSets} sets</span><span class="num">${pct}%</span></div>
+      <div class="progress-meta"><span>${totalSets ? `${doneSets} of ${totalSets} sets${extraDoneSets ? ` (+${extraDoneSets} extra)` : ''}` : `${extraDoneSets} of ${extraTotalSets} extra sets`}</span><span class="num">${pct}%</span></div>
       <div class="track"><i style="width:${pct}%" ${pct === 100 ? 'data-tone="ok"' : ''}></i></div>
     </div>
 
     <div class="ex-list">
-      ${exs.map((ex, idx) => {
+      ${allExs.map((ex, idx) => {
         const rows = Array.from({ length: ex.sets }, (_, i) => getSet(S.week, S.day, ex.name, i + 1));
         const doneCount = rows.filter(r => r.done).length;
         const isDone = doneCount === ex.sets && ex.sets > 0;
@@ -1410,23 +1616,25 @@ function viewTrain() {
         const hint = nextTargetHint(ex, S.week);
         const isOpen = S.openEx === ex.name;
         const vidUrl = resolveVideoUrl(ex);
+        const isReq = !!S.requestedExtras[`${S.day}|${ex.name.toLowerCase()}`];
         return `<div class="ex ${isOpen ? 'is-open' : ''} ${isDone ? 'is-done' : ''}">
           <button class="ex-head" data-act="toggle-ex" data-v="${esc(ex.name)}">
-            <span class="ex-idx">${isDone ? ic('tick') : z(idx + 1)}</span>
+            <span class="ex-idx">${isDone ? ic('tick') : (ex.is_extra ? '+' : z(idx + 1))}</span>
             <span class="ex-main">
               <span class="ex-name-row">
                 <span class="ex-name">${esc(ex.name)}</span>
+                ${ex.is_extra ? '<span class="extra-badge">EXTRA</span>' : ''}
                 ${hasPR ? '<span class="pr-badge">NEW PR</span>' : ''}
               </span>
               <span class="ex-sub">${hint ? `<b>${esc(hint)}</b> · ` : ''}${doneCount}/${ex.sets} sets</span>
             </span>
-            <span class="ex-target num">${ex.sets} × ${esc(ex.rep_label)}</span>
+            <span class="ex-target num">${ex.is_extra ? `${ex.sets} sets` : `${ex.sets} × ${esc(ex.rep_label)}`}</span>
             <span class="ex-chev">${ic('chev')}</span>
           </button>
           ${isOpen ? `<div class="ex-body">
             ${ex.cue || vidUrl ? `<div class="cue">
               <div class="cue-top">
-                <strong>Coaching cue</strong>
+                <strong>${ex.cue ? 'Coaching cue' : 'Exercise demo'}</strong>
                 ${vidUrl ? `<a class="video-link" href="${esc(vidUrl)}" target="_blank" rel="noopener">${ic('play')}Watch form</a>` : ''}
               </div>
               ${ex.cue ? `<p>${esc(ex.cue)}</p>` : ''}
@@ -1442,12 +1650,49 @@ function viewTrain() {
               </div>`).join('')}
             </div>
             <div class="ex-foot">
-              <span>Rest ${ex.rest_sec || 90}s</span>
-              ${hasPR ? '<span style="color:var(--accent);font-weight:500">New estimated 1RM PR!</span>' : ''}
+              <span>Rest ${ex.rest_sec || 90}s${hasPR ? ' · <b style="color:var(--accent);font-weight:500">New e1RM PR!</b>' : ''}</span>
+              ${ex.is_extra ? `<div class="ex-foot-actions">
+                ${ex.sets < 12 ? `<button type="button" class="mini-act" data-act="extra-add-set" data-ex="${esc(ex.name)}">+ Set</button>` : ''}
+                <button type="button" class="mini-act ${isReq ? 'accent' : ''}" data-act="req-extra" data-ex="${esc(ex.name)}" ${isReq ? 'disabled' : ''}>${isReq ? 'Requested ✓' : 'Ask Coach to add'}</button>
+                <button type="button" class="mini-act danger" data-act="del-extra" data-ex="${esc(ex.name)}">Remove</button>
+              </div>` : ''}
             </div>
           </div>` : ''}
         </div>`;
       }).join('')}
+    </div>
+
+    <div class="extra-zone">
+      ${priorExtras.length ? `<div class="extra-quick">
+        <span>Quick-add from prior weeks:</span>
+        ${priorExtras.map(pe => `<button type="button" class="extra-chip" data-act="quick-extra" data-ex="${esc(pe.name)}" data-sets="${pe.sets}" data-bw="${pe.is_bodyweight ? '1' : '0'}">${ic('plus')}${esc(pe.name)}</button>`).join('')}
+      </div>` : ''}
+      ${S.showExtraForm ? `<div class="extra-card">
+        <div class="card-head" style="margin-bottom:4px">
+          <span class="card-title">Log Extra Exercise</span>
+          <button type="button" class="mini-act" data-act="toggle-extra-form">Cancel</button>
+        </div>
+        <div class="card-meta">Track off-plan machines, swaps, or bonus movements. PRs and strength trajectories save automatically.</div>
+        <form id="extra-ex-form">
+          <datalist id="clf-ex-list">${exerciseSuggestions().map(s => `<option value="${esc(s)}">`).join('')}</datalist>
+          <div class="extra-grid">
+            <div class="extra-field span-2">
+              <label for="extra-ex-name">Exercise name</label>
+              <input id="extra-ex-name" name="name" list="clf-ex-list" required placeholder="e.g. Hip Abduction" autocomplete="off">
+            </div>
+            <div class="extra-field">
+              <label for="extra-ex-sets">Sets</label>
+              <select id="extra-ex-sets" name="sets">${[1,2,3,4,5,6].map(n => `<option value="${n}" ${n === 3 ? 'selected' : ''}>${n} set${n > 1 ? 's' : ''}</option>`).join('')}</select>
+            </div>
+            <div class="extra-field">
+              <label for="extra-ex-bw">Load</label>
+              <select id="extra-ex-bw" name="is_bodyweight"><option value="false">Weighted (lb)</option><option value="true">Bodyweight</option></select>
+            </div>
+          </div>
+          <label class="extra-chk"><input type="checkbox" name="ask_coach" value="1"><span>Ask Coach Kyle to add this permanently to my ${esc(S.day || 'weekly')} split</span></label>
+          <button type="submit" class="btn btn-primary btn-block" style="margin-top:12px;height:42px">${ic('plus')}Add to ${esc(S.day || 'Workout')}</button>
+        </form>
+      </div>` : `<button type="button" class="btn btn-secondary btn-block" data-act="toggle-extra-form" style="height:44px">${ic('plus')}Log Extra Exercise</button>`}
     </div>
   </div>`;
 }
@@ -1560,14 +1805,16 @@ function viewCheckin() {
 
 function viewProgress() {
   const c = S.client;
-  const lifts = compoundLifts();
-  const isAll = S.liftSel === 'all' || !lifts.includes(S.liftSel);
-  const pts = isAll ? compositeSeries(lifts) : liftSeries(S.liftSel);
+  const compLifts = compoundLifts();
+  const allLifts = trackedLifts();
+  const isAll = S.liftSel === 'all' || !allLifts.includes(S.liftSel);
+  const pts = isAll ? compositeSeries(compLifts) : liftSeries(S.liftSel);
   const reg = linReg(pts);
   const last = pts[pts.length - 1];
   const base = pts[0];
   const proj = reg ? reg.at(c.weeks || 8) : last?.v;
   const gain = last && base ? last.v - base.v : null;
+  const prRows = liftPrRows();
   const posePhotos = S.photos.filter(p => p.pose === S.photoPose);
   const firstPh = posePhotos[0], lastPh = posePhotos.length > 1 ? posePhotos[posePhotos.length - 1] : null;
 
@@ -1576,7 +1823,7 @@ function viewProgress() {
     <h1>Progress</h1>
     <p class="lede">${Object.keys(S.checkins).length} check-ins logged · ${Object.values(S.setsMap).filter(r => r.done).length} sets completed</p>
 
-    <div class="section-label">
+    <div class="section-label" id="traj-top">
       <span>Strength trajectory</span>
       <div class="mode-switch">
         <button data-act="lmode" data-v="e1rm" aria-pressed="${S.liftMode === 'e1rm'}">Est. 1RM</button>
@@ -1584,9 +1831,13 @@ function viewProgress() {
       </div>
     </div>
     <div class="card">
+      ${allLifts.length > 4 ? `<select class="lift-jump" id="lift-jump" aria-label="Jump to exercise trajectory">
+        <option value="all" ${isAll ? 'selected' : ''}>All compounds (composite %)</option>
+        ${allLifts.map(l => `<option value="${esc(l)}" ${!isAll && S.liftSel === l ? 'selected' : ''}>${esc(l)}${isPrescribedLift(l) ? '' : ' (Extra)'}</option>`).join('')}
+      </select>` : ''}
       <div class="lift-pills">
         <button class="lift-pill" data-act="lsel" data-v="all" aria-selected="${isAll}">All compounds</button>
-        ${lifts.map(l => `<button class="lift-pill" data-act="lsel" data-v="${esc(l)}" aria-selected="${!isAll && S.liftSel === l}">${esc(l.replace(/^(Barbell|Banded|DB|Seated)\s+/i, ''))}</button>`).join('')}
+        ${allLifts.map(l => `<button class="lift-pill" data-act="lsel" data-v="${esc(l)}" aria-selected="${!isAll && S.liftSel === l}">${esc(l.replace(/^(Barbell|Banded|DB|Seated)\s+/i, ''))}${isPrescribedLift(l) ? '' : ' · Extra'}</button>`).join('')}
       </div>
       ${last ? `<div class="stat-row">
         <div class="stat-big num">${isAll ? (last.v >= 0 ? '+' : '') + fmt(last.v, 1) : fmt(last.v, 0)}<small>${isAll ? '%' : 'lb'}</small></div>
@@ -1601,6 +1852,24 @@ function viewProgress() {
         <span><i class="line" style="background:repeating-linear-gradient(90deg,#2DD4BF 0 4px,transparent 4px 7px)"></i>Trajectory to W${c.weeks || 8}</span>
       </div>
     </div>
+
+    ${prRows.length ? `<div class="section-label"><span>Personal records &amp; logged lifts</span><span>${prRows.length} tracked</span></div>
+    <div class="card">
+      ${prRows.map(r => {
+        const delta = !r.isBw && r.firstE1 && r.bestE1 ? +(r.bestE1 - r.firstE1).toFixed(1) : null;
+        const canChart = !r.isBw && allLifts.includes(r.name);
+        return `<button type="button" class="lift ${!isAll && S.liftSel === r.name ? 'is-sel' : ''}" ${canChart ? `data-act="pick-lift" data-v="${esc(r.name)}"` : 'style="cursor:default"'}>
+          <div style="min-width:0">
+            <div class="lift-name" style="display:flex;align-items:center;gap:6px">${esc(r.name)}${r.isExtra ? '<span class="extra-badge">EXTRA</span>' : ''}</div>
+            <div class="lift-sub">${r.bestSet ? (r.isBw ? `Best set: ${r.bestSet.reps} reps (W${r.bestSet.week})` : `Best set: ${r.bestSet.weight} lb × ${r.bestSet.reps} (W${r.bestSet.week})`) : ''} · ${r.sessions.size} session${r.sessions.size === 1 ? '' : 's'}</div>
+          </div>
+          <div class="lift-e1rm num">
+            <div>${r.isBw ? `${r.bestSet?.reps ?? 0} reps` : `${fmt(r.bestE1, 0)} lb e1RM`}</div>
+            ${delta != null && delta > 0 ? `<div class="lift-sub delta-up">+${fmt(delta, 1)} lb PR</div>` : (canChart ? `<div class="lift-sub">Tap to chart</div>` : '')}
+          </div>
+        </button>`;
+      }).join('')}
+    </div>` : ''}
 
     <div class="section-label"><span>Bodyweight trend</span><span>Goal ${c.targets?.weight ?? '—'} lb</span></div>
     <div class="card">
@@ -1837,14 +2106,15 @@ document.addEventListener('click', async e => {
     d.sets.forEach(r => { S.setsMap[setKey(r.week, r.day_name, r.exercise_name, r.set_num)] = r; });
     S.checkins = d.checkins; S.measurements = d.measurements; S.notes = d.notes;
     S.confirmedFutureWeeks = {}; S.pendingFutureFn = null; S.pendingFutureCancel = null;
+    S.showExtraForm = false; S.bonusDrafts = {}; S.requestedExtras = {};
     S.week = 3; S.day = 'Full Body A'; S.openEx = d.exercises[0].name;
     render();
   }
   else if (act === 'tab') { S.tab = v; render(true); window.scrollTo(0, 0); }
-  else if (act === 'day') { S.day = v; S.openEx = null; render(); }
-  else if (act === 'wk-prev') { S.week = Math.max(1, S.week - 1); render(); }
-  else if (act === 'wk-next') { S.week = Math.min(S.client.weeks || 8, S.week + 1); render(); }
-  else if (act === 'wk-cur') { S.week = currentWeek(S.client); render(); }
+  else if (act === 'day') { S.day = v; S.openEx = null; S.showExtraForm = false; render(); }
+  else if (act === 'wk-prev') { S.week = Math.max(1, S.week - 1); S.showExtraForm = false; render(); }
+  else if (act === 'wk-next') { S.week = Math.min(S.client.weeks || 8, S.week + 1); S.showExtraForm = false; render(); }
+  else if (act === 'wk-cur') { S.week = currentWeek(S.client); S.showExtraForm = false; render(); }
   else if (act === 'fw-confirm') {
     S.confirmedFutureWeeks[S.week] = true;
     document.getElementById('future-wk-modal')?.close();
@@ -1867,10 +2137,76 @@ document.addEventListener('click', async e => {
     render();
   }
   else if (act === 'toggle-ex') { S.openEx = S.openEx === v ? null : v; render(); }
+  else if (act === 'toggle-extra-form') {
+    S.showExtraForm = !S.showExtraForm;
+    render();
+    if (S.showExtraForm) document.getElementById('extra-ex-name')?.focus();
+  }
+  else if (act === 'quick-extra') {
+    const exName = String(btn.dataset.ex || '').trim();
+    const sets = Math.max(1, Math.min(12, Number(btn.dataset.sets) || 3));
+    const isBw = btn.dataset.bw === '1';
+    if (!exName) return;
+    requireFutureWeekConfirm(() => {
+      S.bonusDrafts[bonusKey(S.week, S.day, exName)] = { name: exName, sets, is_bodyweight: isBw, rest_sec: 75 };
+      saveBonusDrafts();
+      S.openEx = exName;
+      S.showExtraForm = false;
+      toast(`Added ${exName}`);
+      render();
+    });
+  }
+  else if (act === 'extra-add-set') {
+    const exName = String(btn.dataset.ex || '').trim();
+    const curEx = findDayExercise(S.day, exName, S.week);
+    if (!curEx || curEx.sets >= 12) return;
+    const k = bonusKey(S.week, S.day, exName);
+    S.bonusDrafts[k] = { name: exName, sets: curEx.sets + 1, is_bodyweight: !!curEx.is_bodyweight, rest_sec: curEx.rest_sec || 75 };
+    saveBonusDrafts();
+    render();
+  }
+  else if (act === 'req-extra') {
+    const exName = String(btn.dataset.ex || '').trim();
+    const curEx = findDayExercise(S.day, exName, S.week);
+    if (!exName) return;
+    const rk = `${S.day}|${exName.toLowerCase()}`;
+    S.requestedExtras[rk] = true;
+    await sendChat(`Exercise request: Can we add "${exName}" (${curEx?.sets || 3} sets, ${curEx?.is_bodyweight ? 'Bodyweight' : 'Weighted'}) to my ${S.day} split?`);
+    toast('Sent exercise request to Coach Kyle');
+  }
+  else if (act === 'del-extra') {
+    const exName = String(btn.dataset.ex || '').trim();
+    if (!exName) return;
+    const existingRows = Object.values(S.setsMap).filter(r => r.week === S.week && r.day_name === S.day && r.exercise_name === exName && (r.done || r.weight != null || r.reps != null));
+    if (existingRows.length && !confirm(`Remove "${exName}" and clear its ${existingRows.length} logged set${existingRows.length === 1 ? '' : 's'} for Week ${S.week}?`)) return;
+    delete S.bonusDrafts[bonusKey(S.week, S.day, exName)];
+    saveBonusDrafts();
+    Object.keys(S.setsMap).forEach(k => {
+      const r = S.setsMap[k];
+      if (r && r.week === S.week && r.day_name === S.day && r.exercise_name === exName) delete S.setsMap[k];
+    });
+    if (S.openEx === exName) S.openEx = null;
+    if (S.mode !== 'demo' && sb && S.client?.id && existingRows.length) {
+      const { error } = await sb.from('workout_sets').delete().eq('client_id', S.client.id).eq('week', S.week).eq('day_name', S.day).eq('exercise_name', exName);
+      if (error) {
+        await Promise.all(existingRows.map(r => sb.from('workout_sets').upsert({
+          client_id: S.client.id, week: S.week, day_name: S.day, exercise_name: exName, set_num: r.set_num,
+          weight: null, reps: null, rpe: null, done: false, note: '', logged_at: new Date().toISOString()
+        }, { onConflict: 'client_id,week,day_name,exercise_name,set_num' })));
+      }
+    }
+    toast('Extra exercise removed');
+    render();
+  }
+  else if (act === 'pick-lift') {
+    S.liftSel = v;
+    render();
+    document.getElementById('traj-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
   else if (act === 'check-set') {
     if (Date.now() - (S.lastInvalidAt || 0) < 350) return;
     const exName = btn.dataset.ex, n = Number(btn.dataset.n), rest = Number(btn.dataset.rest || 90);
-    const ex = S.exercises.find(x => x.name === exName && x.day_name === S.day);
+    const ex = findDayExercise(S.day, exName, S.week);
     const prev = { ...getSet(S.week, S.day, exName, n) };
     const rowEl = btn.closest('.set');
     const domPatch = {};
@@ -1888,7 +2224,8 @@ document.addEventListener('click', async e => {
         domPatch[sk] = res.value;
       }
     }
-    const cur = { ...prev, ...domPatch, done: !prev.done };
+    const noteTag = ex?.is_extra ? (ex.is_bodyweight ? 'bw' : (prev.note || 'extra')) : (prev.note || '');
+    const cur = { ...prev, ...domPatch, note: noteTag, done: !prev.done };
     if (cur.done && cur.reps == null && ex?.target_reps) cur.reps = ex.target_reps;
     if (cur.done && cur.reps == null) {
       const repInp = rowEl?.querySelector('[data-set-in="reps"]');
@@ -1989,6 +2326,10 @@ document.addEventListener('change', async e => {
     const cl = S.allClients.find(x => x.id === e.target.value);
     if (cl) await loadClientBundle(cl);
   }
+  if (e.target.id === 'lift-jump') {
+    S.liftSel = e.target.value;
+    render();
+  }
   if (e.target.id === 'photo-pose') { S.photoPose = e.target.value; }
   if (e.target.id === 'photo-file' && e.target.files?.[0]) {
     await uploadProgressPhoto(e.target.files[0], S.photoPose);
@@ -1997,6 +2338,7 @@ document.addEventListener('change', async e => {
   if (e.target.dataset.setIn) {
     const el = e.target;
     const k = el.dataset.setIn, ex = el.dataset.ex, n = Number(el.dataset.n);
+    const exObj = findDayExercise(S.day, ex, S.week);
     const prev = getSet(S.week, S.day, ex, n);
     const res = parseValidNum(el.value, 'set_' + k);
     if (!res.ok) {
@@ -2007,7 +2349,8 @@ document.addEventListener('change', async e => {
     }
     el.value = res.value ?? '';
     requireFutureWeekConfirm(async () => {
-      const cur = { ...getSet(S.week, S.day, ex, n), [k]: res.value };
+      const noteTag = exObj?.is_extra ? (exObj.is_bodyweight ? 'bw' : (prev.note || 'extra')) : (prev.note || '');
+      const cur = { ...getSet(S.week, S.day, ex, n), [k]: res.value, note: noteTag };
       await persistSet(cur);
     }, () => {
       el.value = prev[k] ?? '';
@@ -2048,6 +2391,46 @@ document.addEventListener('submit', async e => {
       S.authTone = error ? 'bad' : 'ok';
       render();
     }
+  }
+  if (e.target.id === 'extra-ex-form') {
+    e.preventDefault();
+    const rawName = e.target.elements.name.value.trim().replace(/\s+/g, ' ').slice(0, 80);
+    if (!rawName) { toast('Enter an exercise name'); return; }
+    const sets = Math.max(1, Math.min(12, Number(e.target.elements.sets?.value) || 3));
+    const isBw = e.target.elements.is_bodyweight?.value === 'true';
+    const askCoach = !!e.target.elements.ask_coach?.checked;
+    const allToday = [...dayExercises(S.day), ...extraDayExercises(S.week, S.day)];
+    const existing = allToday.find(x => x.name.toLowerCase() === rawName.toLowerCase());
+    if (existing) {
+      if (existing.is_extra && sets > existing.sets) {
+        S.bonusDrafts[bonusKey(S.week, S.day, existing.name)] = { name: existing.name, sets, is_bodyweight: existing.is_bodyweight, rest_sec: existing.rest_sec || 75 };
+        saveBonusDrafts();
+      }
+      S.openEx = existing.name;
+      S.showExtraForm = false;
+      if (askCoach && existing.is_extra) {
+        S.requestedExtras[`${S.day}|${existing.name.toLowerCase()}`] = true;
+        await sendChat(`Exercise request: Can we add "${existing.name}" (${sets} sets, ${isBw ? 'Bodyweight' : 'Weighted'}) to my ${S.day} split?`);
+      }
+      toast(`Opened ${existing.name}`);
+      render();
+      return;
+    }
+    const canon = exerciseSuggestions().find(s => s.toLowerCase() === rawName.toLowerCase()) || rawName;
+    requireFutureWeekConfirm(async () => {
+      S.bonusDrafts[bonusKey(S.week, S.day, canon)] = { name: canon, sets, is_bodyweight: isBw, rest_sec: 75 };
+      saveBonusDrafts();
+      S.openEx = canon;
+      S.showExtraForm = false;
+      if (askCoach) {
+        S.requestedExtras[`${S.day}|${canon.toLowerCase()}`] = true;
+        await sendChat(`Exercise request: Can we add "${canon}" (${sets} sets, ${isBw ? 'Bodyweight' : 'Weighted'}) to my ${S.day} split?`);
+        toast(`Added ${canon} + sent request to Coach Kyle`);
+      } else {
+        toast(`Added ${canon} to ${S.day}`);
+      }
+      render();
+    });
   }
   if (e.target.id === 'meas-form') {
     e.preventDefault();
