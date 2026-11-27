@@ -834,6 +834,8 @@ const S = {
   suppTableReady: true,
   showSuppForm: false,
   suppOverlay: true,
+  showWinForm: false,
+  winSubmitted: false,
   tab: 'train',
   week: 1,
   day: '',
@@ -2075,6 +2077,69 @@ function renderSuppImpactCard(pts, isAll) {
   </div>`;
 }
 
+function renderPhaseGateCard() {
+  const c = S.client;
+  if (!c) return '';
+  const totalWks = c.weeks || 8;
+  const curWk = currentWeek(c);
+  if (curWk < totalWks - 1 && S.week < totalWks - 1) return '';
+  const isMo = c.plan_type === 'monthly';
+  const emailParam = c.email ? `?prefilled_email=${encodeURIComponent(c.email)}` : '';
+  const native = isNativeApp();
+
+  if (isMo) {
+    return `<div class="card" style="margin-top:14px;padding:15px 16px;border-color:var(--accent-line)">
+      <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.05em;text-transform:uppercase">Phase Gate Review Ready</div>
+      <div style="font-weight:600;font-size:15px;margin-top:3px">Ready for your next 8-week block</div>
+      <div style="font-size:13px;color:var(--text-2);margin-top:4px;line-height:1.5">Log your latest weigh-in and progress photos, then tap below to let Coach Kyle know what lifts or schedule tweaks you want in your next phase.</div>
+      <button type="button" class="btn btn-primary btn-sm" style="margin-top:10px" data-act="req-phase2">Send Phase Gate Preferences to Kyle</button>
+    </div>`;
+  }
+
+  return `<div class="card" style="margin-top:14px;padding:15px 16px;border-color:var(--accent-line)">
+    <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.05em;text-transform:uppercase">Week ${Math.max(curWk, S.week)} of ${totalWks} &middot; Phase Gate</div>
+    <div style="font-weight:600;font-size:15px;margin-top:3px">Keep Your Momentum Into Phase 2</div>
+    <div style="font-size:13px;color:var(--text-2);margin-top:4px;line-height:1.5">Roll seamlessly into your next custom 8-week training split and updated macros while keeping every PR, trendline, and supplement streak intact.</div>
+    ${native
+      ? `<button type="button" class="btn btn-primary btn-sm" style="margin-top:11px;width:100%" data-act="req-phase2">Message Coach Kyle to Lock In Phase 2</button>`
+      : `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:11px">
+          <a class="btn btn-primary btn-sm" style="flex:1;text-decoration:none;text-align:center" href="https://buy.stripe.com/aFa28r1Opawy9qn5l3aR201${emailParam}" target="_blank" rel="noopener">Roll Into Ongoing ($50/mo) &rarr;</a>
+          <a class="btn btn-secondary btn-sm" style="flex:1;text-decoration:none;text-align:center" href="https://buy.stripe.com/9B63cvct3fQS0TReVDaR200${emailParam}" target="_blank" rel="noopener">Next 8-Week Block ($100)</a>
+        </div>`}
+  </div>`;
+}
+
+function renderClientWinCard() {
+  return `<div class="section-label" style="margin-top:18px">
+    <span>Coaching Wins &amp; Feedback</span>
+    ${!S.winSubmitted ? `<button type="button" class="link-btn" data-act="toggle-win">${S.showWinForm ? 'Close' : '+ Share a Win'}</button>` : '<span style="color:var(--accent)">Submitted</span>'}
+  </div>
+  <div class="card" style="padding:14px 16px">
+    ${S.winSubmitted
+      ? `<div style="font-size:13.5px;color:var(--accent);font-weight:600">Thank you! Coach Kyle received your win.</div>`
+      : S.showWinForm
+        ? `<form id="client-win-form">
+            <label class="field" style="margin-top:0">
+              <span>How has coaching helped your strength, physique, or habits?</span>
+              <textarea name="quote" rows="3" required maxlength="600" placeholder="e.g. Broke past my plateau and dropped 18 lbs while adding strength on every main lift..." style="width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);font-size:14px"></textarea>
+            </label>
+            <label class="field" style="margin-top:10px">
+              <span>Weight / PR milestone (optional, e.g. -18 lb or +35 lb squat)</span>
+              <input name="milestone" type="text" maxlength="60" placeholder="Optional milestone">
+            </label>
+            <label style="display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--text-2);margin-top:10px;cursor:pointer">
+              <input type="checkbox" name="consent" checked style="margin-top:3px">
+              <span>Coach Kyle may feature this quote anonymously as <b>"Verified Client"</b> (your name is never shown).</span>
+            </label>
+            <button type="submit" class="btn btn-primary btn-sm" style="margin-top:12px;width:100%">Submit Win to Coach Kyle</button>
+          </form>`
+        : `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+            <div style="font-size:13px;color:var(--text-2)">Hit a new PR, broke a weight plateau, or dialed in your consistency? Share a quick note with Coach Kyle.</div>
+            <button type="button" class="btn btn-secondary btn-sm" data-act="toggle-win">Share My Progress</button>
+          </div>`}
+  </div>`;
+}
+
 /* ------------------------------------------------------------------ *
  * Views
  * ------------------------------------------------------------------ */
@@ -2147,6 +2212,7 @@ function viewTrain() {
     </div>` : ''}
 
     ${renderDueSuppStrip()}
+    ${curWk >= (c.weeks || 8) - 1 ? renderPhaseGateCard() : ''}
 
     ${pinned ? `<div class="coach-note">
       <div class="coach-note-head">COACH NOTE <span>${new Date(pinned.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric' })}</span></div>
@@ -2474,6 +2540,9 @@ function viewProgress() {
         <div class="lift-e1rm num" style="font-size:12.5px;color:var(--text-2)">W ${m.waist_in ?? '—'}" · C ${m.chest_in ?? '—'}" · A ${m.arms_in ?? '—'}"</div>
       </div>`).join('')}
     </div>` : ''}
+
+    ${renderPhaseGateCard()}
+    ${renderClientWinCard()}
   </div>`;
 }
 
@@ -2891,6 +2960,13 @@ document.addEventListener('click', async e => {
   }
   else if (act === 'del-supp') { await removeClientSupp(btn.dataset.id); }
   else if (act === 'supp-overlay') { S.suppOverlay = !S.suppOverlay; render(); }
+  else if (act === 'toggle-win') { S.showWinForm = !S.showWinForm; render(); }
+  else if (act === 'req-phase2') {
+    await sendChat(`Phase Gate check-in: Ready to roll into my next 8-week block after ${S.client?.phase || 'Phase 1'}! Let me know next steps.`);
+    toast('Sent Phase 2 message to Coach Kyle');
+    S.tab = 'chat';
+    render();
+  }
   else if (act === 'lsel') { S.liftSel = v; render(); }
   else if (act === 'lmode') { S.liftMode = v; render(); }
   else if (act === 'pose') { S.photoPose = v; render(); }
@@ -3044,6 +3120,28 @@ document.addEventListener('submit', async e => {
       timing: f.elements.timing?.value,
       reminder_time: f.elements.reminder_time?.value,
     });
+  }
+  if (e.target.id === 'client-win-form') {
+    e.preventDefault();
+    const quote = String(e.target.elements.quote?.value || '').trim().slice(0, 600);
+    const milestone = String(e.target.elements.milestone?.value || '').trim().slice(0, 60);
+    const consent = Boolean(e.target.elements.consent?.checked);
+    if (!quote) return;
+    if (S.mode !== 'demo' && sb && S.client?.id) {
+      await Promise.allSettled([
+        sb.from('client_testimonials').insert({
+          client_id: S.client.id,
+          quote,
+          milestone,
+          consent_verified_quote: consent,
+        }),
+        sendChat(`Coaching Win${milestone ? ` (${milestone})` : ''}: "${quote}"${consent ? ' [Approved as Verified Client quote]' : ''}`),
+      ]);
+    }
+    S.winSubmitted = true;
+    S.showWinForm = false;
+    toast('Progress win sent to Coach Kyle!');
+    render();
   }
   if (e.target.id === 'chat-form') {
     e.preventDefault();
