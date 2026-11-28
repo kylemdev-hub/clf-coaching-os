@@ -422,8 +422,8 @@ html.bf-live .bf-hide{display:none}
       <div class="vid-showcase" style="margin-top:20px;background:var(--surface,#0b1111);border:1px solid rgba(45,212,191,.22);border-radius:20px;padding:18px;box-shadow:0 24px 64px rgba(0,0,0,.55)">
         <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
           <div>
-            <div style="font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#2DD4BF">24-Second Platform Tour</div>
-            <div style="font-size:16px;font-weight:600;color:#F2F6F6;margin-top:2px">See the Client App, 60-Second Macro Engine &amp; Coach OS in action</div>
+            <div style="font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#2DD4BF">24-Second App Tour</div>
+            <div style="font-size:16px;font-weight:600;color:#F2F6F6;margin-top:2px">See your custom workouts, 60-second macro blueprint &amp; 1-on-1 coaching app in action</div>
           </div>
           <a href="expo.html" class="btn btn-ghost" style="font-size:13px;padding:8px 14px">Try Free 60s Macro Audit &rarr;</a>
         </div>
@@ -586,7 +586,7 @@ html.bf-live .bf-hide{display:none}
           <div class="coach-actions">
             <a class="btn btn-primary" href="about.html">Read Kyle's Story →</a>
             <a class="btn" href="contact.html">Contact Kyle</a>
-            <a class="btn" href="https://linktr.ee/clashlabfitness" target="_blank" rel="noopener">Socials ↗</a>
+            <a class="btn" href="links.html">All Links &amp; Codes</a>
           </div>
         </div>
       </div>
@@ -773,7 +773,7 @@ html.bf-live .bf-hide{display:none}
           <ul>
             <li><a href="mailto:support@clashlabfitness.com">support@clashlabfitness.com</a></li>
             <li><a href="mailto:kyle@clashlabfitness.com">kyle@clashlabfitness.com</a></li>
-            <li><a href="https://linktr.ee/clashlabfitness" target="_blank" rel="noopener">Socials (Linktree) ↗</a></li>
+            <li><a href="links.html">All Links &amp; Codes</a></li>
           </ul>
         </div>
       </div>
@@ -785,6 +785,14 @@ html.bf-live .bf-hide{display:none}
   </footer>
 
   <script>
+    (function(){
+      try {
+        const qp = new URLSearchParams(location.search);
+        const r = (qp.get('ref') || '').trim();
+        const rn = (qp.get('ref_name') || '').trim();
+        if (r || rn) localStorage.setItem('clf_ref', JSON.stringify({ ref: r, ref_name: rn, ts: Date.now() }));
+      } catch (_) {}
+    })();
     const menuBtn = document.getElementById('menuBtn');
     const mobNav = document.getElementById('mobNav');
     if (menuBtn && mobNav) {
