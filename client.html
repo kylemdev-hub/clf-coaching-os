@@ -2109,6 +2109,41 @@ function renderPhaseGateCard() {
   </div>`;
 }
 
+function buildClientReferralLinks() {
+  const c = S.client || {};
+  const rawName = String(c.full_name || S.user?.email?.split('@')[0] || 'Member').trim();
+  const firstName = rawName.split(/\s+/)[0] || 'Member';
+  const refSlug = String(c.slug || firstName).toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, '') || 'member';
+  const qs = `ref=${encodeURIComponent(refSlug)}&ref_name=${encodeURIComponent(firstName)}`;
+  const auditUrl = `https://clashlabfitness.com/expo.html?${qs}`;
+  const applyUrl = `https://clashlabfitness.com/apply.html?${qs}`;
+  const shareMsg = `Hey! I have been training 1-on-1 with Coach Kyle at Clash Lab Fitness (custom split, macros, and app). You can run his free 60-second custom macro and split audit here: ${auditUrl}`;
+  return { firstName, refSlug, auditUrl, applyUrl, shareMsg };
+}
+
+function renderClientReferralCard() {
+  const native = isNativeApp();
+  const ref = buildClientReferralLinks();
+  return `<div class="section-label" style="margin-top:18px">
+    <span>${native ? 'Invite a Training Partner' : 'Refer a Friend'}</span>
+    <span style="color:var(--accent)">${native ? 'Personal Invite' : '$25 Coaching Credit'}</span>
+  </div>
+  <div class="card" style="padding:15px 16px;border-color:rgba(45,212,191,.28)">
+    <div style="font-weight:600;font-size:14.5px">${native ? 'Train Better With Accountability' : 'Give Priority Access, Earn $25 Credit'}</div>
+    <div style="font-size:13px;color:var(--text-2);margin-top:4px;line-height:1.5">
+      ${native
+        ? 'Share your personal CLF Protocol invite link with a friend, spouse, or gym partner so they can run the free 60-second macro audit and Coach Kyle knows you sent them.'
+        : 'Know a friend, spouse, or gym partner who wants a custom split and macros? Share your personal link below. Every friend who joins earns you a <b>$25 coaching credit</b> toward your next month or 8-week block.'}
+    </div>
+    <div class="code-box" style="margin-top:10px;font-size:11.5px;word-break:break-all">${esc(ref.auditUrl)}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+      <button type="button" class="btn btn-primary btn-sm" style="flex:1;min-width:150px" data-act="share-ref">Share via Text / DM</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-act="copy-val" data-v="${esc(ref.auditUrl)}">${ic('copy')}Copy Audit Link</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-act="copy-val" data-v="${esc(ref.applyUrl)}">${ic('copy')}Direct Apply Link</button>
+    </div>
+  </div>`;
+}
+
 function renderClientWinCard() {
   return `<div class="section-label" style="margin-top:18px">
     <span>Coaching Wins &amp; Feedback</span>
@@ -2542,6 +2577,7 @@ function viewProgress() {
     </div>` : ''}
 
     ${renderPhaseGateCard()}
+    ${renderClientReferralCard()}
     ${renderClientWinCard()}
   </div>`;
 }
@@ -2568,6 +2604,7 @@ function viewChat() {
 
 function renderSettingsSheet() {
   const c = S.client;
+  const ref = buildClientReferralLinks();
   const endpoint = `${SUPABASE_URL}/rest/v1/rpc/sync_apple_health`;
   const payload = JSON.stringify({ p_token: c?.health_sync_token || '', p_date: ymd(new Date()), p_weight: 190.5, p_steps: 10000, p_sleep: 7.5, p_active_cal: 550 }, null, 2);
   return `<dialog class="sheet" id="settings-sheet">
@@ -2590,6 +2627,13 @@ function renderSettingsSheet() {
         In iPhone Shortcuts: <b>Find Health Samples</b> (Weight, Steps, Sleep) → <b>Get Contents of URL</b> (Method: POST, Header <code>apikey</code> = API Key above, JSON body with <code>p_token</code>, <code>p_weight</code>, <code>p_steps</code>, <code>p_sleep</code>).
       </p>
       <div class="sheet-divider"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="font-size:12.5px;color:var(--text-2)">Personal Friend Invite Link</span>
+        <div style="display:flex;gap:6px">
+          <button type="button" class="btn btn-secondary btn-sm" data-act="copy-val" data-v="${esc(ref.auditUrl)}">${ic('copy')}Copy Invite</button>
+          <button type="button" class="btn btn-primary btn-sm" data-act="share-ref">Share</button>
+        </div>
+      </div>
       <div class="sheet-row">
         <span style="font-size:12.5px;color:var(--text-3)">${S.mode === 'demo' ? 'Demo mode' : esc(S.user?.email || '')}</span>
         <div style="display:flex;gap:14px;align-items:center">
@@ -2611,6 +2655,7 @@ function renderSettingsSheet() {
       </div>
       <div style="margin-top:12px;font-size:11.5px;color:var(--text-3);display:flex;gap:14px">
         <a href="index.html" target="_blank">Website</a>
+        <a href="links.html" target="_blank">All Links</a>
         <a href="privacy.html" target="_blank">Privacy Policy</a>
         <a href="support.html" target="_blank">Support</a>
       </div>
@@ -2975,6 +3020,21 @@ document.addEventListener('click', async e => {
   else if (act === 'copy-val') {
     const ok = await copyTextWithFallback(v);
     toast(ok ? 'Copied to clipboard' : 'Copy failed');
+  }
+  else if (act === 'share-ref') {
+    const ref = buildClientReferralLinks();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Clash Lab Fitness | Free 60-Sec Macro & Split Audit',
+          text: ref.shareMsg,
+          url: ref.auditUrl,
+        });
+        return;
+      } catch (_) {}
+    }
+    const ok = await copyTextWithFallback(ref.shareMsg);
+    toast(ok ? 'Invite message copied to clipboard' : 'Copy failed');
   }
   else if (act === 'delete-acct') {
     if (!confirm('Permanently delete your CLF Protocol account and all logged workout/check-in data? This cannot be undone.')) return;
