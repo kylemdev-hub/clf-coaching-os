@@ -51,7 +51,8 @@ svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .shell{display:grid;grid-template-columns:256px minmax(0,1fr);min-height:100vh}
 .side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--side);border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:4px}
 .brand{display:flex;align-items:center;gap:10px;padding:2px 8px 18px}
-.mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(160deg,#5EEAD4,#14B8A6);color:var(--on-accent);display:grid;place-items:center;font:700 10px/1 var(--mono);letter-spacing:.04em;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(0,0,0,.2)}
+.mark{width:34px;height:34px;border-radius:9px;object-fit:cover;display:block;flex:none;background:#060B0A;border:1px solid rgba(45,212,191,.36);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 3px 10px rgba(0,0,0,.45),0 0 14px rgba(45,212,191,.14)}
+.auth-card .mark{width:42px;height:42px;border-radius:11px}
 .brand-title{font-weight:600;font-size:14px;letter-spacing:-.01em}
 .brand-sub{font-size:12px;color:var(--text-3)}
 .nav-btn{display:flex;align-items:center;gap:10px;width:100%;height:34px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--text-2);font-size:13.5px;font-weight:500;text-align:left}
@@ -1628,7 +1629,7 @@ function render() {
   if (S.mode === 'auth') {
     root.innerHTML = `<div class="auth-screen">
       <div class="auth-card">
-        <div class="brand" style="padding:0 0 16px"><span class="mark">CLF</span><div><div class="brand-title">CLF Coaching OS</div><div class="brand-sub">Coach Dashboard</div></div></div>
+        <div class="brand" style="padding:0 0 16px"><img class="mark" src="email-logo.png" alt="CLF Coaching OS" width="42" height="42"><div><div class="brand-title">CLF Coaching OS</div><div class="brand-sub">Coach Dashboard</div></div></div>
         <h1>Coach sign in</h1>
         <p>Sign in with your Supabase coach account to manage clients, programs, coach notes, and live data.</p>
         <form id="auth-form">
@@ -1650,7 +1651,7 @@ function render() {
   const openLeads = S.expoLeads.filter(x => !x.converted).length;
   root.innerHTML = `<div class="shell">
     <aside class="side">
-      <div class="brand"><span class="mark">CLF</span><div><div class="brand-title">CLF Coaching</div><div class="brand-sub">Supabase OS</div></div></div>
+      <div class="brand"><img class="mark" src="email-logo.png" alt="CLF Coaching OS" width="42" height="42"><div><div class="brand-title">CLF Coaching</div><div class="brand-sub">Supabase OS</div></div></div>
       <button class="nav-btn" data-act="overview" aria-current="${S.view === 'overview'}">${ic('grid')}Overview</button>
       <button class="nav-btn" data-act="intake" aria-current="${S.view === 'intake'}">${ic('edit')}<span>Intake</span>${pendingCount ? `<span class="tag accent" style="margin-left:auto;height:20px">${pendingCount}</span>` : ''}</button>
       <button class="nav-btn" data-act="automations" aria-current="${S.view === 'automations'}">${ic('bolt')}<span>Automations</span>${openLeads ? `<span class="tag" style="margin-left:auto;height:20px">${openLeads}</span>` : ''}</button>
