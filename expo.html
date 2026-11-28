@@ -142,9 +142,31 @@ h2{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0 0 6px}
   const qp = new URLSearchParams(location.search);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 
+  const isKiosk = qp.get('kiosk') === '1';
+  let initRef = '', initRefName = '';
+  if (!isKiosk) {
+    const uRef = (qp.get('ref') || '').trim();
+    const uRefName = (qp.get('ref_name') || '').trim();
+    if (uRef || uRefName) {
+      initRef = uRef; initRefName = uRefName;
+      try { localStorage.setItem('clf_ref', JSON.stringify({ ref: uRef, ref_name: uRefName, ts: Date.now() })); } catch (_) {}
+    } else {
+      try {
+        const saved = JSON.parse(localStorage.getItem('clf_ref') || 'null');
+        if (saved && (Date.now() - Number(saved.ts || 0) < 30 * 86400000)) {
+          initRef = saved.ref || ''; initRefName = saved.ref_name || '';
+        }
+      } catch (_) {}
+    }
+  }
+  const refLabel = (initRefName || initRef).trim();
+
   const S = {
-    kiosk: qp.get('kiosk') === '1',
-    source: qp.get('utm_source') || (qp.get('kiosk') === '1' ? 'booth_kiosk' : 'expo_qr'),
+    kiosk: isKiosk,
+    ref: initRef,
+    ref_name: initRefName,
+    ref_label: refLabel,
+    source: refLabel ? `ref:${refLabel}` : (qp.get('utm_source') || (isKiosk ? 'booth_kiosk' : 'expo_qr')),
     goal: 'cut',
     sex: 'male',
     age: '',
@@ -228,6 +250,7 @@ h2{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0 0 6px}
       <h1>60-Second Custom Macro &amp; Split Audit</h1>
       <p class="lede">Get your exact daily calorie target, protein/carb/fat breakdown, and optimal weekly lifting split emailed directly to your phone.</p>
 
+      ${S.ref_label ? `<div class="callout" style="margin:0 0 14px;border:1px solid var(--accent-line);background:var(--accent-tint);color:var(--accent-text)"><strong>Invited by ${esc(S.ref_label)}:</strong> Run your free 60-second custom macro and weekly split audit below.</div>` : ''}
       ${S.err ? `<div class="callout err" style="margin:0 0 14px"><strong>Quick check:</strong> ${esc(S.err)}</div>` : ''}
 
       <div class="field">
@@ -333,6 +356,8 @@ h2{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0 0 6px}
       goal_weight: S.goal_weight_lb || S.weight_lb,
       days: String(S.days),
     });
+    if (S.ref) applyParams.set('ref', S.ref);
+    if (S.ref_name) applyParams.set('ref_name', S.ref_name);
     const applyHref = `apply.html?${applyParams.toString()}`;
 
     return `<div class="card">
