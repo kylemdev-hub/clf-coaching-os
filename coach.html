@@ -3,2123 +3,435 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#050707">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CLF Coach">
-<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
-<link rel="icon" type="image/png" href="data:image/png;base64,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">
-<title>CLF Coaching — Coach Dashboard</title>
-<meta name="description" content="CLF Protocol Coach Dashboard powered by Supabase: client roster, program builder, coach notes, strength trajectory, measurements, and Apple Health sync.">
+<meta name="theme-color" content="#040606">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="apple-touch-icon.png">
+<title>Contact Us | Clash Lab Fitness</title>
+<meta name="description" content="Contact Clash Lab Fitness LLC for 1-on-1 remote coaching inquiries, CLF Protocol app support, PAR-Q+ clearance letters, or billing questions.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box}
-html,body{margin:0;padding:0;background:#050707;color-scheme:dark}
-button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer}
+html{scroll-behavior:smooth}
+html,body{margin:0;padding:0;background:#030505;color-scheme:dark}
 a{color:inherit;text-decoration:none}
 
-.coach{
-  --bg:#050707; --side:#080B0B; --surface:#0C1011; --surface-2:#111617; --sunken:#171E1F;
-  --line:rgba(255,255,255,.07); --line-soft:rgba(255,255,255,.045); --line-2:rgba(255,255,255,.11);
-  --text:#ECF3F2; --text-2:#9AA7A6; --text-3:#5F6B6B;
-  --accent:#2DD4BF; --accent-text:#5EEAD4; --accent-tint:rgba(45,212,191,.10); --accent-line:rgba(45,212,191,.32); --on-accent:#022320;
-  --ok:#4ADE80; --ok-tint:rgba(74,222,128,.10); --warn:#F2B84B; --warn-tint:rgba(242,184,75,.10); --bad:#F2706A; --bad-tint:rgba(242,112,106,.10);
+.site{
+  --bg:#040606; --surface:#0A0E0F; --surface-2:#0F1516; --surface-3:#161E20;
+  --line:rgba(255,255,255,.065); --line-2:rgba(255,255,255,.12);
+  --text:#EFF6F5; --text-2:#99A8A7; --text-3:#5E6C6C;
+  --accent:#2DD4BF; --accent-text:#5EEAD4; --accent-tint:rgba(45,212,191,.10); --accent-line:rgba(45,212,191,.36); --on-accent:#021E1B;
+  --ok:#4ADE80;
   --font:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  --shadow:inset 0 1px 0 rgba(255,255,255,.03),0 1px 2px rgba(0,0,0,.45);
-  --ease:cubic-bezier(.2,.7,.2,1);
-  font-family:var(--font);font-size:14px;line-height:1.45;color:var(--text);
-  background:radial-gradient(1100px 460px at 30% -220px,rgba(45,212,191,.06),transparent 70%) no-repeat,var(--bg);
-  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;min-height:100vh;
+  --ease:cubic-bezier(.16,1,.3,1);
+  min-height:100dvh;color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6;
+  background:
+    radial-gradient(1100px 520px at 50% -180px,rgba(45,212,191,.12),transparent 70%) no-repeat,
+    var(--bg);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
 }
-.mono,.n{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
 
-/* Auth */
-.auth-screen{min-height:100vh;display:grid;place-items:center;padding:24px}
-.auth-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line-2);border-radius:18px;padding:28px 24px;box-shadow:0 24px 64px rgba(0,0,0,.6)}
-.auth-card h1{font-size:22px;margin:0}
-.auth-card p{color:var(--text-2);font-size:13.5px;margin:8px 0 20px}
-.auth-msg{margin-top:12px;font-size:13px;min-height:18px;color:var(--text-2)}
-.auth-msg.bad{color:var(--bad)} .auth-msg.ok{color:var(--ok)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.anim{animation:fadeUp .6s var(--ease) both}
+.d1{animation-delay:.07s}
 
-.shell{display:grid;grid-template-columns:256px minmax(0,1fr);min-height:100vh}
-.side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--side);border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:4px}
-.brand{display:flex;align-items:center;gap:10px;padding:2px 8px 18px}
-.mark{width:34px;height:34px;border-radius:9px;object-fit:cover;display:block;flex:none;background:#060B0A;border:1px solid rgba(45,212,191,.36);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 3px 10px rgba(0,0,0,.45),0 0 14px rgba(45,212,191,.14)}
-.auth-card .mark{width:42px;height:42px;border-radius:11px}
-.brand-title{font-weight:600;font-size:14px;letter-spacing:-.01em}
-.brand-sub{font-size:12px;color:var(--text-3)}
-.nav-btn{display:flex;align-items:center;gap:10px;width:100%;height:34px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--text-2);font-size:13.5px;font-weight:500;text-align:left}
-.nav-btn:hover{background:rgba(255,255,255,.04);color:var(--text)}
-.nav-btn[aria-current=true]{background:var(--surface-2);color:var(--text);box-shadow:var(--shadow)}
-.nav-btn[aria-current=true] svg.i{stroke:var(--accent)}
-.side-label{display:flex;justify-content:space-between;align-items:center;padding:18px 10px 6px;font-size:11.5px;font-weight:500;color:var(--text-3)}
-.mini-btn{width:24px;height:24px;border-radius:6px;border:1px solid var(--line-2);background:var(--surface);display:grid;place-items:center;color:var(--text-2)}
-.mini-btn:hover{color:var(--text)}
-.client-btn{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:10px;width:100%;padding:7px 10px;border:0;border-radius:8px;background:transparent;text-align:left}
-.client-btn:hover{background:rgba(255,255,255,.04)}
-.client-btn[aria-current=true]{background:var(--surface-2);box-shadow:var(--shadow)}
-.client-btn[aria-current=true] .avatar{background:var(--accent-tint);color:var(--accent)}
-.avatar{width:28px;height:28px;border-radius:50%;background:var(--sunken);color:var(--text-2);display:grid;place-items:center;font-size:11px;font-weight:600}
-.avatar.lg{width:44px;height:44px;font-size:15px}
-.client-name{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.client-sub{font-size:11.5px;color:var(--text-3)}
-.side-foot{margin-top:auto;padding:12px 10px 0;font-size:12px;color:var(--text-3);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+/* Nav */
+.nav{position:sticky;top:0;z-index:40;background:rgba(4,6,6,.78);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:66px}
+.brand{display:flex;align-items:center;gap:11px}
+.mark{width:38px;height:38px;border-radius:10px;object-fit:cover;display:block;flex:none;background:#060B0A;border:1px solid rgba(45,212,191,.36);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 3px 12px rgba(0,0,0,.45),0 0 14px rgba(45,212,191,.14)}
+.brand-name{font-size:15px;font-weight:600;letter-spacing:-.015em}
+.brand-sub{font-size:11.5px;color:var(--text-3);margin-top:-1px}
+.nav-links{display:flex;align-items:center;gap:24px;font-size:13.5px;color:var(--text-2)}
+.nav-links a{transition:color .15s}
+.nav-links a:hover{color:var(--text)}
+.nav-links a.active{color:var(--accent-text);font-weight:500}
+.nav-act{display:flex;align-items:center;gap:10px}
+.menu-btn{display:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface);color:var(--text);cursor:pointer;place-items:center}
+.mob-nav{display:none;flex-direction:column;gap:4px;padding:12px 24px 18px;border-top:1px solid var(--line);background:rgba(4,6,6,.96)}
+.mob-nav.open{display:flex}
+.mob-nav a{padding:10px 12px;border-radius:10px;font-size:14px;color:var(--text-2)}
+.mob-nav a:hover,.mob-nav a.active{background:var(--surface);color:var(--text)}
 
-/* Main */
-.main{padding:32px 38px 72px;max-width:1320px;width:100%}
-.view{animation:enter .16s var(--ease) both}
-@keyframes enter{from{opacity:.88;transform:translateY(2px)}to{opacity:1;transform:none}}
-.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap}
-.who{display:flex;align-items:center;gap:14px}
-.crumb{font-size:12.5px;color:var(--text-3);margin-bottom:6px}
-.crumb button{border:0;background:none;padding:0;color:var(--text-3)}
-.crumb button:hover{color:var(--text)}
-h1{font-size:28px;line-height:1.1;font-weight:600;letter-spacing:-.03em;margin:0}
-.meta{font-size:13px;color:var(--text-2);margin-top:6px}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-.btn{height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--line-2);background:var(--surface);color:var(--text);font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:7px;box-shadow:var(--shadow);transition:background .15s,border-color .15s,filter .15s}
-.btn:hover{background:var(--surface-2);border-color:rgba(255,255,255,.18)}
-.btn-accent{background:linear-gradient(180deg,#3FE0CB,#20BFAA);border-color:transparent;color:var(--on-accent);font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 1px 2px rgba(0,0,0,.5)}
-.btn-accent:hover{filter:brightness(1.06)}
-.btn-ghost{background:transparent;box-shadow:none;border-color:transparent;color:var(--text-2)}
-.btn-ghost:hover{background:rgba(255,255,255,.05);color:var(--text)}
-.btn.danger{color:var(--bad)}
-.btn-sm{height:28px;padding:0 10px;font-size:12px}
-
-.tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;font-size:11.5px;font-weight:500;background:var(--sunken);color:var(--text-2);white-space:nowrap}
-.tag.ok{background:var(--ok-tint);color:var(--ok)}
-.tag.warn{background:var(--warn-tint);color:var(--warn)}
-.tag.bad{background:var(--bad-tint);color:var(--bad)}
-.tag.accent{background:var(--accent-tint);color:var(--accent-text)}
-
-.tabs{display:flex;gap:22px;margin-top:24px;border-bottom:1px solid var(--line);overflow-x:auto}
-.tab{border:0;background:none;padding:0 0 11px;font-size:13.5px;font-weight:500;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
-.tab:hover{color:var(--text)}
-.tab[aria-selected=true]{color:var(--text);border-bottom-color:var(--accent)}
-
-.grid{display:grid;gap:14px;margin-top:20px}
-.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
-.g-2-1{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
-.g-1-1{grid-template-columns:repeat(2,minmax(0,1fr))}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);min-width:0}
-.card-pad{padding:18px 20px}
-.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px 0;flex-wrap:wrap}
-.card-title{font-size:14px;font-weight:600;letter-spacing:-.01em}
-.card-sub{font-size:12.5px;color:var(--text-3)}
-.stat-label{font-size:12.5px;color:var(--text-3);font-weight:500}
-.stat-value{font-size:28px;font-weight:500;letter-spacing:-.035em;line-height:1.1;margin-top:10px}
-.stat-value small{font-size:13px;color:var(--text-3);margin-left:3px;font-weight:400}
-.stat-foot{font-size:12.5px;color:var(--text-3);margin-top:8px}
-.up{color:var(--ok)} .down{color:var(--bad)}
-.meter{height:4px;border-radius:4px;background:var(--sunken);margin-top:12px;overflow:hidden}
-.meter i{display:block;height:100%;background:var(--accent);border-radius:inherit}
-
-.chart{height:244px;padding:8px 12px 12px}
-.chart svg{display:block;width:100%;height:100%}
-.lift-pills{display:flex;gap:6px;overflow-x:auto;padding:12px 20px 2px;scrollbar-width:none}
-.lift-pill{height:28px;padding:0 11px;border-radius:7px;border:1px solid var(--line);background:var(--surface-2);color:var(--text-2);font-size:12px;font-weight:500;white-space:nowrap}
-.lift-pill[aria-selected=true]{background:var(--accent-tint);border-color:var(--accent-line);color:var(--accent-text)}
-
-/* Notes composer */
-.note-box{padding:14px 20px 18px}
-.note-box textarea{width:100%;min-height:76px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);padding:10px 12px;font-size:13.5px;outline:none;resize:vertical}
-.note-box textarea:focus{border-color:var(--accent-line)}
-.note-item{padding:10px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line-soft);margin-top:10px;font-size:13px}
-.note-item.pinned{border-color:var(--accent-line);box-shadow:inset 3px 0 0 var(--accent)}
-.note-meta{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--text-3);margin-bottom:4px}
-
-/* Tables */
-.table-wrap{overflow-x:auto;padding:4px 0 8px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{font-size:12px;font-weight:500;color:var(--text-3);text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
-td{padding:11px 14px;border-bottom:1px solid var(--line-soft);vertical-align:middle;white-space:nowrap}
-tr:last-child td{border-bottom:0}
-th:first-child,td:first-child{padding-left:20px}
-th:last-child,td:last-child{padding-right:20px}
-td.r,th.r{text-align:right}
-td.wrap{white-space:normal;min-width:200px;color:var(--text-2)}
-tbody tr.link{cursor:pointer}
-tbody tr.link:hover td{background:var(--surface-2)}
-
-/* Program Builder inline form & video override */
-.builder-form{display:grid;grid-template-columns:130px 1.4fr 64px 86px 74px auto;gap:8px;padding:14px 20px;border-top:1px solid var(--line);align-items:end}
-.builder-form-2{display:grid;grid-template-columns:1.4fr 1fr auto;gap:8px;padding:0 20px 16px;align-items:end}
-.f-in label{display:block;font-size:11.5px;color:var(--text-3);margin-bottom:4px}
-.f-in input,.f-in select{width:100%;height:34px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:13px;outline:none}
-.f-in input:focus{border-color:var(--accent-line)}
-.vid-cell{display:inline-flex;align-items:center;gap:6px}
-.vid-edit-row td{background:var(--surface-2);padding:10px 20px!important}
-.vid-override-form{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
-.vid-override-label{font-size:12px;color:var(--text-2);white-space:nowrap}
-.vid-override-label b{color:var(--text);font-weight:600}
-.vid-override-form input{flex:1 1 240px;min-width:0;height:32px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:12.5px;outline:none}
-.vid-override-form input:focus{border-color:var(--accent-line)}
-
-/* Dialog */
-dialog.modal{border:0;padding:0;border-radius:16px;width:min(540px,calc(100% - 32px));background:var(--surface);color:var(--text);box-shadow:0 24px 64px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.08)}
-dialog.modal::backdrop{background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-.modal-body{padding:22px 24px 8px;max-height:78vh;overflow-y:auto}
-.modal-body h2{font-size:18px;font-weight:600;margin:0 0 4px}
-.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.field{display:block;margin-top:12px}
-.field span{display:block;font-size:12px;font-weight:500;color:var(--text-2);margin-bottom:5px}
-.field input,.field textarea{width:100%;height:38px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 11px;font-size:13.5px;outline:none}
-.field textarea{height:auto;min-height:66px;padding:8px 11px;resize:vertical}
-.field input:focus,.field textarea:focus{border-color:var(--accent-line)}
-.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:16px 24px 20px;border-top:1px solid var(--line)}
-
-.card{transition:border-color .2s var(--ease),transform .22s var(--ease),box-shadow .2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.048),0 8px 26px rgba(0,0,0,.38)}
-.card:hover{border-color:rgba(255,255,255,.11)}
-.btn{transition:transform .18s var(--ease),background .15s,border-color .15s,filter .15s,box-shadow .2s}
-.btn:hover{transform:translateY(-1px)}
+/* Buttons */
+.btn{height:40px;padding:0 16px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface);color:var(--text);
+  font-size:13.5px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .2s var(--ease),background .15s,border-color .15s,filter .15s;white-space:nowrap;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);cursor:pointer;font-family:inherit}
+.btn:hover{background:var(--surface-2);border-color:rgba(255,255,255,.22);transform:translateY(-1px)}
 .btn:active{transform:scale(.98)}
-.btn-accent{box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 4px 16px rgba(45,212,191,.2)}
-.btn-accent:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 22px rgba(45,212,191,.28)}
-.nav-btn,.client-btn{transition:background .15s,color .15s}
-.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,8px);opacity:0;pointer-events:none;background:var(--text);color:var(--bg);font-size:13px;font-weight:500;padding:10px 14px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .2s,transform .2s var(--ease);z-index:60}
-.toast.show{opacity:1;transform:translate(-50%,0)}
+.btn-lg{height:48px;padding:0 22px;border-radius:12px;font-size:14.5px}
+.btn-sm{height:32px;padding:0 11px;border-radius:8px;font-size:12px}
+.btn-primary{background:linear-gradient(180deg,#44E6D1,#1BBBA6);border-color:transparent;color:var(--on-accent);font-weight:600;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 22px rgba(45,212,191,.22)}
+.btn-primary:hover{filter:brightness(1.06);background:linear-gradient(180deg,#44E6D1,#1BBBA6);border-color:transparent}
+.btn-ghost{background:transparent;border-color:transparent;box-shadow:none;color:var(--text-2)}
+.btn-ghost:hover{color:var(--text);background:rgba(255,255,255,.05);border-color:transparent;transform:none}
 
-@media (max-width:1100px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g-2-1,.g-1-1{grid-template-columns:minmax(0,1fr)}.builder-form,.builder-form-2{grid-template-columns:1fr 1fr}}
-@media (max-width:820px){
-  .shell{grid-template-columns:1fr}
-  .side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;border-right:0;border-bottom:1px solid var(--line);padding:12px}
-  .brand{padding:0 8px 0 4px}.side-label,.side-foot{display:none}.nav-btn,.client-btn{width:auto}
-  .main{padding:22px 16px 56px}
+/* Page Header */
+.page-head{padding:56px 0 32px;max-width:680px}
+.kicker{font:600 11.5px/1 var(--mono);color:var(--accent-text);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+h1{font-size:clamp(34px,4.5vw,46px);line-height:1.06;letter-spacing:-.038em;font-weight:600;margin:0 0 14px}
+.page-head p{font-size:16px;color:var(--text-2);margin:0;line-height:1.62}
+
+/* Contact Grid */
+.contact-grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.15fr);gap:24px;align-items:start;padding-bottom:32px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 10px 32px rgba(0,0,0,.35)}
+.card h2{font-size:16px;font-weight:600;margin:0 0 6px;letter-spacing:-.01em}
+.card p{font-size:13.5px;color:var(--text-2);margin:0 0 14px;line-height:1.58}
+.email-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface-2);border:1px solid var(--line-2);
+  border-radius:11px;padding:10px 12px}
+.email-bar a{font:500 13px/1 var(--mono);color:var(--accent-text);overflow:hidden;text-overflow:ellipsis}
+.email-bar a:hover{text-decoration:underline}
+.meta-list{display:flex;flex-direction:column;gap:10px;font-size:13.5px;color:var(--text-2)}
+.meta-row{display:flex;justify-content:space-between;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.meta-row:last-child{padding-bottom:0;border-bottom:none}
+.meta-row span{color:var(--text-3)}
+.meta-row b{color:var(--text);font-weight:500;text-align:right}
+
+/* Form */
+.form-card{background:var(--surface);border:1px solid var(--line-2);border-radius:20px;padding:28px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 18px 48px rgba(0,0,0,.45)}
+.form-card h2{font-size:19px;font-weight:600;margin:0 0 6px;letter-spacing:-.02em}
+.form-card .sub{font-size:13.5px;color:var(--text-2);margin:0 0 22px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+label{font-size:12.5px;font-weight:500;color:var(--text-2)}
+input,select,textarea{
+  width:100%;background:var(--surface-2);border:1px solid var(--line-2);border-radius:11px;
+  padding:11px 13px;color:var(--text);font-family:inherit;font-size:14px;outline:none;
+  transition:border-color .15s,background .15s
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent-line);background:#11191B}
+textarea{min-height:132px;resize:vertical;line-height:1.55}
+.route-hint{font:500 12px/1.4 var(--mono);color:var(--text-3);margin:-6px 0 18px;display:flex;align-items:center;gap:8px}
+.route-hint b{color:var(--accent-text);font-weight:500}
+.submit-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.status-box{display:none;margin-top:18px;background:rgba(45,212,191,.08);border:1px solid var(--accent-line);border-radius:14px;padding:16px 18px}
+.status-box.show{display:block}
+.status-box h3{font-size:14.5px;font-weight:600;color:var(--accent-text);margin:0 0 6px}
+.status-box p{font-size:13px;color:var(--text-2);margin:0 0 12px;line-height:1.55}
+
+/* Quick links strip */
+.quick-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}
+.q-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:4px;
+  transition:border-color .15s,transform .2s var(--ease)}
+.q-card:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.q-card b{font-size:14.5px;font-weight:600}
+.q-card span{font-size:13px;color:var(--text-2)}
+
+/* Footer */
+footer{margin-top:52px;padding:42px 0 36px;border-top:1px solid var(--line);font-size:13px;color:var(--text-3)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.1fr;gap:28px;margin-bottom:32px}
+.foot-col h4{font:600 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--text-2);margin:0 0 12px}
+.foot-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.foot-col a{color:var(--text-3);transition:color .15s}
+.foot-col a:hover{color:var(--text)}
+.foot-desc{color:var(--text-3);font-size:13px;line-height:1.6;margin:12px 0 0;max-width:290px}
+.social-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px}
+.social-btn{width:34px;height:34px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line-2);color:var(--text-2);
+  display:grid;place-items:center;transition:color .15s,border-color .15s,background .15s,transform .2s}
+.social-btn:hover{color:var(--accent-text);border-color:var(--accent-line);background:var(--accent-tint);transform:translateY(-1px)}
+.social-btn svg{width:16px;height:16px;display:block}
+.foot-bottom{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}
+.coach-link{opacity:.6;transition:opacity .15s,color .15s}
+.coach-link:hover{opacity:1;color:var(--accent)}
+
+@media (max-width:880px){
+  .nav-links{display:none}
+  .menu-btn{display:grid}
+  .nav-act .btn-ghost{display:none}
+  .contact-grid,.quick-strip,.foot-grid,.field-row{grid-template-columns:1fr}
+  .page-head{padding:38px 0 24px}
+}
+@media (max-width:520px){
+  .wrap{padding:0 18px}
+  .form-card{padding:22px 18px}
 }
 </style>
 </head>
-<body class="coach">
-<div id="root"></div>
-<div class="toast" id="toast" role="status"></div>
+<body class="site">
+  <header class="nav">
+    <div class="wrap nav-in">
+      <a class="brand" href="index.html">
+        <img class="mark" src="email-logo.png" alt="Clash Lab Fitness" width="38" height="38">
+        <div>
+          <div class="brand-name">Clash Lab Fitness</div>
+          <div class="brand-sub">CLF Protocol</div>
+        </div>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="index.html#results">Results</a>
+        <a href="index.html#plans">Programs</a>
+        <a href="expo.html">Macro Audit</a>
+        <a href="index.html#partners">Partners</a>
+        <a href="about.html">About</a>
+        <a href="index.html#faq">FAQ</a>
+        <a href="contact.html" class="active">Contact</a>
+      </nav>
+      <div class="nav-act">
+        <a class="btn btn-ghost" href="client.html">Client Login</a>
+        <a class="btn btn-primary" href="apply.html">Apply Now</a>
+        <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <nav class="mob-nav" id="mobNav" aria-label="Mobile">
+      <a href="index.html">Home</a>
+      <a href="index.html#results">Client Results</a>
+      <a href="index.html#plans">Programs &amp; Pricing</a>
+      <a href="expo.html">Free Macro &amp; Split Audit</a>
+      <a href="index.html#partners">Official Partners</a>
+      <a href="about.html">About Coach Kyle</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="contact.html" class="active">Contact Us</a>
+      <a href="client.html">Client Login</a>
+    </nav>
+  </header>
 
-<script>
-(() => {
-'use strict';
+  <main class="wrap">
+    <section class="page-head anim">
+      <div class="kicker">Contact Clash Lab Fitness</div>
+      <h1>Get in touch.</h1>
+      <p>Have a question about 1-on-1 coaching, need help with the CLF Protocol app, or sending over a PAR-Q+ medical clearance letter or 3-day food log? Reach us directly below.</p>
+    </section>
 
-const SUPABASE_URL = 'https://rvktkrodnkfktvpbleib.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_XZPmucPNraOaPCYXy-fjGQ_6xakqTNS';
-const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+    <section class="contact-grid">
+      <div class="stack anim">
+        <div class="card">
+          <h2>Support &amp; Client Operations</h2>
+          <p>App login help, PAR-Q+ medical clearance letters, 3-day food logs, billing, and account requests.</p>
+          <div class="email-bar">
+            <a href="mailto:support@clashlabfitness.com">support@clashlabfitness.com</a>
+            <button type="button" class="btn btn-sm" onclick="copyText('support@clashlabfitness.com', this)">Copy</button>
+          </div>
+        </div>
 
-const DAY_MS = 86400000;
-const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
-const fmt = (n, d = 0) => n == null || Number.isNaN(n) ? '—' : Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
-const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-const parseYmd = s => { const [y, m, d] = String(s).split('-').map(Number); return new Date(y, (m || 1) - 1, d || 1); };
-const initials = n => String(n || '?').split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase() || '').join('');
-const e1rm = (w, r) => (!w || !r) ? null : (r === 1 ? w : w * (1 + r / 30));
+        <div class="card">
+          <h2>Direct Coaching Inquiries</h2>
+          <p>Questions for Kyle about programming, goals, injuries, or which coaching plan fits you best.</p>
+          <div class="email-bar">
+            <a href="mailto:kyle@clashlabfitness.com">kyle@clashlabfitness.com</a>
+            <button type="button" class="btn btn-sm" onclick="copyText('kyle@clashlabfitness.com', this)">Copy</button>
+          </div>
+        </div>
 
-const ICONS = {
-  grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
-  plus: '<path d="M12 5v14M5 12h14"/>',
-  refresh: '<path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/>',
-  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
-  copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
-  trash: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>',
-  ext: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
-  heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
-  bolt: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
-  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
-};
-const ic = k => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[k] || ''}</svg>`;
+        <div class="card">
+          <h2>Details &amp; Socials</h2>
+          <div class="meta-list">
+            <div class="meta-row"><span>Response Time</span><b>24 to 48 hours</b></div>
+            <div class="meta-row"><span>Coaching Format</span><b>100% Remote · Worldwide</b></div>
+            <div class="meta-row"><span>Company</span><b>Clash Lab Fitness LLC</b></div>
+            <div class="meta-row"><span>All Links &amp; Codes</span><b><a href="links.html" style="color:var(--accent-text)">clashlabfitness.com/links.html &rarr;</a></b></div>
+          </div>
+          <div id="contact-socials"><div class="social-row" aria-label="Clash Lab Fitness Social Media">
+            <a class="social-btn" href="https://www.instagram.com/clashlabfitness/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+            <a class="social-btn" href="https://www.tiktok.com/@clashlabfitness" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.3 0 .59.04.88.13V9.4a6.33 6.33 0 0 0-.88-.07A6.34 6.34 0 0 0 3.14 15.67a6.34 6.34 0 0 0 10.86 4.48 6.3 6.3 0 0 0 1.86-4.48V8.7a8.26 8.26 0 0 0 4.83 1.56V6.82a4.8 4.8 0 0 1-1.1-.13z"/></svg></a>
+            <a class="social-btn" href="https://www.youtube.com/@Clashlabfitness" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.4.58A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.12c1.86.58 9.4.58 9.4.58s7.54 0 9.4-.58a3 3 0 0 0 2.1-2.12A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg></a>
+            <a class="social-btn" href="https://www.facebook.com/clashlabfitness" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8.2h2.76l.41-3.2H13.5V8.56c0-.93.26-1.56 1.59-1.56h1.7V4.14c-.3-.04-1.31-.13-2.49-.13-2.46 0-4.15 1.5-4.15 4.26v2.33H7.36v3.2h2.79V22h3.35z"/></svg></a>
+            <a class="social-btn" href="https://x.com/clashlabfitness" target="_blank" rel="noopener" aria-label="X" title="X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+            <a class="social-btn" href="https://www.threads.com/@clashlabfitness" target="_blank" rel="noopener" aria-label="Threads" title="Threads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg></a>
+            <a class="social-btn" href="https://www.linkedin.com/company/144179412/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 8.5H3.56V20h3.38V8.5zM5.25 3A2.01 2.01 0 0 0 3.2 5.02c0 1.1.89 2 1.99 2h.03a2.01 2.01 0 1 0 .03-4.02zM20.8 13.4c0-3.47-1.85-5.08-4.32-5.08-1.99 0-2.89 1.1-3.39 1.87V8.5H9.71c.04.96 0 11.5 0 11.5h3.38v-6.42c0-.34.03-.68.13-.93.27-.68.89-1.39 1.93-1.39 1.36 0 1.91 1.04 1.91 2.57V20H20.8v-6.6z"/></svg></a>
+          </div></div>
+        </div>
+      </div>
 
-let toastTimer;
-function toast(m) {
-  const el = document.getElementById('toast');
-  if (!el) return;
-  el.textContent = m; el.classList.add('show');
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
-}
+      <div class="form-card anim d1">
+        <h2>Send a message</h2>
+        <p class="sub">Pick your topic and write your message so it routes straight to the right inbox.</p>
 
-async function copyTextWithFallback(txt) {
-  const str = String(txt ?? '');
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(str);
-      return true;
-    }
-  } catch {}
-  try {
-    const ta = document.createElement('textarea');
-    ta.value = str;
-    ta.setAttribute('readonly', '');
-    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    ta.setSelectionRange(0, str.length);
-    const ok = document.execCommand('copy');
-    document.body.removeChild(ta);
-    return !!ok;
-  } catch {
-    return false;
-  }
-}
+        <form id="contactForm">
+          <div class="field-row">
+            <div class="field">
+              <label for="cName">Your Name</label>
+              <input id="cName" name="name" type="text" placeholder="Alex Rivera" required>
+            </div>
+            <div class="field">
+              <label for="cEmail">Email Address</label>
+              <input id="cEmail" name="email" type="email" placeholder="you@example.com" required>
+            </div>
+          </div>
 
-const CURATED_VIDEOS = {
-  'flat bench press': 'https://www.youtube.com/watch?v=BbvyOxXFFHE',
-  'incline db press': 'https://www.youtube.com/watch?v=xBj33JqHOPI',
-  'db lateral raises': 'https://www.youtube.com/watch?v=-hyAJdSFzT4',
-  'diamond push-ups': 'https://www.youtube.com/watch?v=J0DnG1_S92I',
-  'rear delt row (chest supported)': 'https://www.youtube.com/watch?v=6mvWr4JKOUM',
-  'barbell deadlift': 'https://www.youtube.com/watch?v=AweC3UaM14o',
-  'db seal rows (chest supported)': 'https://www.youtube.com/watch?v=ym-Mp8tCF00',
-  'weighted pull-ups (neutral grip)': 'https://www.youtube.com/watch?v=fGv2Sxw9SDQ',
-  'barbell shrugs': 'https://www.youtube.com/watch?v=M_MjF5Nm_h4',
-  'db hammer curls': 'https://www.youtube.com/watch?v=8XLxfXROrTo',
-  'incline db curls': 'https://www.youtube.com/watch?v=cIYCLQVKzlQ',
-  'barbell back squat': 'https://www.youtube.com/watch?v=1oed-UmAxFs',
-  'db goblet squat': 'https://www.youtube.com/watch?v=MxsFDhcyFyE',
-  'barbell stiff-legged deadlift': 'https://www.youtube.com/watch?v=CN_7cz3P-1U',
-  'db lunges': 'https://www.youtube.com/watch?v=qQyCK_rxzN0',
-  'db calf raises': 'https://www.youtube.com/watch?v=HvvqTpTongY',
-  'barbell bench press': 'https://www.youtube.com/watch?v=BbvyOxXFFHE',
-  'seated db shoulder press': 'https://www.youtube.com/watch?v=HzIiNhHhhtA',
-  'incline db bench press': 'https://www.youtube.com/watch?v=0f6-uCUKqgA',
-  'cable lateral raises': 'https://www.youtube.com/watch?v=qitQHqNZbeM',
-  'cable tricep pushdowns': 'https://www.youtube.com/watch?v=_w-HpW70nSQ',
-  'barbell romanian deadlift': 'https://www.youtube.com/watch?v=pTocjWvkMj0',
-  'chest-supported db row': 'https://www.youtube.com/watch?v=wY_qMbOuPMI',
-  'lat pulldown': 'https://www.youtube.com/watch?v=3PmWIGn0dwU',
-  'cable face pulls': 'https://www.youtube.com/watch?v=7z65m-qWJrA',
-  'db bicep curls': 'https://www.youtube.com/watch?v=CvOWb2nmcog',
-  'barbell hip thrust': 'https://www.youtube.com/watch?v=EF7jXP17DPE',
-  'db bulgarian split squat': 'https://www.youtube.com/watch?v=OHOmkrKoOt8',
-  'seated leg curl': 'https://www.youtube.com/watch?v=Orxowest56U',
-  'standing calf raises': 'https://www.youtube.com/watch?v=YMmgqO8Jo-k',
-  'barbell overhead press': 'https://www.youtube.com/watch?v=mUxbYo3Im34',
-  'assisted or bw pull-ups': 'https://www.youtube.com/watch?v=gnElpp3Fm50',
-  'flat db bench press': 'https://www.youtube.com/watch?v=SHsUIZiNdeY',
-  'seated cable row': 'https://www.youtube.com/watch?v=jgjrOlY6XIM',
-  'overhead cable tricep ext.': 'https://www.youtube.com/watch?v=7hx0-DZgdl8',
-  'trap bar or conv. deadlift': 'https://www.youtube.com/watch?v=eIFW8zspJzQ',
-  'front squat or hack squat': 'https://www.youtube.com/watch?v=u_1a0nWG7vQ',
-  'db romanian deadlift': 'https://www.youtube.com/watch?v=BF-vvMGP8Y0',
-  'db walking lunges': 'https://www.youtube.com/watch?v=_DLIS8SySzs',
-  'hanging knee raises': 'https://www.youtube.com/watch?v=RD_A-Z15ER4',
-  'banded goblet squats': 'https://www.youtube.com/watch?v=W3sp_uGF9XA',
-  'tempo push-ups': 'https://www.youtube.com/watch?v=B2QZkEu-n0g',
-  'banded seated rows': 'https://www.youtube.com/watch?v=PpdPVyH-nqw',
-  'banded overhead press': 'https://www.youtube.com/watch?v=956rqQ8PgH0',
-  'banded bicep curls': 'https://www.youtube.com/watch?v=oXAMW-LNX_Q',
-  'plank w/ shoulder taps': 'https://www.youtube.com/watch?v=VX4Q1gX4NqU',
-  'banded stiff-leg deadlifts': 'https://www.youtube.com/watch?v=SncRS4cTjmc',
-  'banded lat pulldowns': 'https://www.youtube.com/watch?v=84D8bVJWB3s',
-  'banded chest press': 'https://www.youtube.com/watch?v=6-86jEAXA08',
-  'banded lateral raises': 'https://www.youtube.com/watch?v=gfEyrmxbCbw',
-  'banded tricep extensions': 'https://www.youtube.com/watch?v=OWV6s4FtwME',
-  'banded woodchoppers': 'https://www.youtube.com/watch?v=ooP1Zq6lq5Y',
-  'barbell row': 'https://www.youtube.com/watch?v=6FZHJGzMFEc',
-  'barbell bent over row': 'https://www.youtube.com/watch?v=6FZHJGzMFEc',
-  'leg press': 'https://www.youtube.com/watch?v=yZmx_Ac3880',
-  'leg extension': 'https://www.youtube.com/watch?v=m0FOpMEgero',
-  'lying leg curl': 'https://www.youtube.com/watch?v=n5WDXD_mpVY',
-  'cable chest fly': 'https://www.youtube.com/watch?v=hrh0K1Oo7Yc',
-  'tricep dips': 'https://www.youtube.com/watch?v=Rea9_yRXWmU',
-  'skull crushers': 'https://www.youtube.com/watch?v=RavQHfFxbdA',
-  'push-ups': 'https://www.youtube.com/watch?v=vh72hbUqqfs',
-};
+          <div class="field">
+            <label for="cTopic">Topic</label>
+            <select id="cTopic" name="topic">
+              <option value="1-on-1 Coaching Inquiry">1-on-1 Coaching Inquiry</option>
+              <option value="Existing Client / App Support">Existing Client / App Support</option>
+              <option value="PAR-Q+ Medical Clearance">PAR-Q+ Medical Clearance Letter</option>
+              <option value="3-Day Food Log Submission">3-Day Food Log Submission</option>
+              <option value="Billing & Membership">Billing &amp; Membership</option>
+              <option value="General Question">General Question</option>
+            </select>
+          </div>
 
-function isSearchVideoUrl(u) {
-  const s = String(u || '').trim();
-  return !s || !/^https?:\/\//i.test(s) || /youtube\.com\/results\b/i.test(s);
-}
+          <div class="route-hint" id="routeHint">Routes to: <b>kyle@clashlabfitness.com</b></div>
 
-function curatedVideoUrl(name) {
-  const k = String(name || '').trim().toLowerCase().replace(/\s+/g, ' ');
-  if (!k) return '';
-  if (CURATED_VIDEOS[k]) return CURATED_VIDEOS[k];
-  const isBand = /\bband(ed)?\b|resistance band/.test(k);
-  if (isBand) {
-    if (/goblet|squat/.test(k)) return CURATED_VIDEOS['banded goblet squats'];
-    if (/deadlift|rdl|stiff/.test(k)) return CURATED_VIDEOS['banded stiff-leg deadlifts'];
-    if (/pulldown/.test(k)) return CURATED_VIDEOS['banded lat pulldowns'];
-    if (/row/.test(k)) return CURATED_VIDEOS['banded seated rows'];
-    if (/chest|bench/.test(k)) return CURATED_VIDEOS['banded chest press'];
-    if (/overhead|shoulder press/.test(k)) return CURATED_VIDEOS['banded overhead press'];
-    if (/lateral/.test(k)) return CURATED_VIDEOS['banded lateral raises'];
-    if (/tricep/.test(k)) return CURATED_VIDEOS['banded tricep extensions'];
-    if (/curl/.test(k)) return CURATED_VIDEOS['banded bicep curls'];
-    if (/woodchop/.test(k)) return CURATED_VIDEOS['banded woodchoppers'];
-  }
-  if (/rear delt/.test(k) && /row|fly|raise/.test(k)) return CURATED_VIDEOS['rear delt row (chest supported)'];
-  if (/seal row/.test(k)) return CURATED_VIDEOS['db seal rows (chest supported)'];
-  if (/chest[- ]supported/.test(k) && /row/.test(k)) return CURATED_VIDEOS['chest-supported db row'];
-  if (/neutral/.test(k) && /pull[- ]?up/.test(k)) return CURATED_VIDEOS['weighted pull-ups (neutral grip)'];
-  if (/assisted/.test(k) && /pull[- ]?up/.test(k)) return CURATED_VIDEOS['assisted or bw pull-ups'];
-  if (/pull[- ]?up/.test(k)) return CURATED_VIDEOS['weighted pull-ups (neutral grip)'];
-  if (/diamond/.test(k) && /push[- ]?up/.test(k)) return CURATED_VIDEOS['diamond push-ups'];
-  if (/tempo/.test(k) && /push[- ]?up/.test(k)) return CURATED_VIDEOS['tempo push-ups'];
-  if (/push[- ]?up/.test(k)) return CURATED_VIDEOS['push-ups'];
-  if (/shoulder tap|plank/.test(k)) return CURATED_VIDEOS['plank w/ shoulder taps'];
-  if (/incline/.test(k) && /curl/.test(k)) return CURATED_VIDEOS['incline db curls'];
-  if (/hammer/.test(k) && /curl/.test(k)) return CURATED_VIDEOS['db hammer curls'];
-  if (/leg curl/.test(k)) return /lying/.test(k) ? CURATED_VIDEOS['lying leg curl'] : CURATED_VIDEOS['seated leg curl'];
-  if (/curl/.test(k)) return CURATED_VIDEOS['db bicep curls'];
-  if (/stiff[- ]leg/.test(k)) return CURATED_VIDEOS['barbell stiff-legged deadlift'];
-  if (/romanian|\brdl\b/.test(k)) return /\bdb\b|dumbbell/.test(k) ? CURATED_VIDEOS['db romanian deadlift'] : CURATED_VIDEOS['barbell romanian deadlift'];
-  if (/trap bar/.test(k)) return CURATED_VIDEOS['trap bar or conv. deadlift'];
-  if (/deadlift/.test(k)) return CURATED_VIDEOS['barbell deadlift'];
-  if (/goblet/.test(k)) return CURATED_VIDEOS['db goblet squat'];
-  if (/bulgarian/.test(k)) return CURATED_VIDEOS['db bulgarian split squat'];
-  if (/hack squat|front squat/.test(k)) return CURATED_VIDEOS['front squat or hack squat'];
-  if (/squat/.test(k)) return CURATED_VIDEOS['barbell back squat'];
-  if (/hip thrust/.test(k)) return CURATED_VIDEOS['barbell hip thrust'];
-  if (/walking lunge/.test(k)) return CURATED_VIDEOS['db walking lunges'];
-  if (/lunge/.test(k)) return CURATED_VIDEOS['db lunges'];
-  if (/calf/.test(k)) return /\bdb\b|dumbbell/.test(k) ? CURATED_VIDEOS['db calf raises'] : CURATED_VIDEOS['standing calf raises'];
-  if (/incline/.test(k) && /\bdb\b|dumbbell/.test(k) && /press/.test(k)) return /bench/.test(k) ? CURATED_VIDEOS['incline db bench press'] : CURATED_VIDEOS['incline db press'];
-  if (/\bdb\b|dumbbell/.test(k) && /shoulder press|overhead/.test(k)) return CURATED_VIDEOS['seated db shoulder press'];
-  if (/\bdb\b|dumbbell/.test(k) && /bench|chest press/.test(k)) return CURATED_VIDEOS['flat db bench press'];
-  if (/overhead press|\bohp\b/.test(k)) return CURATED_VIDEOS['barbell overhead press'];
-  if (/bench press/.test(k)) return CURATED_VIDEOS['flat bench press'];
-  if (/cable/.test(k) && /lateral/.test(k)) return CURATED_VIDEOS['cable lateral raises'];
-  if (/lateral raise/.test(k)) return CURATED_VIDEOS['db lateral raises'];
-  if (/face pull/.test(k)) return CURATED_VIDEOS['cable face pulls'];
-  if (/shrug/.test(k)) return CURATED_VIDEOS['barbell shrugs'];
-  if (/overhead/.test(k) && /tricep/.test(k)) return CURATED_VIDEOS['overhead cable tricep ext.'];
-  if (/pushdown|tricep/.test(k)) return CURATED_VIDEOS['cable tricep pushdowns'];
-  if (/pulldown/.test(k)) return CURATED_VIDEOS['lat pulldown'];
-  if (/cable row/.test(k)) return CURATED_VIDEOS['seated cable row'];
-  if (/row/.test(k)) return CURATED_VIDEOS['barbell row'];
-  if (/knee raise|leg raise/.test(k)) return CURATED_VIDEOS['hanging knee raises'];
-  if (/leg press/.test(k)) return CURATED_VIDEOS['leg press'];
-  if (/leg extension/.test(k)) return CURATED_VIDEOS['leg extension'];
-  return '';
-}
+          <div class="field">
+            <label for="cMsg">Message</label>
+            <textarea id="cMsg" name="message" placeholder="Tell us your goals, question, or how we can help..." required></textarea>
+          </div>
 
-function resolveVideoUrl(ex) {
-  if (!ex) return '';
-  if (!isSearchVideoUrl(ex.video_url)) return String(ex.video_url).trim();
-  return curatedVideoUrl(ex.name);
-}
+          <div class="submit-row">
+            <button type="submit" class="btn btn-primary btn-lg">Open Pre-Filled Email →</button>
+            <button type="button" class="btn btn-lg" id="copyDraftBtn">Copy Message</button>
+          </div>
+        </form>
 
-const S = {
-  mode: 'loading', // 'auth' | 'app' | 'demo'
-  authMsg: '', authTone: '',
-  user: null,
-  clients: [],
-  intakes: [],
-  expoLeads: [],
-  testimonials: [],
-  autoLogs: [],
-  autoBusy: false,
-  templates: [],
-  photoUrls: {},
-  data: {}, // clientId -> { exercises, sets, checkins, measurements, notes, messages, photos, supplements, suppLogs }
-  suppTableReady: true,
-  suppOverlay: true,
-  view: 'overview', // 'overview' | 'intake' | 'automations' | 'client'
-  selId: null,
-  tab: 'overview', // overview | program | training | nutrition | supplements | measurements | messages
-  liftSel: 'all',
-  editClient: null,
-  editVideoId: null,
-};
+        <div class="status-box" id="statusBox">
+          <h3>Your email draft is ready</h3>
+          <p id="statusText"></p>
+          <div class="submit-row">
+            <a class="btn btn-sm btn-primary" id="mailtoFallback" href="#">Open Email App Again</a>
+            <button type="button" class="btn btn-sm" id="copyFullBtn">Copy Address &amp; Message</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-async function sendCoachAutomation(payload, fallbackHref) {
-  if (S.mode === 'demo') {
-    S.autoLogs.unshift({
-      id: 'dl-' + Date.now(),
-      event_type: payload.template || payload.action || 'email',
-      recipient_email: payload.to || 'kyle@clashlabfitness.com',
-      subject: payload.label || payload.template || payload.action,
-      status: 'sent_demo',
-      created_at: new Date().toISOString(),
-    });
-    toast(`Sent ${payload.label || 'branded CLF email'} (demo)`);
-    render();
-    return true;
-  }
-  try {
-    S.autoBusy = true;
-    const { data: { session } } = await sb.auth.getSession();
-    const token = session?.access_token || SUPABASE_KEY;
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/clf-automations`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
-    S.autoBusy = false;
-    if (res.ok) {
-      const out = await res.json().catch(() => ({}));
-      toast(out.message || `Sent ${payload.label || 'CLF email'} via Resend`);
-      await fetchAll();
-      return true;
-    }
-    if (fallbackHref) {
-      toast('Edge Function not active yet; opening mail app fallback');
-      location.href = fallbackHref;
-      return false;
-    }
-    const errBody = await res.text().catch(() => '');
-    toast('Automation error: ' + (errBody.slice(0, 80) || res.status));
-    return false;
-  } catch (err) {
-    S.autoBusy = false;
-    if (fallbackHref) {
-      toast('Opening mail app fallback');
-      location.href = fallbackHref;
-      return false;
-    }
-    toast('Network error triggering automation');
-    return false;
-  }
-}
+    <section class="quick-strip">
+      <a class="q-card" href="apply.html">
+        <b>Ready to get started? →</b>
+        <span>Complete the 5-minute 3-step coaching application.</span>
+      </a>
+      <a class="q-card" href="client.html">
+        <b>Already a client? →</b>
+        <span>Sign in to your CLF Protocol training app.</span>
+      </a>
+      <a class="q-card" href="support.html">
+        <b>Need app help? →</b>
+        <span>Visit App Support for login &amp; account deletion help.</span>
+      </a>
+    </section>
+  </main>
 
-const COACH_SUPP_PRESETS = [
-  { name: 'Creatine Monohydrate', dosage: '5g', timing: 'Morning', reminder_time: '08:30', note: '5g daily with water for ATP saturation, rep volume, and strength recovery.' },
-  { name: 'Electrolytes', dosage: '1 scoop', timing: 'Pre-Workout', reminder_time: '16:00', note: 'Take 20 mins pre-workout for hydration, sodium balance, and muscle pump.' },
-  { name: 'Whey Protein', dosage: '1 to 2 scoops', timing: 'Post-Workout', reminder_time: '18:00', note: 'Use post-workout or between meals to hit your daily protein target effortlessly.' },
-  { name: 'Omega-3 Fish Oil', dosage: '2g', timing: 'With Meals', reminder_time: '12:30', note: 'Daily EPA/DHA support for joint comfort and systemic recovery.' },
-  { name: 'Vitamin D3 + K2', dosage: '5000 IU', timing: 'Morning', reminder_time: '08:30', note: 'Take in the morning alongside a meal containing dietary fats.' },
-  { name: 'Magnesium Glycinate', dosage: '200 to 400mg', timing: 'Evening', reminder_time: '21:00', note: 'Take 30 to 60 mins before sleep to support recovery and nervous system relaxation.' },
-  { name: 'Pre-Workout', dosage: '1 scoop', timing: 'Pre-Workout', reminder_time: '16:00', note: 'Optional 20 to 30 mins before heavy training sessions.' },
-];
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="index.html">
+            <img class="mark" src="email-logo.png" alt="Clash Lab Fitness" width="38" height="38">
+            <div>
+              <div class="brand-name">Clash Lab Fitness</div>
+              <div class="brand-sub">CLF Protocol</div>
+            </div>
+          </a>
+          <p class="foot-desc">1-on-1 remote personal training, time-efficient strength &amp; hypertrophy programming, and practical nutrition inside the CLF Protocol app.</p>
+          <div class="social-row" aria-label="Clash Lab Fitness Social Media">
+            <a class="social-btn" href="https://www.instagram.com/clashlabfitness/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+            <a class="social-btn" href="https://www.tiktok.com/@clashlabfitness" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.3 0 .59.04.88.13V9.4a6.33 6.33 0 0 0-.88-.07A6.34 6.34 0 0 0 3.14 15.67a6.34 6.34 0 0 0 10.86 4.48 6.3 6.3 0 0 0 1.86-4.48V8.7a8.26 8.26 0 0 0 4.83 1.56V6.82a4.8 4.8 0 0 1-1.1-.13z"/></svg></a>
+            <a class="social-btn" href="https://www.youtube.com/@Clashlabfitness" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.4.58A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.12c1.86.58 9.4.58 9.4.58s7.54 0 9.4-.58a3 3 0 0 0 2.1-2.12A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg></a>
+            <a class="social-btn" href="https://www.facebook.com/clashlabfitness" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8.2h2.76l.41-3.2H13.5V8.56c0-.93.26-1.56 1.59-1.56h1.7V4.14c-.3-.04-1.31-.13-2.49-.13-2.46 0-4.15 1.5-4.15 4.26v2.33H7.36v3.2h2.79V22h3.35z"/></svg></a>
+            <a class="social-btn" href="https://x.com/clashlabfitness" target="_blank" rel="noopener" aria-label="X" title="X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+            <a class="social-btn" href="https://www.threads.com/@clashlabfitness" target="_blank" rel="noopener" aria-label="Threads" title="Threads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg></a>
+            <a class="social-btn" href="https://www.linkedin.com/company/144179412/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 8.5H3.56V20h3.38V8.5zM5.25 3A2.01 2.01 0 0 0 3.2 5.02c0 1.1.89 2 1.99 2h.03a2.01 2.01 0 1 0 .03-4.02zM20.8 13.4c0-3.47-1.85-5.08-4.32-5.08-1.99 0-2.89 1.1-3.39 1.87V8.5H9.71c.04.96 0 11.5 0 11.5h3.38v-6.42c0-.34.03-.68.13-.93.27-.68.89-1.39 1.93-1.39 1.36 0 1.91 1.04 1.91 2.57V20H20.8v-6.6z"/></svg></a>
+          </div>
+        </div>
+        <div class="foot-col">
+          <h4>Website</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#results">Client Results</a></li>
+            <li><a href="index.html#plans">Programs &amp; Pricing</a></li>
+            <li><a href="index.html#partners">Official Partners</a></li>
+            <li><a href="about.html">About Coach Kyle</a></li>
+            <li><a href="index.html#faq">FAQ</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Client Access</h4>
+          <ul>
+            <li><a href="expo.html">Free Macro &amp; Split Audit</a></li>
+            <li><a href="apply.html">Apply for Coaching</a></li>
+            <li><a href="client.html">Client App Login</a></li>
+            <li><a href="support.html">App Support</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="mailto:support@clashlabfitness.com">support@clashlabfitness.com</a></li>
+            <li><a href="mailto:kyle@clashlabfitness.com">kyle@clashlabfitness.com</a></li>
+            <li><a href="links.html">All Links &amp; Codes</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© Clash Lab Fitness LLC · Remote Personal Training</span>
+        <a class="coach-link" href="coach.html">Coach Portal</a>
+      </div>
+    </div>
+  </footer>
 
-function parseIntakeSupps(inRow) {
-  const fromArr = Array.isArray(inRow?.supplements) ? inRow.supplements.filter(Boolean) : [];
-  if (fromArr.length) return fromArr;
-  const m = String(inRow?.typical_eating || '').match(/\[Supplements:\s*([^\]]+)\]/i);
-  if (!m) return [];
-  return m[1].split(',').map(s => s.trim()).filter(s => s && s.toLowerCase() !== 'none currently');
-}
-
-function cleanIntakeEating(inRow) {
-  return String(inRow?.typical_eating || '').replace(/\s*\[Supplements:[^\]]*\]\s*/ig, '').trim();
-}
-
-function coachSuppStartWk(c, supp) {
-  if (!supp?.started_at || !c?.start_date) return 1;
-  const diff = Math.floor((parseYmd(supp.started_at) - parseYmd(c.start_date)) / DAY_MS);
-  return Math.max(1, Math.min(c.weeks || 8, Math.floor(diff / 7) + 1));
-}
-
-function coachSuppWkAdh(c, supp, suppLogs, wk) {
-  if (!c?.start_date) return null;
-  const wkStart = parseYmd(c.start_date).getTime() + (wk - 1) * 7 * DAY_MS;
-  const todayMs = parseYmd(ymd(new Date())).getTime();
-  const sStartMs = supp.started_at ? parseYmd(supp.started_at).getTime() : wkStart;
-  let elig = 0, taken = 0;
-  for (let i = 0; i < 7; i++) {
-    const ms = wkStart + i * DAY_MS;
-    if (ms > todayMs || ms < sStartMs) continue;
-    elig++;
-    if (suppLogs?.[`${supp.id}|${ymd(new Date(ms))}`]) taken++;
-  }
-  return elig ? Math.round((taken / elig) * 100) : null;
-}
-
-function coachSuppAdh(supp, suppLogs, maxDays = 28) {
-  const todayMs = parseYmd(ymd(new Date())).getTime();
-  const startMs = supp.started_at ? parseYmd(supp.started_at).getTime() : todayMs;
-  const earliest = Math.max(startMs, todayMs - (maxDays - 1) * DAY_MS);
-  let elig = 0, taken = 0;
-  for (let ms = earliest; ms <= todayMs; ms += DAY_MS) {
-    elig++;
-    if (suppLogs?.[`${supp.id}|${ymd(new Date(ms))}`]) taken++;
-  }
-  return elig ? Math.round((taken / elig) * 100) : 100;
-}
-
-function coachSuppStreak(supp, suppLogs) {
-  const base = parseYmd(ymd(new Date()));
-  let count = 0;
-  let offset = suppLogs?.[`${supp.id}|${ymd(base)}`] ? 0 : 1;
-  for (let i = offset; i < 365; i++) {
-    const dStr = ymd(new Date(base.getTime() - i * DAY_MS));
-    if (suppLogs?.[`${supp.id}|${dStr}`]) count++;
-    else break;
-  }
-  return count;
-}
-
-function currentWeek(c) {
-  if (!c?.start_date) return 1;
-  return Math.max(1, Math.min(c.weeks || 8, Math.floor((new Date() - parseYmd(c.start_date)) / DAY_MS / 7) + 1));
-}
-
-function daysRemaining(c) {
-  if (!c?.start_date) return null;
-  const end = parseYmd(c.start_date).getTime() + (c.weeks || 8) * 7 * DAY_MS;
-  return Math.ceil((end - Date.now()) / DAY_MS);
-}
-
-function nextPhaseLabel(phase) {
-  const m = String(phase || 'Phase 1').match(/^(.*?)(\d+)\s*$/);
-  return m ? `${m[1]}${Number(m[2]) + 1}` : `${phase || 'Phase'} 2`;
-}
-
-function loadDemo() {
-  const today = new Date(), s21 = ymd(new Date(today - 21 * DAY_MS));
-  S.mode = 'demo';
-  S.clients = [
-    { id:'d-scott', slug:'scott', full_name:'Scott Nassif', email:'', phase:'Phase 3', split:'Push / Pull / Legs', start_date:s21, weeks:8, targets:{ weight:205, calories:3400, protein:200, water:128, steps:10000, sleep:7.5 }, program_notes:'Shoulder-safe compound progression.', health_sync_token:'demo_scott_token' },
-    { id:'d-emily', slug:'emily', full_name:'Emily', email:'', phase:'Lean Hypertrophy', split:'Push / Pull / Legs / Upper / Lower', start_date:s21, weeks:8, targets:{ weight:128, calories:2100, protein:125, water:90, steps:8500, sleep:7.5 }, program_notes:'5-day compound lean hypertrophy split.', health_sync_token:'demo_emily_token' },
-    { id:'d-charles', slug:'charles', full_name:'Charles Bennett', email:'', phase:'Phase 1', split:'Full Body A / B / C', start_date:s21, weeks:8, targets:{ weight:180, calories:2500, protein:200, water:100, steps:10000, sleep:7.5 }, program_notes:'3-day Full Body banded & bodyweight resistance protocol.', health_sync_token:'demo_charles_token' },
-  ];
-  S.intakes = [
-    { id:'d-in1', status:'pending', payment_status:'paid', paid_amount_cents:7500, first_name:'Jordan', last_name:'Lee', email:'jordan@example.com', age:31, height:'5\'10"', current_weight:196, goal_weight:180, injuries:'Mild right knee patellar tendonitis on deep lunges', typical_eating:'3 meals + 1 protein shake, ~80 oz water\n[Supplements: Creatine Monohydrate, Protein Powder]', supplements:['Creatine Monohydrate','Protein Powder'], equipment:['Full Gym','Dumbbells Only'], days_per_week:4, parq_answers:{q1:'no',q2:'no',q3:'no',q4:'no',q5:'no',q6:'no',q7:'no'}, medical_clearance_required:false, parq_signature:'Jordan Lee', waiver_agreed:true, waiver_signature:'Jordan Lee', signed_at:new Date().toISOString(), created_at:new Date().toISOString() },
-  ];
-  S.expoLeads = [
-    { id:'d-ex1', first_name:'Marcus', email:'marcus@example.com', age:29, height_label:'6\'0"', weight_lb:208, goal_weight_lb:190, goal:'cut', days_per_week:4, calories:2290, protein_g:200, carbs_g:220, fats_g:65, water_oz:115, recommended_split:'4-Day Upper / Lower Progressive Overload', source:'booth_kiosk', drip_stage:1, converted:false, created_at:new Date(today - DAY_MS).toISOString() },
-  ];
-  S.testimonials = [
-    { id:'d-tm1', client_id:'d-charles', quote:'Before talking to Kyle, I hit a plateau and was unable to drop any weight no matter how little I was eating. After working with him I dropped 25lbs in 3 months.', milestone:'-25 lb in 3 months', consent_verified_quote:true, created_at:new Date(today - 2 * DAY_MS).toISOString() },
-  ];
-  S.autoLogs = [
-    { id:'d-al1', event_type:'stripe_paid', recipient_email:'kyle@clashlabfitness.com', subject:'Stripe Paid ($75.00): Jordan Lee', status:'sent', created_at:new Date(today - 3600000).toISOString() },
-    { id:'d-al2', event_type:'expo_blueprint', recipient_email:'marcus@example.com', subject:'Your CLF Custom Macro & Split Blueprint', status:'sent', created_at:new Date(today - DAY_MS).toISOString() },
-  ];
-  S.clients.forEach(c => {
-    const baseW = c.slug === 'emily' ? 125.2 : c.slug === 'scott' ? 198.4 : 193.5;
-    const chks = Array.from({ length: 14 }, (_, i) => ({
-      date: ymd(new Date(today - (14 - i) * DAY_MS)),
-      weight: +(baseW + (c.slug === 'charles' ? -0.18 : 0.08) * i).toFixed(1),
-      calories: c.targets.calories, protein: c.targets.protein, water_oz: c.targets.water, steps: c.targets.steps, sleep_hrs: 7.6, energy: 8, joint_comfort: 9, source: i % 2 ? 'apple_health' : 'manual', notes: ''
-    }));
-    const lift = c.slug === 'charles' ? 'Banded Goblet Squats' : 'Barbell Back Squat';
-    const sets = [1, 2, 3].map(w => ({ week: w, day_name: c.slug === 'charles' ? 'Full Body A' : 'Legs', exercise_name: lift, set_num: 1, weight: (c.slug === 'emily' ? 105 : c.slug === 'charles' ? 45 : 185) + w * 5, reps: 8, rpe: 8, done: true }));
-    if (c.slug === 'emily') {
-      [1, 2, 3].forEach(w => {
-        for (let s = 1; s <= 3; s++) {
-          sets.push({ week: w, day_name: 'Legs', exercise_name: 'Hip Abduction', set_num: s, weight: 85 + w * 5, reps: 15, rpe: 8, done: true, note: 'extra' });
-        }
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const mobNav = document.getElementById('mobNav');
+    if (menuBtn && mobNav) {
+      menuBtn.addEventListener('click', () => {
+        const open = mobNav.classList.toggle('open');
+        menuBtn.setAttribute('aria-expanded', String(open));
       });
     }
-    const supId = 'ds1-' + c.id;
-    const supStart = ymd(new Date(today - 12 * DAY_MS));
-    const supplements = [
-      { id: supId, client_id: c.id, name: 'Creatine Monohydrate', dosage: '5g', frequency: 'daily', timing: 'Morning', status: 'active', added_by: 'coach', coach_note: '5g daily with water for ATP saturation and rep recovery.', reminder_enabled: true, reminder_time: '08:30', started_at: supStart },
-    ];
-    if (c.slug === 'emily') {
-      supplements.push({ id: 'ds2-' + c.id, client_id: c.id, name: 'Magnesium Glycinate', dosage: '200mg', frequency: 'daily', timing: 'Evening', status: 'recommended', added_by: 'coach', coach_note: 'Take 30 mins before sleep for recovery.', reminder_enabled: true, reminder_time: '21:00', started_at: null });
+
+    function copyText(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 1600);
+      });
     }
-    const suppLogs = {};
-    for (let i = 12; i >= 1; i--) {
-      if (i !== 6) suppLogs[`${supId}|${ymd(new Date(today - i * DAY_MS))}`] = true;
+
+    const topicEl = document.getElementById('cTopic');
+    const routeHint = document.getElementById('routeHint');
+    function getRecipient() {
+      return topicEl.value === '1-on-1 Coaching Inquiry'
+        ? 'kyle@clashlabfitness.com'
+        : 'support@clashlabfitness.com';
     }
-    S.data[c.id] = {
-      exercises: [{ id: 'ex1-' + c.id, day_name: c.slug === 'charles' ? 'Full Body A' : 'Legs', day_order: 1, exercise_order: 1, name: lift, sets: 4, target_reps: 8, rep_label: '8', rest_sec: 120, is_bodyweight: false, cue: 'Control the descent and brace core.', video_url: '' }],
-      sets, checkins: chks,
-      measurements: [{ date: ymd(new Date(today - 7 * DAY_MS)), waist_in: c.slug === 'emily' ? 27.2 : 35.8, chest_in: 41.5, hips_in: 39.2, arms_in: 15.1, thighs_in: 23.5, photo_url: '', notes: 'Week 2 check-in' }],
-      notes: [{ id: 'n-' + c.id, message: 'Strong week · keep tempo crisp on top sets.', pinned: true, created_at: new Date().toISOString() }],
-      supplements, suppLogs,
-    };
-  });
-  S.view = 'overview'; S.selId = null; S.editVideoId = null;
-  render();
-}
-
-const COACH_EX_SUGGESTIONS = [
-  'Hip Abduction', 'Hip Adduction', 'Cable Glute Kickbacks', 'Barbell Hip Thrust',
-  'Barbell Back Squat', 'Front Squat', 'Hack Squat', 'Leg Press', 'Leg Extension',
-  'Seated Leg Curl', 'Lying Leg Curl', 'Barbell Romanian Deadlift', 'DB Romanian Deadlift',
-  'DB Bulgarian Split Squat', 'DB Walking Lunges', 'Standing Calf Raises', 'Seated Calf Raises',
-  'Barbell Bench Press', 'Incline DB Bench Press', 'Flat DB Bench Press', 'Cable Chest Fly', 'Pec Deck Fly',
-  'Barbell Overhead Press', 'Seated DB Shoulder Press', 'DB Lateral Raises', 'Cable Lateral Raises',
-  'Cable Face Pulls', 'Rear Delt Machine Fly', 'Lat Pulldown', 'Seated Cable Row',
-  'Chest-Supported DB Row', 'Barbell Row', 'Assisted or BW Pull-Ups',
-  'DB Bicep Curls', 'Incline DB Curls', 'DB Hammer Curls', 'Preacher Curls',
-  'Cable Tricep Pushdowns', 'Overhead Cable Tricep Ext.', 'Skull Crushers', 'Tricep Dips',
-  'Hanging Knee Raises', 'Cable Crunch',
-];
-
-async function fetchAll() {
-  if (S.mode === 'demo') return;
-  const [{ data: clients, error }, intakeRes, tplRes, expoRes, testRes, logRes] = await Promise.all([
-    sb.from('clients').select('*').eq('coach_id', S.user.id).eq('active', true).order('created_at'),
-    sb.from('intake_submissions').select('*').order('created_at', { ascending: false }),
-    sb.from('program_templates').select('*').eq('coach_id', S.user.id).order('created_at', { ascending: false }),
-    sb.from('expo_leads').select('*').order('created_at', { ascending: false }).limit(60),
-    sb.from('client_testimonials').select('*').order('created_at', { ascending: false }).limit(40),
-    sb.from('automation_logs').select('*').order('created_at', { ascending: false }).limit(30),
-  ]);
-  if (error) { toast('Load error: ' + error.message); return; }
-  S.clients = clients || [];
-  S.intakes = intakeRes.error ? [] : (intakeRes.data || []);
-  S.templates = tplRes.error ? [] : (tplRes.data || []);
-  S.expoLeads = expoRes.error ? [] : (expoRes.data || []);
-  S.testimonials = testRes.error ? [] : (testRes.data || []);
-  S.autoLogs = logRes.error ? [] : (logRes.data || []);
-  const ids = S.clients.map(c => c.id);
-  if (!ids.length) { S.data = {}; render(); return; }
-  const [exRes, setRes, chkRes, measRes, noteRes, msgRes, phRes, suppRes, slogRes] = await Promise.all([
-    sb.from('program_exercises').select('*').in('client_id', ids).order('day_order').order('exercise_order'),
-    sb.from('workout_sets').select('*').in('client_id', ids),
-    sb.from('checkins').select('*').in('client_id', ids).order('date'),
-    sb.from('measurements').select('*').in('client_id', ids).order('date'),
-    sb.from('coach_notes').select('*').in('client_id', ids).order('created_at', { ascending: false }),
-    sb.from('messages').select('*').in('client_id', ids).order('created_at'),
-    sb.from('progress_photos').select('*').in('client_id', ids).order('date'),
-    sb.from('client_supplements').select('*').in('client_id', ids).order('created_at'),
-    sb.from('supplement_logs').select('*').in('client_id', ids),
-  ]);
-  S.suppTableReady = !suppRes.error;
-  S.data = {};
-  ids.forEach(id => { S.data[id] = { exercises: [], sets: [], checkins: [], measurements: [], notes: [], messages: [], photos: [], supplements: [], suppLogs: {} }; });
-  (exRes.data || []).forEach(r => S.data[r.client_id]?.exercises.push(r));
-  (setRes.data || []).forEach(r => S.data[r.client_id]?.sets.push(r));
-  (chkRes.data || []).forEach(r => S.data[r.client_id]?.checkins.push(r));
-  (measRes.data || []).forEach(r => S.data[r.client_id]?.measurements.push(r));
-  (noteRes.data || []).forEach(r => S.data[r.client_id]?.notes.push(r));
-  (msgRes.error ? [] : (msgRes.data || [])).forEach(r => S.data[r.client_id]?.messages.push(r));
-  (suppRes.error ? [] : (suppRes.data || [])).forEach(r => S.data[r.client_id]?.supplements.push(r));
-  (slogRes.error ? [] : (slogRes.data || [])).forEach(r => {
-    if (r.taken && S.data[r.client_id]) S.data[r.client_id].suppLogs[`${r.supplement_id}|${r.date}`] = true;
-  });
-  const allPhotos = phRes.error ? [] : (phRes.data || []);
-  allPhotos.forEach(r => S.data[r.client_id]?.photos.push(r));
-  S.photoUrls = {};
-  if (allPhotos.length) {
-    await Promise.all(allPhotos.slice(-24).map(async p => {
-      const { data } = await sb.storage.from('progress-photos').createSignedUrl(p.storage_path, 3600);
-      if (data?.signedUrl) S.photoUrls[p.id] = data.signedUrl;
-    }));
-  }
-  render();
-}
-
-async function initAuth() {
-  if (!sb) { S.mode = 'auth'; S.authMsg = 'Supabase SDK failed to load.'; S.authTone = 'bad'; render(); return; }
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) { S.mode = 'auth'; render(); return; }
-  S.user = session.user;
-  S.mode = 'app';
-  await fetchAll();
-}
-
-/* Analytics helpers */
-function clientAnalytics(c) {
-  const d = S.data[c.id] || { exercises: [], sets: [], checkins: [], measurements: [], notes: [] };
-  const wk = currentWeek(c);
-  const chks = d.checkins;
-  const lastChk = chks[chks.length - 1];
-  const latestWt = [...chks].reverse().find(x => x.weight != null)?.weight ?? null;
-  const doneSetsWk = d.sets.filter(s => s.done && s.week === wk).length;
-  const prescribedLowMap = new Map();
-  const prescribedDayLow = new Set();
-  d.exercises.forEach(e => {
-    const low = String(e.name || '').toLowerCase();
-    if (!prescribedLowMap.has(low)) prescribedLowMap.set(low, e.name);
-    prescribedDayLow.add(`${String(e.day_name || '').toLowerCase()}|${low}`);
-  });
-  const compSet = new Set(
-    d.exercises
-      .filter(e => !e.is_bodyweight && !/curl|tricep|calf|lateral|face pull|shrug|woodchop|plank|knee raise|abduction|adduction|kickback/i.test(e.name))
-      .map(e => e.name.toLowerCase())
-  );
-  const allNameByLow = new Map();
-  d.exercises.filter(e => !e.is_bodyweight).forEach(e => {
-    const low = e.name.toLowerCase();
-    if (!allNameByLow.has(low)) allNameByLow.set(low, e.name);
-  });
-  d.sets.forEach(s => {
-    if (!s.done || !s.exercise_name || !Number(s.weight)) return;
-    const low = s.exercise_name.toLowerCase();
-    if (!allNameByLow.has(low)) allNameByLow.set(low, prescribedLowMap.get(low) || s.exercise_name);
-  });
-  const liftMap = {};
-  const extraLiftSet = new Set();
-  allNameByLow.forEach((canonName, low) => {
-    const byWk = new Map();
-    d.sets.filter(s => s.done && String(s.exercise_name || '').toLowerCase() === low && s.weight).forEach(s => {
-      const val = e1rm(Number(s.weight), Number(s.reps || 0));
-      if (val && (!byWk.has(s.week) || val > byWk.get(s.week))) byWk.set(s.week, val);
+    topicEl.addEventListener('change', () => {
+      routeHint.innerHTML = 'Routes to: <b>' + getRecipient() + '</b>';
     });
-    const pts = [...byWk.entries()].sort((a, b) => a[0] - b[0]).map(([w, v]) => ({ wk: w, v }));
-    if (pts.length) {
-      liftMap[canonName] = pts;
-      if (!prescribedLowMap.has(low)) extraLiftSet.add(canonName);
+
+    function buildPayload() {
+      const to = getRecipient();
+      const name = document.getElementById('cName').value.trim();
+      const email = document.getElementById('cEmail').value.trim();
+      const topic = topicEl.value;
+      const msg = document.getElementById('cMsg').value.trim();
+      const subject = `[CLF] ${topic}${name ? ' | ' + name : ''}`;
+      const body = `Name: ${name}\nReply Email: ${email}\nTopic: ${topic}\n\n${msg}`;
+      const href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      return { to, subject, body, href };
     }
-  });
-  const extraMap = new Map();
-  d.sets.forEach(s => {
-    if (!s.done || !s.exercise_name || !s.day_name) return;
-    const dKey = `${s.day_name.toLowerCase()}|${s.exercise_name.toLowerCase()}`;
-    if (prescribedDayLow.has(dKey)) return;
-    const cur = extraMap.get(dKey) || {
-      day_name: s.day_name, name: s.exercise_name, sets: 0, reps: 12,
-      is_bodyweight: true, bestE1: 0, bestSet: null, weeks: new Set(),
-    };
-    if (s.set_num > cur.sets) cur.sets = s.set_num;
-    if (Number(s.weight) > 0) cur.is_bodyweight = false;
-    cur.weeks.add(s.week);
-    const est = Number(s.weight) > 0 ? e1rm(Number(s.weight), Number(s.reps || 0)) : null;
-    if (est && est > cur.bestE1) { cur.bestE1 = est; cur.bestSet = s; cur.reps = Number(s.reps) || 12; }
-    else if (!est && Number(s.reps) > (cur.bestSet?.reps || 0)) { cur.bestSet = s; cur.reps = Number(s.reps) || 12; }
-    extraMap.set(dKey, cur);
-  });
-  const extraLogged = [...extraMap.values()].map(x => ({
-    ...x,
-    sets: Math.max(x.sets || 3, 1),
-    bestText: x.bestSet ? (x.is_bodyweight ? `${x.bestSet.reps} reps (BW)` : `${x.bestSet.weight} lb × ${x.bestSet.reps}`) : '',
-    weekCount: x.weeks.size,
-  }));
-  const compEntries = Object.entries(liftMap).filter(([n]) => compSet.has(n.toLowerCase()));
-  const compSource = compEntries.length ? compEntries.map(([, p]) => p) : Object.values(liftMap);
-  const byWkPct = new Map();
-  compSource.forEach(pts => {
-    const base = pts[0].v;
-    pts.forEach(p => {
-      if (!byWkPct.has(p.wk)) byWkPct.set(p.wk, []);
-      byWkPct.get(p.wk).push(((p.v - base) / base) * 100);
+
+    document.getElementById('copyDraftBtn').addEventListener('click', function () {
+      const p = buildPayload();
+      copyText(`To: ${p.to}\nSubject: ${p.subject}\n\n${p.body}`, this);
     });
-  });
-  const comp = [...byWkPct.entries()].sort((a, b) => a[0] - b[0]).map(([w, arr]) => ({ wk: w, v: arr.reduce((a, b) => a + b, 0) / arr.length }));
-  const strPct = comp.length ? comp[comp.length - 1].v : null;
-  const daysSince = lastChk ? Math.round((new Date() - parseYmd(lastChk.date)) / DAY_MS) : null;
-  const flags = [];
-  if (daysSince == null || daysSince >= 3) flags.push({ bad: daysSince == null || daysSince >= 5, title: daysSince == null ? 'No check-ins logged yet' : `No check-in for ${daysSince} days`, body: lastChk ? `Last logged ${lastChk.date}` : 'Client has not submitted their first check-in.' });
-  if (lastChk?.joint_comfort && lastChk.joint_comfort <= 5) flags.push({ bad: true, title: `Low ${c.joint_label || 'joint comfort'} (${lastChk.joint_comfort}/10)`, body: lastChk.notes || 'Check in before next session.' });
-  return { d, wk, lastChk, latestWt, doneSetsWk, lifts: Object.keys(liftMap), liftMap, extraLiftSet, extraLogged, comp, strPct, flags, prescribedDayLow };
-}
 
-function linReg(pts) {
-  if (pts.length < 2) return null;
-  const n = pts.length, sx = pts.reduce((a, p) => a + p.wk, 0), sy = pts.reduce((a, p) => a + p.v, 0);
-  const sxx = pts.reduce((a, p) => a + p.wk * p.wk, 0), sxy = pts.reduce((a, p) => a + p.wk * p.v, 0);
-  const den = n * sxx - sx * sx;
-  if (!den) return null;
-  const m = (n * sxy - sx * sy) / den, b = (sy - m * sx) / n;
-  return { m, b, at: x => m * x + b };
-}
+    document.getElementById('contactForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const p = buildPayload();
+      const statusBox = document.getElementById('statusBox');
+      const statusText = document.getElementById('statusText');
+      const mailtoFallback = document.getElementById('mailtoFallback');
+      const copyFullBtn = document.getElementById('copyFullBtn');
 
-function svgTraj(pts, weeks, isAll, c, d) {
-  if (!pts.length) return '<div style="padding:70px 20px;text-align:center;color:var(--text-3)">No completed sets logged yet.</div>';
-  const W = 640, H = 220, P = { l: 44, r: 22, t: 20, b: 26 };
-  const reg = linReg(pts), last = pts[pts.length - 1], proj = reg ? reg.at(weeks) : last.v;
-  const vals = pts.map(p => p.v).concat(reg ? [proj] : []);
-  let lo = Math.min(...vals), hi = Math.max(...vals);
-  if (hi - lo < 4) { lo -= 3; hi += 3; } else { const pad = (hi - lo) * 0.16; lo -= pad; hi += pad; }
-  const x = w => P.l + ((w - 1) / Math.max(1, weeks - 1)) * (W - P.l - P.r);
-  const y = v => P.t + (1 - (v - lo) / (hi - lo)) * (H - P.t - P.b);
-  const ticks = [lo, (lo + hi) / 2, hi].map(v => Math.round(v));
-  const line = pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.wk).toFixed(1)},${y(p.v).toFixed(1)}`).join('');
-  const area = `${line} L${x(last.wk).toFixed(1)},${H - P.b} L${x(pts[0].wk).toFixed(1)},${H - P.b} Z`;
-  const actSupps = S.suppOverlay && c && d ? (d.supplements || []).filter(s => s.status === 'active') : [];
-  let suppBands = '', suppPins = '';
-  if (actSupps.length) {
-    for (let w = 1; w <= weeks; w++) {
-      const high = actSupps.some(s => { const p = coachSuppWkAdh(c, s, d.suppLogs, w); return p != null && p >= 85; });
-      if (high) {
-        const cx = x(w), bw = Math.min(44, (W - P.l - P.r) / Math.max(1, weeks));
-        suppBands += `<rect x="${(cx - bw / 2).toFixed(1)}" y="${P.t}" width="${bw.toFixed(1)}" height="${H - P.t - P.b}" rx="5" fill="rgba(251,191,36,.075)"/>`;
-      }
-    }
-    const byWk = new Map();
-    actSupps.forEach(s => {
-      const sw = coachSuppStartWk(c, s);
-      byWk.set(sw, (byWk.get(sw) || []).concat(s.name.split(/\s+/)[0]));
+      statusText.innerHTML = `We opened your email client addressed to <b>${p.to}</b>. If it didn't open automatically, copy the message below and send it from Gmail or your preferred mail app.`;
+      mailtoFallback.href = p.href;
+      copyFullBtn.onclick = () => copyText(`To: ${p.to}\nSubject: ${p.subject}\n\n${p.body}`, copyFullBtn);
+      statusBox.classList.add('show');
+      window.location.href = p.href;
     });
-    byWk.forEach((names, sw) => {
-      const px = x(sw);
-      const lbl = names.length > 1 ? `${names[0]} +${names.length - 1}` : `${names[0]} start`;
-      const anchor = sw >= weeks - 1 ? 'end' : 'start';
-      const tx = anchor === 'end' ? px - 5 : px + 5;
-      suppPins += `<line x1="${px.toFixed(1)}" x2="${px.toFixed(1)}" y1="${P.t}" y2="${H - P.b}" stroke="#FBBF24" stroke-opacity=".78" stroke-width="1.4" stroke-dasharray="4 3"/>` +
-        `<text x="${tx.toFixed(1)}" y="${P.t + 10}" text-anchor="${anchor}" font-size="10.5" fill="#FCD34D" font-family="Geist Mono,monospace">${esc(lbl)}</text>`;
-    });
-  }
-  return `<svg viewBox="0 0 ${W} ${H}">
-    <defs><linearGradient id="clf" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2DD4BF" stop-opacity=".16"/><stop offset="1" stop-color="#2DD4BF" stop-opacity="0"/></linearGradient></defs>
-    ${suppBands}
-    ${ticks.map(t => `<line x1="${P.l}" x2="${W - P.r}" y1="${y(t)}" y2="${y(t)}" stroke="rgba(255,255,255,.06)"/><text x="${P.l - 10}" y="${y(t) + 3.5}" text-anchor="end" font-size="11" fill="#5F6B6B" font-family="Geist Mono,monospace">${isAll && t > 0 ? '+' + t + '%' : isAll ? t + '%' : t}</text>`).join('')}
-    ${Array.from({ length: weeks }, (_, i) => `<text x="${x(i + 1)}" y="${H - 6}" text-anchor="middle" font-size="11" fill="#5F6B6B" font-family="Geist Mono,monospace">W${i + 1}</text>`).join('')}
-    ${pts.length >= 2 ? `<path d="${area}" fill="url(#clf)"/>` : ''}
-    ${suppPins}
-    ${reg && last.wk < weeks ? `<line x1="${x(last.wk)}" y1="${y(last.v)}" x2="${x(weeks)}" y2="${y(proj)}" stroke="#2DD4BF" stroke-opacity=".8" stroke-width="1.8" stroke-dasharray="5 4"/>
-      <circle cx="${x(weeks)}" cy="${y(proj)}" r="4.2" fill="#0C1011" stroke="#2DD4BF" stroke-width="2"/>
-      <text x="${x(weeks) - 8}" y="${Math.max(14, y(proj) - 8)}" text-anchor="end" font-size="11" font-weight="600" fill="#5EEAD4" font-family="Geist Mono,monospace">W${weeks}: ${isAll ? (proj >= 0 ? '+' : '') + fmt(proj, 1) + '%' : fmt(proj, 0) + ' lb'}</text>` : ''}
-    ${pts.length >= 2 ? `<path d="${line}" fill="none" stroke="#2DD4BF" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>` : ''}
-    ${pts.map((p, k) => `<circle cx="${x(p.wk)}" cy="${y(p.v)}" r="${k === pts.length - 1 ? 4.5 : 3}" fill="#2DD4BF" stroke="#0C1011" stroke-width="2"/>`).join('')}
-    <text x="${x(last.wk) + 8}" y="${y(last.v) + 4}" font-size="11" font-weight="600" fill="#ECF3F2" font-family="Geist Mono,monospace">${isAll ? (last.v >= 0 ? '+' : '') + fmt(last.v, 1) + '%' : fmt(last.v, 0)}</text>
-  </svg>`;
-}
-
-function svgWeight(c, chks, d) {
-  const start = parseYmd(c.start_date), total = (c.weeks || 8) * 7;
-  const pts = chks.filter(r => r.weight != null).map(r => ({ i: Math.round((parseYmd(r.date) - start) / DAY_MS), v: Number(r.weight) })).filter(p => p.i >= 0 && p.i <= total);
-  if (!pts.length) return '<div style="padding:70px 20px;text-align:center;color:var(--text-3)">No weigh-ins logged yet.</div>';
-  const W = 540, H = 220, P = { l: 42, r: 22, t: 20, b: 26 };
-  const goal = c.targets?.weight;
-  const vals = pts.map(p => p.v).concat(goal ? [goal] : []);
-  const lo = Math.min(...vals) - 2, hi = Math.max(...vals) + 2;
-  const x = i => P.l + (i / Math.max(1, total - 1)) * (W - P.l - P.r);
-  const y = v => P.t + (1 - (v - lo) / (hi - lo)) * (H - P.t - P.b);
-  const ticks = [lo, (lo + hi) / 2, hi].map(v => Math.round(v));
-  const path = pts.map((p, k) => `${k ? 'L' : 'M'}${x(p.i).toFixed(1)},${y(p.v).toFixed(1)}`).join('');
-  const last = pts[pts.length - 1];
-  const actSupps = S.suppOverlay && d ? (d.supplements || []).filter(s => s.status === 'active' && s.started_at) : [];
-  let suppPins = '';
-  if (actSupps.length) {
-    const byDay = new Map();
-    actSupps.forEach(s => {
-      const di = Math.max(0, Math.min(total - 1, Math.round((parseYmd(s.started_at) - start) / DAY_MS)));
-      byDay.set(di, (byDay.get(di) || []).concat(s.name.split(/\s+/)[0]));
-    });
-    byDay.forEach((names, di) => {
-      const px = x(di);
-      const lbl = names.length > 1 ? `${names[0]} +${names.length - 1}` : `${names[0]} start`;
-      const anchor = di > total * 0.7 ? 'end' : 'start';
-      const tx = anchor === 'end' ? px - 5 : px + 5;
-      suppPins += `<line x1="${px.toFixed(1)}" x2="${px.toFixed(1)}" y1="${P.t}" y2="${H - P.b}" stroke="#FBBF24" stroke-opacity=".78" stroke-width="1.3" stroke-dasharray="4 3"/>` +
-        `<text x="${tx.toFixed(1)}" y="${P.t + 10}" text-anchor="${anchor}" font-size="10.5" fill="#FCD34D" font-family="Geist Mono,monospace">${esc(lbl)}</text>`;
-    });
-  }
-  return `<svg viewBox="0 0 ${W} ${H}">
-    ${ticks.map(t => `<line x1="${P.l}" x2="${W - P.r}" y1="${y(t)}" y2="${y(t)}" stroke="rgba(255,255,255,.06)"/><text x="${P.l - 10}" y="${y(t) + 3.5}" text-anchor="end" font-size="11" fill="#5F6B6B" font-family="Geist Mono,monospace">${t}</text>`).join('')}
-    ${goal ? `<line x1="${P.l}" x2="${W - P.r}" y1="${y(goal)}" y2="${y(goal)}" stroke="#7F8C8B" stroke-dasharray="3 4"/><text x="${W - P.r}" y="${y(goal) - 6}" text-anchor="end" font-size="11" fill="#7F8C8B">Goal ${goal} lb</text>` : ''}
-    ${Array.from({ length: c.weeks || 8 }, (_, w) => `<text x="${x(w * 7 + 3)}" y="${H - 6}" text-anchor="middle" font-size="11" fill="#5F6B6B" font-family="Geist Mono,monospace">W${w + 1}</text>`).join('')}
-    ${suppPins}
-    <path d="${path}" fill="none" stroke="#2DD4BF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-    <circle cx="${x(last.i)}" cy="${y(last.v)}" r="4.5" fill="#2DD4BF" stroke="#0C1011" stroke-width="2"/>
-    <text x="${x(last.i) + 8}" y="${y(last.v) + 4}" font-size="11" font-weight="600" fill="#ECF3F2" font-family="Geist Mono,monospace">${fmt(last.v, 1)}</text>
-  </svg>`;
-}
-
-function renderCoachSuppImpact(c, d, trajPts, isAll) {
-  const act = (d.supplements || []).filter(s => s.status === 'active');
-  if (!act.length) return '';
-  const allWt = (d.checkins || []).filter(r => r.weight != null).sort((a, b) => a.date.localeCompare(b.date));
-  const unitLbl = isAll ? '%' : ' lb';
-  return `<div class="card card-pad" style="margin-top:16px">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
-      <div>
-        <span class="card-title">Supplement Adherence vs. Trendlines</span>
-        <span class="card-sub" style="margin-left:8px">Comparing pre-stack baseline against active adherence phases</span>
-      </div>
-      <button type="button" class="btn btn-sm" data-act="tab" data-v="supplements">Manage Stack →</button>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">
-      ${act.map(s => {
-        const sw = coachSuppStartWk(c, s);
-        const adh = coachSuppAdh(s, d.suppLogs, 28);
-        const streak = coachSuppStreak(s, d.suppLogs);
-        const onPts = (trajPts || []).filter(p => p.wk >= sw);
-        let strTxt = `Started W${sw} · Logging active weeks`;
-        if (onPts.length >= 2) {
-          const g = +(onPts[onPts.length - 1].v - onPts[0].v).toFixed(1);
-          const span = Math.max(1, onPts[onPts.length - 1].wk - onPts[0].wk);
-          const rate = +(g / span).toFixed(1);
-          strTxt = `${g >= 0 ? '+' : ''}${g}${unitLbl} since W${sw} (${rate >= 0 ? '+' : ''}${rate}${unitLbl}/wk)`;
-        }
-        let wtTxt = 'Awaiting weigh-ins';
-        if (s.started_at && allWt.length >= 2) {
-          const preW = allWt.filter(r => r.date < s.started_at);
-          const onW = allWt.filter(r => r.date >= s.started_at);
-          if (preW.length && onW.length) {
-            const pAvg = preW.reduce((sum, r) => sum + Number(r.weight), 0) / preW.length;
-            const latest = Number(onW[onW.length - 1].weight);
-            const diff = +(latest - pAvg).toFixed(1);
-            wtTxt = `Pre ${fmt(pAvg, 1)} lb -> Now ${fmt(latest, 1)} lb (${diff >= 0 ? '+' : ''}${diff} lb)`;
-          } else if (onW.length >= 2) {
-            const diff = +(Number(onW[onW.length - 1].weight) - Number(onW[0].weight)).toFixed(1);
-            wtTxt = `${diff >= 0 ? '+' : ''}${diff} lb since ${s.started_at}`;
-          }
-        }
-        return `<div style="padding:12px 14px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-            <strong style="font-size:13.5px">${esc(s.name)}${s.dosage ? ` · <span style="color:var(--accent)">${esc(s.dosage)}</span>` : ''}</strong>
-            <span class="tag ${adh >= 85 ? 'ok' : 'warn'}">${adh}% adherence${streak >= 2 ? ` · ${streak}d` : ''}</span>
-          </div>
-          <div style="margin-top:8px;font-size:12.5px;color:var(--text-2)"><b>Strength:</b> <span class="n">${esc(strTxt)}</span></div>
-          <div style="margin-top:4px;font-size:12.5px;color:var(--text-2)"><b>Bodyweight:</b> <span class="n">${esc(wtTxt)}</span></div>
-        </div>`;
-      }).join('')}
-    </div>
-  </div>`;
-}
-
-/* Views */
-function viewOverview() {
-  const today = ymd(new Date());
-  const rows = S.clients.map(c => ({ c, a: clientAnalytics(c) }));
-  const checkedToday = rows.filter(r => r.a.lastChk?.date === today).length;
-  const totalSetsWk = rows.reduce((s, r) => s + r.a.doneSetsWk, 0);
-  return `<div class="view">
-    <div class="page-head">
-      <div>
-        <div class="crumb">${new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' })}</div>
-        <h1>Clients</h1>
-        <div class="meta">${S.clients.length} active · ${S.mode === 'demo' ? 'Demo preview' : 'Live Supabase Postgres'}</div>
-      </div>
-      <div class="actions">
-        <button class="btn" data-act="refresh">${ic('refresh')}Refresh</button>
-        <button class="btn btn-accent" data-act="add-client">${ic('plus')}Add client</button>
-      </div>
-    </div>
-    <div class="grid g4">
-      <div class="card card-pad"><div class="stat-label">Active clients</div><div class="stat-value n">${S.clients.length}</div><div class="stat-foot">${S.mode === 'demo' ? 'Sample data' : 'Synced to Supabase'}</div></div>
-      <div class="card card-pad"><div class="stat-label">Checked in today</div><div class="stat-value n">${checkedToday}<small>/ ${S.clients.length}</small></div><div class="stat-foot">Manual + Apple Health</div></div>
-      <div class="card card-pad"><div class="stat-label">Sets logged this week</div><div class="stat-value n">${totalSetsWk}</div><div class="stat-foot">Across all clients</div></div>
-      <div class="card card-pad"><div class="stat-label">Client app</div><div class="stat-value" style="font-size:16px;margin-top:14px"><a href="client.html" style="color:var(--accent)">Open client app →</a></div><div class="stat-foot">Preview any client</div></div>
-    </div>
-    <div class="card" style="margin-top:20px">
-      <div class="card-head"><span class="card-title">Roster</span><span class="card-sub">Click a client to edit program, pin coach notes, or inspect trends</span></div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Client</th><th>Program &amp; split</th><th>Week</th><th>Last check-in</th><th class="r">Bodyweight</th><th class="r">Strength</th><th class="r">Status</th></tr></thead>
-        <tbody>
-          ${rows.map(({ c, a }) => `<tr class="link" data-act="select" data-id="${c.id}">
-            <td><div style="display:flex;align-items:center;gap:10px"><span class="avatar">${initials(c.full_name)}</span><div><div style="font-weight:500">${esc(c.full_name)}</div><div class="client-sub">${esc(c.email || 'No email linked yet')}</div></div></div></td>
-            <td style="color:var(--text-2)">${esc(c.phase)} <span style="color:var(--text-3)">· ${esc(c.split)}</span></td>
-            <td class="n">${a.wk} / ${c.weeks}</td>
-            <td style="color:var(--text-2)">${a.lastChk ? `${a.lastChk.date}${a.lastChk.source !== 'manual' ? ' <span class="tag accent">Health</span>' : ''}` : '—'}</td>
-            <td class="r n">${a.latestWt ? fmt(a.latestWt, 1) + ' lb' : '—'}</td>
-            <td class="r n ${a.strPct >= 0 ? 'up' : ''}">${a.strPct != null ? (a.strPct >= 0 ? '+' : '') + fmt(a.strPct, 1) + '%' : '—'}</td>
-            <td class="r">${a.flags.length ? `<span class="tag ${a.flags.some(f => f.bad) ? 'bad' : 'warn'}">${a.flags.length} flag</span>` : '<span class="tag ok">On track</span>'}</td>
-          </tr>`).join('')}
-        </tbody>
-      </table></div>
-    </div>
-  </div>`;
-}
-
-function viewClient(c) {
-  const a = clientAnalytics(c);
-  const d = a.d;
-  const isAll = S.liftSel === 'all' || !a.liftMap[S.liftSel];
-  const trajPts = isAll ? a.comp : a.liftMap[S.liftSel];
-  const hasActiveSupps = (d.supplements || []).some(s => s.status === 'active');
-
-  let body = '';
-  if (S.tab === 'overview') {
-    body = `
-      <div class="grid g4">
-        <div class="card card-pad"><div class="stat-label">Bodyweight</div><div class="stat-value n">${a.latestWt ? fmt(a.latestWt, 1) : '—'}<small>lb</small></div><div class="stat-foot">Goal ${c.targets?.weight ?? '—'} lb</div></div>
-        <div class="card card-pad"><div class="stat-label">Compound strength</div><div class="stat-value n ${a.strPct >= 0 ? 'up' : ''}">${a.strPct != null ? (a.strPct >= 0 ? '+' : '') + fmt(a.strPct, 1) : '—'}<small>%</small></div><div class="stat-foot">e1RM trajectory</div></div>
-        <div class="card card-pad"><div class="stat-label">Sets this week</div><div class="stat-value n">${a.doneSetsWk}</div><div class="stat-foot">Week ${a.wk} of ${c.weeks}</div></div>
-        <div class="card card-pad"><div class="stat-label">Measurements</div><div class="stat-value n">${d.measurements.length}</div><div class="stat-foot">${d.measurements.length ? `Waist ${d.measurements[d.measurements.length - 1].waist_in ?? '—'}"` : 'None logged yet'}</div></div>
-      </div>
-
-      <div class="grid g-2-1">
-        <div class="card">
-          <div class="card-head"><span class="card-title">Bodyweight</span><span class="card-sub">Daily weigh-ins &amp; Apple Health sync</span></div>
-          <div class="chart">${svgWeight(c, d.checkins, d)}</div>
-        </div>
-        <div class="card">
-          <div class="card-head"><span class="card-title">Coach notes (pinned to client app)</span></div>
-          <div class="note-box">
-            <form id="note-form">
-              <textarea name="message" required placeholder="Write weekly feedback or cues to pin at the top of ${esc(c.full_name)}'s Train screen…"></textarea>
-              ${c.email ? `<label style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-2);margin-top:8px;cursor:pointer"><input type="checkbox" name="send_email" checked> Also email this feedback to ${esc(c.email)} (CLF Branded)</label>` : ''}
-              <button type="submit" class="btn btn-accent" style="margin-top:8px;width:100%;justify-content:center">${c.email ? 'Pin Note & Send Branded Email' : 'Pin note to client app'}</button>
-            </form>
-            ${d.notes.slice(0, 3).map(n => `<div class="note-item ${n.pinned ? 'pinned' : ''}">
-              <div class="note-meta"><span>${n.pinned ? 'PINNED' : 'Past note'} · ${new Date(n.created_at).toLocaleDateString()}</span>
-                <button type="button" class="btn-ghost btn-sm" style="border:0" data-act="del-note" data-id="${n.id}">Delete</button>
-              </div>
-              <div>${esc(n.message)}</div>
-            </div>`).join('')}
-          </div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:16px">
-        <div class="card-head" style="flex-wrap:wrap;gap:10px">
-          <div><span class="card-title">Strength trajectory</span><span class="card-sub" style="margin-left:8px">Est. 1RM progression &amp; Week ${c.weeks} projection</span></div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            ${hasActiveSupps ? `<button type="button" class="btn btn-sm ${S.suppOverlay ? 'btn-accent' : ''}" data-act="coach-supp-overlay">${S.suppOverlay ? 'Supplements Overlaid ✓' : 'Overlay Supplements'}</button>` : ''}
-            ${Object.keys(a.liftMap).length > 5 ? `<select id="coach-lift-jump" style="height:30px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:12.5px;color:var(--text)">
-              <option value="all" ${isAll ? 'selected' : ''}>All compounds (%)</option>
-              ${Object.keys(a.liftMap).map(l => `<option value="${esc(l)}" ${!isAll && S.liftSel === l ? 'selected' : ''}>${esc(l)}${a.extraLiftSet?.has(l) ? ' (Extra)' : ''}</option>`).join('')}
-            </select>` : ''}
-          </div>
-        </div>
-        <div class="lift-pills">
-          <button class="lift-pill" data-act="lsel" data-v="all" aria-selected="${isAll}">All compounds (%)</button>
-          ${Object.keys(a.liftMap).map(l => `<button class="lift-pill" data-act="lsel" data-v="${esc(l)}" aria-selected="${!isAll && S.liftSel === l}">${esc(l.replace(/^(Barbell|Banded|DB|Seated)\s+/i, ''))}${a.extraLiftSet?.has(l) ? ' · Extra' : ''}</button>`).join('')}
-        </div>
-        <div class="chart">${svgTraj(trajPts, c.weeks, isAll, c, d)}</div>
-      </div>
-      ${renderCoachSuppImpact(c, d, trajPts, isAll)}
-    `;
-  } else if (S.tab === 'program') {
-    const cloneOpts = [
-      ...S.templates.map(t => `<option value="tpl:${t.id}">Template: ${esc(t.name)} (${(t.exercises || []).length} ex)</option>`),
-      ...S.clients.filter(x => x.id !== c.id && (S.data[x.id]?.exercises?.length || 0) > 0).map(x => `<option value="cli:${x.id}">Clone ${esc(x.full_name)} (${S.data[x.id].exercises.length} ex)</option>`),
-    ];
-    const exSuggestions = [...new Set([...d.sets.map(s => s.exercise_name).filter(Boolean), ...COACH_EX_SUGGESTIONS])];
-    const extraBanner = a.extraLogged.length ? `<div class="card card-pad" style="margin-top:20px;border-color:var(--accent-line)">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-        <div>
-          <strong style="color:var(--accent);font-size:13.5px">Client-Logged Extra Exercises (${a.extraLogged.length})</strong>
-          <div style="font-size:12.5px;color:var(--text-2);margin-top:2px">${esc(c.full_name)} logged off-plan sets on these movements. Click <b>+ Add to Program</b> to make any of them permanent on their split.</div>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        ${a.extraLogged.map(ex => `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:10px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line)">
-          <div>
-            <div style="font-weight:500;font-size:13.5px">${esc(ex.name)} <span class="tag" style="margin-left:6px">${esc(ex.day_name)}</span></div>
-            <div style="font-size:12px;color:var(--text-3);margin-top:2px">${ex.sets} sets · ${ex.bestText ? `Best: ${esc(ex.bestText)} · ` : ''}${ex.weekCount} week${ex.weekCount === 1 ? '' : 's'} logged</div>
-          </div>
-          <div class="actions">
-            ${!ex.is_bodyweight && a.liftMap[ex.name] ? `<button type="button" class="btn btn-sm" data-act="jump-traj" data-v="${esc(ex.name)}">View Trajectory</button>` : ''}
-            <button type="button" class="btn btn-accent btn-sm" data-act="promote-ex" data-day="${esc(ex.day_name)}" data-ex="${esc(ex.name)}" data-sets="${ex.sets}" data-reps="${ex.reps}" data-bw="${ex.is_bodyweight ? '1' : '0'}">${ic('plus')}Add to Program</button>
-          </div>
-        </div>`).join('')}
-      </div>
-    </div>` : '';
-    body = `${extraBanner}<div class="card" style="margin-top:20px">
-      <div class="card-head">
-        <div><span class="card-title">Program Builder (${d.exercises.length} exercises)</span><div class="card-sub">Changes sync instantly to ${esc(c.full_name)}'s app</div></div>
-        <div class="actions">
-          ${cloneOpts.length ? `<select id="tpl-pick" style="height:30px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:12.5px">${cloneOpts.join('')}</select>
-          <button class="btn btn-sm" data-act="apply-tpl">Apply Template</button>` : ''}
-          ${d.exercises.length ? `<button class="btn btn-sm" data-act="save-tpl">Save as Template</button>` : ''}
-        </div>
-      </div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Day</th><th>Exercise</th><th>Sets × Reps</th><th>Rest</th><th>Coaching Cue</th><th>Form Video</th><th class="r"></th></tr></thead>
-        <tbody>
-          ${d.exercises.map(ex => {
-            const hasCustom = !isSearchVideoUrl(ex.video_url);
-            const resolved = resolveVideoUrl(ex);
-            const isEditingVid = S.editVideoId === String(ex.id);
-            return `<tr>
-              <td><span class="tag">${esc(ex.day_name)}</span></td>
-              <td style="font-weight:500">${esc(ex.name)}${ex.is_bodyweight ? ' <span class="tag accent">BW</span>' : ''}</td>
-              <td class="n">${ex.sets} × ${esc(ex.rep_label)}</td>
-              <td class="n" style="color:var(--text-2)">${ex.rest_sec}s</td>
-              <td class="wrap">${esc(ex.cue || '—')}</td>
-              <td>
-                <div class="vid-cell">
-                  ${hasCustom
-                    ? `<a href="${esc(ex.video_url.trim())}" target="_blank" rel="noopener" class="tag accent" title="${esc(ex.video_url.trim())}">Custom ↗</a>`
-                    : resolved
-                      ? `<a href="${esc(resolved)}" target="_blank" rel="noopener" class="tag ok" title="Curated demo: ${esc(resolved)}">Curated ↗</a>`
-                      : `<span class="tag">None</span>`}
-                  <button type="button" class="btn btn-ghost btn-sm" data-act="edit-ex-vid" data-id="${esc(ex.id)}">${isEditingVid ? 'Close' : (hasCustom ? 'Edit URL' : 'Override')}</button>
-                </div>
-              </td>
-              <td class="r"><button class="btn btn-ghost btn-sm danger" data-act="del-ex" data-id="${esc(ex.id)}">${ic('trash')}</button></td>
-            </tr>
-            ${isEditingVid ? `<tr class="vid-edit-row">
-              <td colspan="7">
-                <form class="vid-override-form" data-ex-vid-form="${esc(ex.id)}">
-                  <span class="vid-override-label">Custom video URL for <b>${esc(ex.name)}</b>:</span>
-                  <input name="video_url" type="url" value="${esc(hasCustom ? ex.video_url.trim() : '')}" placeholder="${esc(resolved ? `Default curated: ${resolved}` : 'https://www.youtube.com/watch?v=...')}">
-                  <button type="submit" class="btn btn-accent btn-sm">Save URL</button>
-                  ${hasCustom || ex.video_url ? `<button type="button" class="btn btn-sm" data-act="reset-ex-vid" data-id="${esc(ex.id)}">Use Curated</button>` : ''}
-                  <button type="button" class="btn btn-ghost btn-sm" data-act="cancel-ex-vid">Cancel</button>
-                </form>
-              </td>
-            </tr>` : ''}`;
-          }).join('')}
-        </tbody>
-      </table></div>
-      <form id="ex-form">
-        <datalist id="coach-ex-list">${exSuggestions.map(s => `<option value="${esc(s)}">`).join('')}</datalist>
-        <div class="builder-form">
-          <div class="f-in"><label>Day name</label><input name="day_name" required placeholder="Push / Full Body A" value="${esc(d.exercises[d.exercises.length - 1]?.day_name || 'Day 1')}"></div>
-          <div class="f-in"><label>Exercise name</label><input name="name" list="coach-ex-list" required placeholder="e.g. Hip Abduction / Incline DB Press" autocomplete="off"></div>
-          <div class="f-in"><label>Sets</label><input name="sets" type="number" value="3" min="1" max="15"></div>
-          <div class="f-in"><label>Reps label</label><input name="rep_label" value="10" placeholder="8–12 / AMRAP"></div>
-          <div class="f-in"><label>Rest (s)</label><input name="rest_sec" type="number" value="90"></div>
-          <div class="f-in"><label>Bodyweight</label><select name="is_bodyweight"><option value="false">Weighted</option><option value="true">BW</option></select></div>
-        </div>
-        <div class="builder-form-2">
-          <div class="f-in"><label>Coaching cue</label><input name="cue" placeholder="Form cues, tempo, range of motion…"></div>
-          <div class="f-in"><label>Custom video URL override (optional — auto-uses curated demo)</label><input name="video_url" type="url" placeholder="Leave blank for curated demo, or paste https://..."></div>
-          <button type="submit" class="btn btn-accent">${ic('plus')}Add exercise</button>
-        </div>
-      </form>
-    </div>`;
-  } else if (S.tab === 'training') {
-    const doneSets = d.sets.filter(s => s.done).sort((x, y) => y.week - x.week || x.day_name.localeCompare(y.day_name));
-    const extraTrainBanner = a.extraLogged.length ? `<div class="card card-pad" style="margin-top:20px;border-color:var(--accent-line)">
-      <div style="font-weight:600;font-size:13.5px;color:var(--accent);margin-bottom:8px">Extra Off-Plan Movements Logged (${a.extraLogged.length})</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">
-        ${a.extraLogged.map(ex => `<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);font-size:12.5px">
-          <span><b>${esc(ex.name)}</b> · ${esc(ex.day_name)}${ex.bestText ? ` (${esc(ex.bestText)})` : ''}</span>
-          <button type="button" class="btn btn-accent btn-sm" style="height:26px;padding:0 8px;font-size:11.5px" data-act="promote-ex" data-day="${esc(ex.day_name)}" data-ex="${esc(ex.name)}" data-sets="${ex.sets}" data-reps="${ex.reps}" data-bw="${ex.is_bodyweight ? '1' : '0'}">${ic('plus')}Add to Split</button>
-        </div>`).join('')}
-      </div>
-    </div>` : '';
-    body = `${extraTrainBanner}<div class="card" style="margin-top:20px">
-      <div class="card-head"><span class="card-title">Logged sets (${doneSets.length})</span></div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Week</th><th>Day</th><th>Exercise</th><th>Set</th><th class="r">Weight</th><th class="r">Reps</th><th class="r">RPE</th><th class="r">Est. 1RM</th></tr></thead>
-        <tbody>
-          ${doneSets.length ? doneSets.slice(0, 80).map(s => {
-            const isExtraRow = !a.prescribedDayLow.has(`${String(s.day_name || '').toLowerCase()}|${String(s.exercise_name || '').toLowerCase()}`);
-            return `<tr>
-              <td class="n">W${s.week}</td><td>${esc(s.day_name)}</td>
-              <td style="font-weight:500">${esc(s.exercise_name)}${isExtraRow ? ' <span class="tag accent">Extra</span>' : ''}</td>
-              <td class="n">${s.set_num}</td><td class="r n">${s.weight != null ? s.weight + ' lb' : 'BW'}</td>
-              <td class="r n">${s.reps ?? '—'}</td><td class="r n">${s.rpe ?? '—'}</td>
-              <td class="r n" style="color:var(--accent)">${e1rm(Number(s.weight), Number(s.reps)) ? fmt(e1rm(Number(s.weight), Number(s.reps)), 1) : '—'}</td>
-            </tr>`;
-          }).join('') : '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-3)">No sets logged yet.</td></tr>'}
-        </tbody>
-      </table></div>
-    </div>`;
-  } else if (S.tab === 'nutrition') {
-    body = `<div class="card" style="margin-top:20px">
-      <div class="card-head">
-        <div><span class="card-title">Daily check-ins &amp; Apple Health</span><div class="card-sub">Targets: ${fmt(c.targets?.calories)} kcal · ${fmt(c.targets?.protein)} g protein · ${fmt(c.targets?.water)} oz · ${fmt(c.targets?.steps)} steps</div></div>
-        <button class="btn" data-act="copy-health" data-token="${esc(c.health_sync_token)}">${ic('heart')}Copy Apple Health Token</button>
-      </div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Date</th><th>Source</th><th class="r">Weight</th><th class="r">Calories</th><th class="r">Protein</th><th class="r">Water</th><th class="r">Steps</th><th class="r">Sleep</th><th class="r">Energy</th><th>Notes</th></tr></thead>
-        <tbody>
-          ${d.checkins.length ? [...d.checkins].reverse().slice(0, 30).map(x => `<tr>
-            <td class="n">${esc(x.date)}</td>
-            <td><span class="tag ${x.source !== 'manual' ? 'accent' : ''}">${esc(x.source)}</span></td>
-            <td class="r n">${x.weight != null ? fmt(x.weight, 1) : '—'}</td>
-            <td class="r n">${x.calories != null ? fmt(x.calories) : '—'}</td>
-            <td class="r n">${x.protein != null ? x.protein + ' g' : '—'}</td>
-            <td class="r n">${x.water_oz != null ? x.water_oz + ' oz' : '—'}</td>
-            <td class="r n">${x.steps != null ? fmt(x.steps) : '—'}</td>
-            <td class="r n">${x.sleep_hrs != null ? x.sleep_hrs + ' h' : '—'}</td>
-            <td class="r n">${x.energy ?? '—'}</td>
-            <td class="wrap">${esc(x.notes || '')}</td>
-          </tr>`).join('') : '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text-3)">No check-ins logged yet.</td></tr>'}
-        </tbody>
-      </table></div>
-    </div>`;
-  } else if (S.tab === 'supplements') {
-    const supps = d.supplements || [];
-    body = `
-      ${S.mode !== 'demo' && !S.suppTableReady ? `<div class="card card-pad" style="margin-top:20px;border-color:rgba(242,184,75,.45)">
-        <strong style="color:var(--warn)">Database Setup Needed</strong>
-        <div style="font-size:13px;color:var(--text-2);margin-top:4px">Run the Supplement Stack SQL migration in your Supabase SQL Editor to sync supplement recommendations and daily logs across devices.</div>
-      </div>` : ''}
-
-      <div class="card card-pad" style="margin-top:20px">
-        <div class="card-title">Recommend or Add Supplement for ${esc(c.full_name)}</div>
-        <div style="font-size:12.5px;color:var(--text-2);margin:4px 0 12px">Click a preset or type a custom supplement. Recommendations appear on ${esc(c.full_name)}'s Check-in screen so they can opt in and set a daily phone reminder.</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
-          ${COACH_SUPP_PRESETS.map((p, idx) => `<button type="button" class="btn btn-sm" data-act="preset-csupp" data-idx="${idx}">+ ${esc(p.name)} (${esc(p.dosage)})</button>`).join('')}
-        </div>
-        <form id="coach-supp-form">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
-            <label class="field" style="margin:0"><span>Supplement name</span><input id="cs-name" name="name" required placeholder="e.g. Creatine Monohydrate"></label>
-            <label class="field" style="margin:0"><span>Dosage</span><input id="cs-dose" name="dosage" placeholder="e.g. 5g"></label>
-            <label class="field" style="margin:0"><span>Timing</span>
-              <select id="cs-timing" name="timing" style="width:100%;height:38px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:13.5px;color:var(--text)">
-                <option value="Morning">Morning</option>
-                <option value="Pre-Workout">Pre-Workout</option>
-                <option value="Post-Workout">Post-Workout</option>
-                <option value="With Meals">With Meals</option>
-                <option value="Evening">Evening</option>
-                <option value="Anytime">Anytime</option>
-              </select>
-            </label>
-            <label class="field" style="margin:0"><span>Suggested reminder</span><input id="cs-rem" name="reminder_time" type="time" value="08:30"></label>
-            <label class="field" style="margin:0"><span>Delivery mode</span>
-              <select id="cs-status" name="status" style="width:100%;height:38px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:13.5px;color:var(--text)">
-                <option value="recommended">Recommend (Client opts in)</option>
-                <option value="active">Activate immediately</option>
-              </select>
-            </label>
-          </div>
-          <label class="field" style="margin-top:10px"><span>Coaching note (shown to client)</span><input id="cs-note" name="coach_note" placeholder="e.g. 5g daily with water for ATP saturation and rep recovery."></label>
-          <div style="display:flex;justify-content:flex-end;margin-top:12px">
-            <button type="submit" class="btn btn-accent">${ic('plus')}Send to ${esc(c.full_name)}'s Stack</button>
-          </div>
-        </form>
-      </div>
-
-      <div class="card" style="margin-top:18px">
-        <div class="card-head"><span class="card-title">Client Supplement Stack (${supps.length})</span><span class="card-sub">Live adherence, daily streaks &amp; opt-in status</span></div>
-        <div class="table-wrap"><table>
-          <thead><tr><th>Supplement</th><th>Dose &amp; Timing</th><th>Status</th><th>Start</th><th class="r">28d Adherence</th><th class="r">Streak</th><th>Reminder</th><th class="r">Actions</th></tr></thead>
-          <tbody>
-            ${supps.length ? supps.map(s => {
-              const isAct = s.status === 'active';
-              const adh = isAct ? coachSuppAdh(s, d.suppLogs, 28) : null;
-              const streak = isAct ? coachSuppStreak(s, d.suppLogs) : 0;
-              const stTag = isAct ? `<span class="tag ok">Active${s.added_by === 'client' ? ' · Client' : ''}</span>`
-                : s.status === 'recommended' ? '<span class="tag accent">Awaiting Opt-In</span>'
-                : '<span class="tag">Skipped</span>';
-              return `<tr>
-                <td><div style="font-weight:500">${esc(s.name)}</div>${s.coach_note ? `<div style="font-size:11.5px;color:var(--text-3);margin-top:2px">${esc(s.coach_note)}</div>` : ''}</td>
-                <td style="color:var(--text-2)">${esc(s.dosage || 'Standard')} · ${esc(s.timing || 'Daily')}</td>
-                <td>${stTag}</td>
-                <td class="n">${s.started_at ? `W${coachSuppStartWk(c, s)} (${esc(s.started_at)})` : 'Pending'}</td>
-                <td class="r n">${adh != null ? `<span style="color:${adh >= 85 ? 'var(--ok)' : 'var(--warn)'};font-weight:600">${adh}%</span>` : 'Pending'}</td>
-                <td class="r n">${isAct ? `${streak}d` : '0d'}</td>
-                <td class="n" style="color:var(--text-2)">${s.reminder_enabled && s.reminder_time ? esc(s.reminder_time) : 'Off'}</td>
-                <td class="r">
-                  <div style="display:inline-flex;gap:6px">
-                    ${!isAct ? `<button type="button" class="btn btn-sm" data-act="coach-act-supp" data-id="${esc(s.id)}">Activate</button>` : ''}
-                    <button type="button" class="btn btn-ghost btn-sm danger" data-act="coach-del-supp" data-id="${esc(s.id)}">Remove</button>
-                  </div>
-                </td>
-              </tr>`;
-            }).join('') : '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-3)">No supplements added or recommended yet. Use a preset above to send a recommendation.</td></tr>'}
-          </tbody>
-        </table></div>
-      </div>
-
-      ${renderCoachSuppImpact(c, d, trajPts, isAll)}
-    `;
-  } else if (S.tab === 'measurements') {
-    const photos = d.photos || [];
-    body = `${photos.length ? `<div class="card card-pad" style="margin-top:20px">
-      <div class="card-title" style="margin-bottom:12px">Private Progress Photos (${photos.length})</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px">
-        ${photos.map(p => `<div style="background:var(--surface-2);border:1px solid var(--line);border-radius:12px;overflow:hidden">
-          ${S.photoUrls[p.id] ? `<a href="${esc(S.photoUrls[p.id])}" target="_blank"><img src="${esc(S.photoUrls[p.id])}" alt="${esc(p.pose)}" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block"></a>` : '<div style="padding:40px 10px;text-align:center;color:var(--text-3);font-size:12px">Private photo</div>'}
-          <div style="padding:8px 10px;font-size:12px;display:flex;justify-content:space-between;color:var(--text-2)"><span>${esc(p.pose)}</span><span class="n">${esc(p.date)}</span></div>
-        </div>`).join('')}
-      </div>
-    </div>` : ''}
-    <div class="card" style="margin-top:20px">
-      <div class="card-head"><span class="card-title">Body measurements &amp; check-in photos</span></div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Date</th><th class="r">Waist</th><th class="r">Chest</th><th class="r">Hips</th><th class="r">Arms</th><th class="r">Thighs</th><th>Photos</th><th>Notes</th></tr></thead>
-        <tbody>
-          ${d.measurements.length ? [...d.measurements].reverse().map(m => `<tr>
-            <td class="n">${esc(m.date)}</td>
-            <td class="r n">${m.waist_in != null ? m.waist_in + '"' : '—'}</td>
-            <td class="r n">${m.chest_in != null ? m.chest_in + '"' : '—'}</td>
-            <td class="r n">${m.hips_in != null ? m.hips_in + '"' : '—'}</td>
-            <td class="r n">${m.arms_in != null ? m.arms_in + '"' : '—'}</td>
-            <td class="r n">${m.thighs_in != null ? m.thighs_in + '"' : '—'}</td>
-            <td>${m.photo_url ? `<a href="${esc(m.photo_url)}" target="_blank" style="color:var(--accent)">View photos ↗</a>` : '—'}</td>
-            <td class="wrap">${esc(m.notes || '')}</td>
-          </tr>`).join('') : '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-3)">No measurements logged yet.</td></tr>'}
-        </tbody>
-      </table></div>
-    </div>`;
-  } else if (S.tab === 'messages') {
-    const msgs = d.messages || [];
-    body = `<div class="card card-pad" style="margin-top:20px">
-      <div class="card-title" style="margin-bottom:14px">Direct Chat with ${esc(c.full_name)}</div>
-      <div style="display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto;padding-bottom:12px">
-        ${msgs.length ? msgs.map(m => `<div style="max-width:75%;padding:10px 14px;border-radius:12px;font-size:13.5px;align-self:${m.sender_role === 'coach' ? 'flex-end' : 'flex-start'};background:${m.sender_role === 'coach' ? 'var(--accent-tint)' : 'var(--surface-2)'};border:1px solid ${m.sender_role === 'coach' ? 'var(--accent-line)' : 'var(--line-2)'}">
-          <div>${esc(m.body)}</div>
-          <div style="font-size:11px;color:var(--text-3);margin-top:4px">${m.sender_role === 'coach' ? 'You' : esc(c.full_name)} · ${new Date(m.created_at).toLocaleString([], { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' })}</div>
-        </div>`).join('') : '<div style="padding:28px 0;text-align:center;color:var(--text-3)">No messages yet. Start the conversation below.</div>'}
-      </div>
-      <form id="coach-chat-form" style="display:flex;gap:8px;margin-top:12px;min-width:0">
-        <input name="body" required placeholder="Message ${esc(c.full_name)}…" style="flex:1 1 0%;min-width:0;height:40px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg);padding:0 12px;font-size:13.5px;outline:none">
-        <button type="submit" class="btn btn-accent" style="flex:0 0 auto">Send</button>
-      </form>
-    </div>`;
-  }
-
-  const dLeft = daysRemaining(c);
-  const isMo = c.plan_type === 'monthly';
-  const renewMailto = c.email ? (() => {
-    const first = String(c.full_name || 'there').split(/\s+/)[0];
-    const subj = isMo ? `Phase Gate Review — Ready for ${nextPhaseLabel(c.phase)}!` : `Your 8-Week CLF Protocol — Renewal Options`;
-    const body = isMo
-      ? `Hey ${first},\n\nYou're wrapping up ${c.phase}! I'm doing your Phase Gate Review this week to build ${nextPhaseLabel(c.phase)}. Reply with any lifts you loved, joints to watch, or schedule changes.\n\n— Kyle`
-      : `Hey ${first},\n\nYou're wrapping up your 8-week ${c.phase} protocol! To keep your momentum going with updated programming and coaching, you can:\n\n1. Switch to the $50/month Ongoing Membership (continuous phase-gate updates & weekly coaching): https://buy.stripe.com/aFa28r1Opawy9qn5l3aR201?prefilled_email=${encodeURIComponent(c.email)}\n2. Renew another 8-Week Intensive ($100): https://buy.stripe.com/9B63cvct3fQS0TReVDaR200?prefilled_email=${encodeURIComponent(c.email)}\n\nLet me know which option you'd like!\n\n— Kyle`;
-    return `mailto:${encodeURIComponent(c.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
-  })() : '';
-
-  const cycleBanner = dLeft != null && dLeft <= 14 ? `<div class="card card-pad" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border-color:${isMo ? 'var(--accent-line)' : dLeft <= 0 ? 'rgba(242,112,106,.4)' : 'rgba(242,184,75,.38)'}">
-    <div>
-      <strong style="color:${isMo ? 'var(--accent)' : dLeft <= 0 ? 'var(--bad)' : 'var(--warn)'}">
-        ${isMo ? `Phase Gate Review Ready (${dLeft <= 0 ? 'Week ' + c.weeks + ' complete' : dLeft + ' days left'})`
-          : dLeft <= 0 ? `8-Week Protocol Expired (${Math.abs(dLeft)}d ago)` : `8-Week Protocol Expiring in ${dLeft} days`}
-      </strong>
-      <div style="font-size:12.5px;color:var(--text-2);margin-top:2px">
-        ${isMo ? 'Monthly member ($50/mo): roll into a fresh 8-week phase while keeping all historical PRs and check-ins.' : 'One-time $100 plan: send 1-click Phase 2 rollover offer ($50/mo membership or $100 next 8 weeks).'}
-      </div>
-    </div>
-    <div class="actions">
-      ${c.email ? `<button class="btn btn-sm" data-act="send-auto-email" data-tpl="phase_rollover" data-to="${esc(c.email)}" data-name="${esc(c.full_name)}" data-phase="${esc(c.phase)}" data-plan="${esc(c.plan_type || '8_week')}" data-fallback="${esc(renewMailto)}">${ic('mail')}${isMo ? 'Send Phase Gate Email' : 'Send Renewal Email (1-Click)'}</button>` : ''}
-      <button class="btn btn-accent btn-sm" data-act="next-phase" data-id="${c.id}">Start ${esc(nextPhaseLabel(c.phase))} &rarr;</button>
-    </div>
-  </div>` : '';
-
-  const billTag = c.billing_status === 'past_due'
-    ? '<span class="tag bad">Stripe Past Due</span>'
-    : c.billing_status === 'canceled'
-      ? '<span class="tag bad">Subscription Canceled</span>'
-      : '';
-
-  return `<div class="view">
-    <div class="page-head">
-      <div class="who">
-        <span class="avatar lg" style="background:var(--accent-tint);color:var(--accent)">${initials(c.full_name)}</span>
-        <div>
-          <div class="crumb"><button data-act="overview">Clients</button> / ${esc(c.full_name)}</div>
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <h1>${esc(c.full_name)}</h1>
-            <span class="tag ${isMo ? 'accent' : ''}">${isMo ? 'Monthly · $50/mo' : '8-Week · $100'}</span>
-            ${billTag}
-            ${dLeft != null ? `<span class="tag ${dLeft <= 0 ? 'bad' : dLeft <= 14 ? 'warn' : ''}">${dLeft <= 0 ? 'Cycle ended' : dLeft + 'd left'}</span>` : ''}
-          </div>
-          <div class="meta">${esc(c.phase)} · Week ${a.wk} of ${c.weeks} · ${esc(c.split)} ${c.email ? `· ${esc(c.email)}` : ''}</div>
-        </div>
-      </div>
-      <div class="actions">
-        ${c.email ? `<button class="btn" data-act="send-auto-email" data-tpl="app_invite" data-to="${esc(c.email)}" data-name="${esc(c.full_name)}" data-fallback="${esc(buildInviteMailto(c.full_name, c.email))}">${ic('mail')}Send App Invite</button>` : ''}
-        <button class="btn" data-act="edit-client" data-id="${c.id}">${ic('edit')}Edit profile</button>
-        <a class="btn btn-accent" href="client.html?client=${esc(c.slug)}">${ic('ext')}Open as client</a>
-      </div>
-    </div>
-    ${cycleBanner}
-    <div class="tabs">
-      ${[['overview','Overview'],['program',`Program Builder${a.extraLogged.length ? ` (+${a.extraLogged.length} extra)` : ''}`],['training','Training Log'],['nutrition','Nutrition & Health'],['supplements',`Supplements${(d.supplements?.length || 0) ? ` (${d.supplements.length})` : ''}`],['measurements','Measurements & Photos'],['messages',`Messages${(d.messages?.length || 0) ? ` (${d.messages.length})` : ''}`]].map(([k, l]) =>
-        `<button class="tab" data-act="tab" data-v="${k}" aria-selected="${S.tab === k}">${l}</button>`).join('')}
-    </div>
-    ${body}
-  </div>`;
-}
-
-function renderClientModal() {
-  const c = S.editClient || { full_name:'', email:'', plan_type:'8_week', phase:'Phase 1', split:'Push / Pull / Legs', start_date: ymd(new Date()), weeks: 8, joint_label:'Joint comfort', targets:{ weight:180, calories:2500, protein:180, water:100, steps:10000, sleep:7.5 }, program_notes:'' };
-  const T = c.targets || {};
-  return `<dialog class="modal" id="client-modal">
-    <form id="client-form">
-      <div class="modal-body">
-        <h2>${c.id ? 'Edit client' : 'Add new client'}</h2>
-        <p style="font-size:13px;color:var(--text-2);margin:0 0 10px">Once you enter their email, they can sign into the Client App and their profile links automatically.</p>
-        <div class="modal-grid">
-          <label class="field"><span>Full name</span><input name="full_name" required value="${esc(c.full_name)}" placeholder="e.g. Jordan Lee"></label>
-          <label class="field"><span>Client email (for login)</span><input name="email" type="email" value="${esc(c.email || '')}" placeholder="client@example.com"></label>
-          <label class="field"><span>Plan</span><select name="plan_type" style="width:100%;height:38px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);padding:0 10px;font-size:13.5px"><option value="8_week" ${c.plan_type !== 'monthly' ? 'selected' : ''}>8-Week Intensive ($100)</option><option value="monthly" ${c.plan_type === 'monthly' ? 'selected' : ''}>Monthly Membership ($50/mo)</option></select></label>
-          <label class="field"><span>Phase / Program</span><input name="phase" value="${esc(c.phase)}"></label>
-          <label class="field"><span>Split</span><input name="split" value="${esc(c.split)}"></label>
-          <label class="field"><span>Start date</span><input name="start_date" type="date" value="${esc(c.start_date)}"></label>
-          <label class="field"><span>Weeks</span><input name="weeks" type="number" min="1" max="52" value="${c.weeks || 8}"></label>
-          <label class="field"><span>Goal weight (lb)</span><input name="weight" type="number" step="0.5" value="${T.weight ?? ''}"></label>
-          <label class="field"><span>Calories target</span><input name="calories" type="number" value="${T.calories ?? ''}"></label>
-          <label class="field"><span>Protein (g)</span><input name="protein" type="number" value="${T.protein ?? ''}"></label>
-          <label class="field"><span>Water (oz)</span><input name="water" type="number" value="${T.water ?? ''}"></label>
-          <label class="field"><span>Steps</span><input name="steps" type="number" value="${T.steps ?? ''}"></label>
-          <label class="field"><span>Sleep (hrs)</span><input name="sleep" type="number" step="0.5" value="${T.sleep ?? ''}"></label>
-        </div>
-        <label class="field"><span>Program notes</span><textarea name="program_notes">${esc(c.program_notes || '')}</textarea></label>
-      </div>
-      <div class="modal-foot">
-        <button type="button" class="btn" data-act="close-modal">Cancel</button>
-        <button type="submit" class="btn btn-accent">Save client</button>
-      </div>
-    </form>
-  </dialog>`;
-}
-
-function buildInviteMailto(name, email) {
-  const first = String(name || 'there').split(/\s+/)[0];
-  const appUrl = location.href.replace(/coach\.html.*$/i, 'client.html');
-  const subj = 'Your CLF Protocol Training App is Live';
-  const body = `Hey ${first},\n\nYour custom CLF Protocol app is ready with your full training split, coaching cues, form videos, daily check-ins, supplement stack, and strength trajectory tracker.\n\nHow to get in (30 seconds):\n1. Open this link on your phone: ${appUrl}\n2. Tap "Email Magic Link", enter this email (${email}), and tap the link in your inbox.\n3. Pin it to your Home Screen (iPhone Safari: Share -> Add to Home Screen).\n\nLet me know once you're logged in!\n\nCoach Kyle\nClash Lab Fitness LLC`;
-  return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
-}
-
-function buildIntakeMailto(row) {
-  const first = row.first_name || row.last_name || 'there';
-  if (row.status === 'approved') return { tpl: 'app_invite', label: 'Send App Invite', href: buildInviteMailto(`${row.first_name} ${row.last_name}`, row.email) };
-  if (row.medical_clearance_required) {
-    const subj = 'Clash Lab Fitness: Medical Clearance Next Steps';
-    const body = `Hey ${first},\n\nThanks for submitting your Clash Lab Fitness onboarding packet! Because one or more answers on your PAR-Q+ health screening was marked "Yes", our protocol requires a brief medical clearance note from your physician before we issue your 8-week training split and nutrition targets.\n\nNext steps:\n1. Share your PAR-Q+ answers with your doctor.\n2. Ask for a brief note clearing you for "unsupervised, vigorous physical activity and resistance training."\n3. Reply to this email with a photo or PDF of the note.\n\nCoach Kyle\nClash Lab Fitness LLC`;
-    return { tpl: 'clearance', label: 'Send Clearance Email', href: `mailto:${encodeURIComponent(row.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}` };
-  }
-  const subj = 'Clash Lab Fitness: Application Received + 3-Day Food Log';
-  const body = `Hey ${first},\n\nGot your Clash Lab Fitness intake, PAR-Q+ screening, and signed waiver!\n\nBefore I build your custom 8-week training split and nutrition targets, please reply with your 3-Day Food Log (everything you eat and drink for 3 typical days, including rough portions and daily water intake).\n\nOnce I have your 3-day log, I will deliver your full CLF Protocol app access within 3 to 5 business days.\n\nCoach Kyle\nClash Lab Fitness LLC`;
-  return { tpl: 'food_log', label: 'Send Food Log Email', href: `mailto:${encodeURIComponent(row.email)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}` };
-}
-
-function viewIntake() {
-  const PARQ_LABELS = {
-    q1: 'Heart condition / high blood pressure',
-    q2: 'Chest pain at rest or during activity',
-    q3: 'Dizziness / loss of consciousness (12 mo)',
-    q4: 'Other chronic medical condition',
-    q5: 'Prescribed meds for chronic condition',
-    q6: 'Bone, joint, or soft tissue issue',
-    q7: 'Doctor advised supervised activity only',
-  };
-  const applyUrl = location.href.replace(/coach\.html.*$/i, 'apply.html');
-  return `<div class="view">
-    <div class="page-head">
-      <div>
-        <div class="crumb">Client Onboarding</div>
-        <h1>Intake &amp; Applications</h1>
-        <div class="meta">${S.intakes.length} total submissions · Auto-synced with Stripe Checkout &amp; 1-click Resend emails</div>
-      </div>
-      <div class="actions">
-        <button class="btn" data-act="refresh">${ic('refresh')}Refresh</button>
-        <button class="btn btn-accent" data-act="copy-apply" data-url="${esc(applyUrl)}">${ic('copy')}Copy Application Link</button>
-      </div>
-    </div>
-
-    ${!S.intakes.length ? `<div class="card card-pad" style="margin-top:20px;text-align:center;padding:42px 24px">
-      <div style="font-size:16px;font-weight:600;margin-bottom:6px">No applications yet</div>
-      <div style="color:var(--text-2);font-size:13.5px;max-width:440px;margin:0 auto 16px">Share your branded Clash Lab Fitness onboarding link (<code style="color:var(--accent)">apply.html</code>) with prospective clients. Submissions and Stripe payments appear here automatically.</div>
-      <button class="btn btn-accent" data-act="copy-apply" data-url="${esc(applyUrl)}">${ic('copy')}Copy Application Link</button>
-    </div>` : S.intakes.map(inRow => {
-      const fullName = `${inRow.first_name || ''} ${inRow.last_name || ''}`.trim() || 'Applicant';
-      const pq = inRow.parq_answers || {};
-      const yesQs = Object.entries(PARQ_LABELS).filter(([k]) => pq[k] === 'yes').map(([, l]) => l);
-      const mailBtn = inRow.email ? buildIntakeMailto(inRow) : null;
-      const badge = inRow.status === 'approved' ? '<span class="tag ok">Onboarded</span>'
-        : inRow.status === 'declined' ? '<span class="tag">Declined</span>'
-        : inRow.medical_clearance_required ? '<span class="tag bad">Medical Clearance Required</span>'
-        : '<span class="tag accent">Ready to Review</span>';
-      const payBadge = inRow.payment_status === 'paid'
-        ? `<span class="tag ok">Stripe Paid${inRow.paid_amount_cents ? ` ($${(inRow.paid_amount_cents / 100).toFixed(0)})` : ''}</span>`
-        : inRow.payment_status === 'past_due'
-          ? '<span class="tag bad">Payment Failed</span>'
-          : '<span class="tag">Awaiting Stripe</span>';
-      return `<div class="card card-pad" style="margin-top:14px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
-          <div>
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <strong style="font-size:16px">${esc(fullName)}</strong>
-              ${badge}
-              ${payBadge}
-              <span class="tag">${inRow.selected_plan === 'monthly' ? 'Monthly ($50/mo)' : '8-Week ($100)'}</span>
-              <span class="tag">${inRow.days_per_week ?? '?'} days/wk</span>
-            </div>
-            <div style="font-size:12.5px;color:var(--text-2);margin-top:4px">
-              ${esc(inRow.email)} · Age ${inRow.age ?? '?'} · ${esc(inRow.height || '?')} · ${inRow.current_weight ?? '?'} lb &rarr; Goal ${inRow.goal_weight ?? '?'} lb · Submitted ${new Date(inRow.created_at).toLocaleDateString()}
-            </div>
-          </div>
-          <div class="actions">
-            ${mailBtn ? `<button class="btn btn-sm" data-act="send-auto-email" data-tpl="${esc(mailBtn.tpl)}" data-to="${esc(inRow.email)}" data-name="${esc(fullName)}" data-fallback="${esc(mailBtn.href)}">${ic('mail')}${esc(mailBtn.label)}</button>` : ''}
-            ${inRow.status !== 'approved' ? `<button class="btn btn-accent btn-sm" data-act="approve-intake" data-id="${inRow.id}">${ic('plus')}Approve &amp; Onboard</button>` : ''}
-            ${inRow.status !== 'declined' && inRow.status !== 'approved' ? `<button class="btn btn-ghost btn-sm danger" data-act="decline-intake" data-id="${inRow.id}">Decline</button>` : ''}
-          </div>
-        </div>
-
-        <div class="grid g-1-1" style="margin-top:14px">
-          <div style="padding:12px 14px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line-soft);font-size:13px">
-            <div style="font-size:11.5px;color:var(--text-3);margin-bottom:4px;font-weight:600">INJURIES / CHECK-ENGINE LIGHTS</div>
-            <div style="color:var(--text)">${esc(inRow.injuries || 'None listed')}</div>
-            <div style="font-size:11.5px;color:var(--text-3);margin:10px 0 4px;font-weight:600">TYPICAL DAY OF EATING</div>
-            <div style="color:var(--text-2)">${esc(cleanIntakeEating(inRow) || 'None listed')}</div>
-            ${parseIntakeSupps(inRow).length ? `<div style="font-size:11.5px;color:var(--text-3);margin:10px 0 4px;font-weight:600">CURRENT SUPPLEMENTS</div>
-            <div style="color:var(--accent)">${esc(parseIntakeSupps(inRow).join(', '))}</div>` : ''}
-          </div>
-          <div style="padding:12px 14px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line-soft);font-size:13px">
-            <div style="font-size:11.5px;color:var(--text-3);margin-bottom:4px;font-weight:600">EQUIPMENT &amp; COMPLIANCE</div>
-            <div style="color:var(--text)">Equipment: ${esc((inRow.equipment || []).join(', ') || 'None')}</div>
-            <div style="margin-top:6px;color:${yesQs.length ? 'var(--bad)' : 'var(--ok)'}">
-              ${yesQs.length ? `PAR-Q+ Flags: ${esc(yesQs.join('; '))}` : 'PAR-Q+: All 7 questions answered No (Cleared)'}
-            </div>
-            <div style="margin-top:8px;font-size:12px;color:var(--text-3)">
-              PAR-Q+ Signed: <b style="color:var(--text-2)">${esc(inRow.parq_signature || 'N/A')}</b><br>
-              Waiver Signed: <b style="color:var(--text-2)">${esc(inRow.waiver_signature || 'N/A')}</b> (${inRow.signed_at ? new Date(inRow.signed_at).toLocaleString() : 'N/A'})
-            </div>
-          </div>
-        </div>
-      </div>`;
-    }).join('')}
-  </div>`;
-}
-
-function viewAutomations() {
-  const expoUrl = location.href.replace(/coach\.html.*$/i, 'expo.html');
-  const kioskUrl = `${expoUrl}?kiosk=1`;
-  return `<div class="view">
-    <div class="page-head">
-      <div>
-        <div class="crumb">Operations &amp; Growth</div>
-        <h1>Automations &amp; Booth Leads</h1>
-        <div class="meta">Trade show QR leads, scheduled check-in nudges, Monday Coach Digest, Stripe billing sync &amp; Verified Testimonials</div>
-      </div>
-      <div class="actions">
-        <a class="btn btn-sm" href="${esc(expoUrl)}" target="_blank" rel="noopener">${ic('ext')}Macro Calculator</a>
-        <a class="btn btn-accent btn-sm" href="${esc(kioskUrl)}" target="_blank" rel="noopener">${ic('bolt')}Booth Kiosk Mode</a>
-      </div>
-    </div>
-
-    <div class="grid g4" style="margin-top:16px">
-      <div class="card card-pad">
-        <div class="stat-label">Monday Coach Digest</div>
-        <div style="font-size:13px;color:var(--text-2);margin:6px 0 10px">Scheduled every Monday 7 AM PT (compliance, PRs &amp; at-risk clients).</div>
-        <button class="btn btn-sm" style="width:100%;justify-content:center" data-act="run-auto-job" data-job="monday_coach_digest" data-label="Monday Coach Digest">${ic('mail')}Send Digest Now</button>
-      </div>
-      <div class="card card-pad">
-        <div class="stat-label">Sunday Check-In Nudge</div>
-        <div style="font-size:13px;color:var(--text-2);margin:6px 0 10px">Scheduled Sunday 9 AM PT to active clients missing weekly weigh-in.</div>
-        <button class="btn btn-sm" style="width:100%;justify-content:center" data-act="run-auto-job" data-job="sunday_checkin_nudge" data-label="Sunday Check-In Nudges">${ic('mail')}Nudge Missing Now</button>
-      </div>
-      <div class="card card-pad">
-        <div class="stat-label">Phase Gate &amp; Lead Drip</div>
-        <div style="font-size:13px;color:var(--text-2);margin:6px 0 10px">Runs daily at 9 AM PT (Week 7 rollover + Day-2/Day-5 Expo follow-ups).</div>
-        <button class="btn btn-sm" style="width:100%;justify-content:center" data-act="run-auto-job" data-job="daily_lifecycle_check" data-label="Lifecycle & Drip Check">${ic('bolt')}Run Daily Check</button>
-      </div>
-      <div class="card card-pad">
-        <div class="stat-label">Booth QR Link</div>
-        <div style="font-size:13px;color:var(--text-2);margin:6px 0 10px">${S.expoLeads.length} calculator leads captured &middot; Auto-synced to Dispatch.</div>
-        <button class="btn btn-accent btn-sm" style="width:100%;justify-content:center" data-act="copy-apply" data-url="${esc(expoUrl)}">${ic('copy')}Copy Expo QR Link</button>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:16px">
-      <div class="card-head">
-        <div><span class="card-title">Trade Show &amp; QR Calculator Leads</span><span class="card-sub" style="margin-left:8px">${S.expoLeads.length} captured via expo.html</span></div>
-        <button class="btn btn-sm" data-act="refresh">${ic('refresh')}Refresh</button>
-      </div>
-      <div style="padding:0 16px 16px">
-        ${!S.expoLeads.length ? `<div style="padding:22px 0;color:var(--text-3);font-size:13.5px">No QR calculator leads yet. Open <code>expo.html</code> or Booth Kiosk Mode at events to capture leads automatically.</div>` :
-        S.expoLeads.map(l => {
-          const dripTag = l.converted ? '<span class="tag ok">Converted</span>'
-            : (l.drip_stage || 0) >= 2 ? '<span class="tag accent">Day-5 Drip Sent</span>'
-            : (l.drip_stage || 0) === 1 ? '<span class="tag accent">Day-2 Drip Sent</span>'
-            : '<span class="tag">Blueprint Sent</span>';
-          const prefill = `apply.html?${new URLSearchParams({ first_name: l.first_name || '', email: l.email || '', age: l.age || '', height: l.height_label || '', weight: l.weight_lb || '', goal_weight: l.goal_weight_lb || '', days: l.days_per_week || 4 }).toString()}`;
-          const fbMail = `mailto:${encodeURIComponent(l.email)}?subject=${encodeURIComponent('Ready to build your custom CLF 8-Week Split?')}&body=${encodeURIComponent(`Hey ${l.first_name || 'there'},\n\nSaw your CLF Macro & Split Audit (${l.calories} kcal, ${l.protein_g}g protein, ${l.recommended_split}). Whenever you are ready to have me build your exact gym program and set up your CLF Protocol app, you can apply right here:\n\nhttps://clashlabfitness.com/${prefill}\n\nCoach Kyle\nClash Lab Fitness`)}`;
-          return `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line-soft)">
-            <div>
-              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-                <strong>${esc(l.first_name || 'Visitor')}</strong>
-                <span style="font-size:12.5px;color:var(--text-2)">${esc(l.email)}</span>
-                ${dripTag}
-                <span class="tag">${esc(l.source || 'expo_qr')}</span>
-              </div>
-              <div style="font-size:12.5px;color:var(--text-2);margin-top:3px">
-                <b>${l.calories} kcal</b> (${l.protein_g}g P / ${l.carbs_g}g C / ${l.fats_g}g F) &middot; ${esc(l.recommended_split || '')} &middot; ${new Date(l.created_at).toLocaleDateString()}
-              </div>
-            </div>
-            <div class="actions">
-              <button class="btn btn-sm" data-act="send-auto-email" data-tpl="expo_followup" data-to="${esc(l.email)}" data-name="${esc(l.first_name || 'there')}" data-split="${esc(l.recommended_split || '')}" data-cal="${l.calories || ''}" data-prot="${l.protein_g || ''}" data-fallback="${esc(fbMail)}">${ic('mail')}Send Personal Invite</button>
-              <a class="btn btn-accent btn-sm" href="${esc(prefill)}" target="_blank" rel="noopener">Open Pre-Filled Apply</a>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>
-
-    <div class="grid g-1-1" style="margin-top:16px">
-      <div class="card">
-        <div class="card-head"><span class="card-title">Verified Client Wins</span><span class="card-sub">Submitted inside client.html</span></div>
-        <div style="padding:0 16px 16px">
-          ${!S.testimonials.length ? `<div style="padding:18px 0;color:var(--text-3);font-size:13px">Client wins submitted from the Progress tab appear here ready to copy as anonymous "Verified Client" website quotes.</div>` :
-          S.testimonials.map(t => `<div style="padding:12px 0;border-bottom:1px solid var(--line-soft)">
-            <div style="font-size:13.5px;color:var(--text);line-height:1.5">"${esc(t.quote)}"</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">
-              <span style="font-size:12px;color:var(--text-3)">Verified Client${t.milestone ? ` &middot; ${esc(t.milestone)}` : ''} &middot; ${new Date(t.created_at).toLocaleDateString()}</span>
-              <button class="btn btn-sm" data-act="copy-testimonial" data-quote="${esc(t.quote)}">${ic('copy')}Copy Website Quote</button>
-            </div>
-          </div>`).join('')}
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><span class="card-title">Recent Automation Activity</span><span class="card-sub">Webhooks &amp; Resend log</span></div>
-        <div style="padding:0 16px 16px">
-          ${!S.autoLogs.length ? `<div style="padding:18px 0;color:var(--text-3);font-size:13px">Outbound emails, Stripe webhook updates, and scheduled digests will log here automatically.</div>` :
-          S.autoLogs.slice(0, 10).map(lg => `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line-soft);font-size:12.5px">
-            <div style="min-width:0">
-              <div style="font-weight:600;color:var(--text)">${esc(lg.subject || lg.event_type)}</div>
-              <div style="color:var(--text-3)">${esc(lg.recipient_email || '')} &middot; ${new Date(lg.created_at).toLocaleString()}</div>
-            </div>
-            <span class="tag ok">${esc(lg.status || 'sent')}</span>
-          </div>`).join('')}
-        </div>
-      </div>
-    </div>
-  </div>`;
-}
-
-function render() {
-  const root = document.getElementById('root');
-  if (S.mode === 'loading') { root.innerHTML = '<div class="auth-screen" style="color:var(--text-3)">Loading Coach Dashboard…</div>'; return; }
-  if (S.mode === 'auth') {
-    root.innerHTML = `<div class="auth-screen">
-      <div class="auth-card">
-        <div class="brand" style="padding:0 0 16px"><img class="mark" src="email-logo.png" alt="CLF Coaching OS" width="42" height="42"><div><div class="brand-title">CLF Coaching OS</div><div class="brand-sub">Coach Dashboard</div></div></div>
-        <h1>Coach sign in</h1>
-        <p>Sign in with your Supabase coach account to manage clients, programs, coach notes, and live data.</p>
-        <form id="auth-form">
-          <label class="field"><span>Coach email</span><input name="email" type="email" required placeholder="kyle@example.com"></label>
-          <label class="field"><span>Password</span><input name="password" type="password" required placeholder="••••••••"></label>
-          <button type="submit" class="btn btn-accent" style="width:100%;height:42px;justify-content:center;margin-top:16px">Sign in</button>
-        </form>
-        <div class="auth-msg ${S.authTone}">${esc(S.authMsg)}</div>
-        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:12.5px;color:var(--text-3)">Want to preview first?</span>
-          <button type="button" class="btn btn-sm" data-act="demo">Preview Demo</button>
-        </div>
-      </div>
-    </div>`;
-    return;
-  }
-  const sel = S.view === 'client' ? S.clients.find(c => c.id === S.selId) : null;
-  const pendingCount = S.intakes.filter(x => x.status === 'pending' || x.status === 'needs_clearance').length;
-  const openLeads = S.expoLeads.filter(x => !x.converted).length;
-  root.innerHTML = `<div class="shell">
-    <aside class="side">
-      <div class="brand"><img class="mark" src="email-logo.png" alt="CLF Coaching OS" width="42" height="42"><div><div class="brand-title">CLF Coaching</div><div class="brand-sub">Supabase OS</div></div></div>
-      <button class="nav-btn" data-act="overview" aria-current="${S.view === 'overview'}">${ic('grid')}Overview</button>
-      <button class="nav-btn" data-act="intake" aria-current="${S.view === 'intake'}">${ic('edit')}<span>Intake</span>${pendingCount ? `<span class="tag accent" style="margin-left:auto;height:20px">${pendingCount}</span>` : ''}</button>
-      <button class="nav-btn" data-act="automations" aria-current="${S.view === 'automations'}">${ic('bolt')}<span>Automations</span>${openLeads ? `<span class="tag" style="margin-left:auto;height:20px">${openLeads}</span>` : ''}</button>
-      <div class="side-label"><span>Clients</span><button class="mini-btn" data-act="add-client" title="Add client">${ic('plus')}</button></div>
-      ${S.clients.map(c => `<button class="client-btn" data-act="select" data-id="${c.id}" aria-current="${S.view === 'client' && c.id === S.selId}">
-        <span class="avatar">${initials(c.full_name)}</span>
-        <div style="min-width:0"><div class="client-name">${esc(c.full_name)}</div><div class="client-sub">Wk ${currentWeek(c)} of ${c.weeks}</div></div>
-      </button>`).join('')}
-      <div class="side-foot">
-        <span>${S.mode === 'demo' ? 'Demo mode' : esc(S.user?.email || '')}</span>
-        <button class="btn btn-sm" data-act="signout">${S.mode === 'demo' ? 'Exit demo' : 'Sign out'}</button>
-      </div>
-    </aside>
-    <main class="main">${S.view === 'intake' ? viewIntake() : S.view === 'automations' ? viewAutomations() : sel ? viewClient(sel) : viewOverview()}</main>
-  </div>${renderClientModal()}`;
-}
-
-/* Events */
-document.addEventListener('click', async e => {
-  const btn = e.target.closest('[data-act]');
-  if (!btn) return;
-  const act = btn.dataset.act;
-  if (act === 'demo') loadDemo();
-  else if (act === 'overview') { S.view = 'overview'; S.selId = null; S.editVideoId = null; render(); }
-  else if (act === 'intake') { S.view = 'intake'; S.selId = null; S.editVideoId = null; render(); }
-  else if (act === 'automations') { S.view = 'automations'; S.selId = null; S.editVideoId = null; render(); }
-  else if (act === 'send-auto-email') {
-    await sendCoachAutomation({
-      action: 'coach_send_email',
-      template: btn.dataset.tpl,
-      to: btn.dataset.to,
-      name: btn.dataset.name || 'there',
-      phase: btn.dataset.phase || '',
-      plan_type: btn.dataset.plan || '',
-      split: btn.dataset.split || '',
-      calories: btn.dataset.cal || '',
-      protein: btn.dataset.prot || '',
-      label: btn.textContent.trim(),
-    }, btn.dataset.fallback || '');
-  }
-  else if (act === 'run-auto-job') {
-    await sendCoachAutomation({
-      action: btn.dataset.job,
-      label: btn.dataset.label || btn.dataset.job,
-    }, '');
-  }
-  else if (act === 'copy-testimonial') {
-    const formatted = `"${btn.dataset.quote}"\nVerified Client`;
-    const ok = await copyTextWithFallback(formatted);
-    toast(ok ? 'Copied Verified Client quote' : 'Copy failed');
-  }
-  else if (act === 'select') { S.view = 'client'; S.selId = btn.dataset.id; S.tab = 'overview'; S.liftSel = 'all'; S.editVideoId = null; render(); }
-  else if (act === 'tab') { S.tab = btn.dataset.v; S.editVideoId = null; render(); }
-  else if (act === 'lsel') { S.liftSel = btn.dataset.v; render(); }
-  else if (act === 'coach-supp-overlay') { S.suppOverlay = !S.suppOverlay; render(); }
-  else if (act === 'preset-csupp') {
-    const p = COACH_SUPP_PRESETS[Number(btn.dataset.idx)];
-    if (!p) return;
-    const setV = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
-    setV('cs-name', p.name);
-    setV('cs-dose', p.dosage);
-    setV('cs-timing', p.timing);
-    setV('cs-rem', p.reminder_time);
-    setV('cs-note', p.note);
-  }
-  else if (act === 'coach-act-supp') {
-    const sid = String(btn.dataset.id);
-    const todayStr = ymd(new Date());
-    const row = S.data[S.selId]?.supplements?.find(x => String(x.id) === sid);
-    if (!row) return;
-    row.status = 'active';
-    row.started_at = row.started_at || todayStr;
-    if (S.mode !== 'demo' && S.suppTableReady) {
-      await sb.from('client_supplements').update({ status: 'active', started_at: row.started_at }).eq('id', sid);
-    }
-    toast(`${row.name} activated`);
-    render();
-  }
-  else if (act === 'coach-del-supp') {
-    const sid = String(btn.dataset.id);
-    const row = S.data[S.selId]?.supplements?.find(x => String(x.id) === sid);
-    if (!row || !confirm(`Remove "${row.name}" from this client's supplement stack?`)) return;
-    S.data[S.selId].supplements = (S.data[S.selId].supplements || []).filter(x => String(x.id) !== sid);
-    if (S.mode !== 'demo' && S.suppTableReady) {
-      await sb.from('client_supplements').delete().eq('id', sid);
-    }
-    toast(`Removed ${row.name}`);
-    render();
-  }
-  else if (act === 'refresh') { await fetchAll(); toast('Refreshed from Supabase'); }
-  else if (act === 'copy-apply') {
-    const ok = await copyTextWithFallback(btn.dataset.url);
-    toast(ok ? 'Application link copied' : 'Copy failed');
-  }
-  else if (act === 'approve-intake') {
-    const row = S.intakes.find(x => x.id === btn.dataset.id);
-    if (!row) return;
-    const fullName = `${row.first_name || ''} ${row.last_name || ''}`.trim();
-    const slug = fullName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Math.floor(Math.random() * 90 + 10);
-    const splitGuess = row.days_per_week >= 5 ? 'Push / Pull / Legs / Upper / Lower' : row.days_per_week === 4 ? 'Upper / Lower (4-Day)' : 'Full Body A / B / C';
-    const inSupps = parseIntakeSupps(row);
-    const notes = `Equipment: ${(row.equipment || []).join(', ')}. Days/wk: ${row.days_per_week || '?'}. Injuries: ${row.injuries || 'None'}.${inSupps.length ? ' Supplements: ' + inSupps.join(', ') + '.' : ''} Baseline: ${row.age || '?'}yo, ${row.height || '?'}, ${row.current_weight || '?'} lb -> ${row.goal_weight || '?'} lb.`;
-    const todayStr = ymd(new Date());
-    const payload = {
-      coach_id: S.user?.id, slug, full_name: fullName, email: row.email || null,
-      plan_type: row.selected_plan === 'monthly' ? 'monthly' : '8_week',
-      phase: 'Phase 1', split: splitGuess, start_date: todayStr, weeks: 8,
-      targets: { weight: row.goal_weight || null, calories: 2200, protein: 160, water: 100, steps: 10000, sleep: 7.5 },
-      program_notes: notes,
-    };
-    const buildSeedSupps = cid => inSupps.map((spName, idx) => {
-      const preset = COACH_SUPP_PRESETS.find(p => spName.toLowerCase().includes(p.name.split(/\s+/)[0].toLowerCase()));
-      return {
-        client_id: cid,
-        name: spName,
-        dosage: preset?.dosage || '',
-        frequency: 'daily',
-        timing: preset?.timing || 'Morning',
-        status: 'active',
-        added_by: 'intake',
-        coach_note: '',
-        reminder_enabled: true,
-        reminder_time: preset?.reminder_time || '08:30',
-        started_at: todayStr,
-      };
-    });
-    if (S.mode === 'demo') {
-      const id = 'd-' + Date.now();
-      S.clients.push({ id, health_sync_token: 'demo_tok', ...payload });
-      const seeded = buildSeedSupps(id).map((s, idx) => ({ id: 'ds-' + id + '-' + idx, ...s }));
-      S.data[id] = { exercises: [], sets: [], checkins: [], measurements: [], notes: [], messages: [], photos: [], supplements: seeded, suppLogs: {} };
-      row.status = 'approved'; S.view = 'client'; S.selId = id; S.tab = 'program';
-      toast(`${fullName} onboarded${seeded.length ? ` (+${seeded.length} supplements)` : ''} (demo)`); render(); return;
-    }
-    const { data: created, error } = await sb.from('clients').insert(payload).select().single();
-    if (error) { toast('Onboard failed: ' + error.message); return; }
-    await sb.from('intake_submissions').update({ status: 'approved', onboarded_client_id: created.id }).eq('id', row.id);
-    if (inSupps.length && S.suppTableReady) {
-      await sb.from('client_supplements').insert(buildSeedSupps(created.id));
-    }
-    toast(`${fullName} added to roster!`);
-    await fetchAll();
-    S.view = 'client'; S.selId = created.id; S.tab = 'program'; render();
-  }
-  else if (act === 'next-phase') {
-    const c = S.clients.find(x => x.id === btn.dataset.id);
-    if (!c) return;
-    const nextPhase = nextPhaseLabel(c.phase);
-    const todayStr = ymd(new Date());
-    if (S.mode === 'demo') {
-      c.phase = nextPhase; c.start_date = todayStr;
-      toast(`Rolled into ${nextPhase} (demo)`); render(); return;
-    }
-    const { error } = await sb.from('clients').update({
-      phase: nextPhase, start_date: todayStr, renewal_notified_at: null, expired_notified_at: null, updated_at: new Date().toISOString()
-    }).eq('id', c.id);
-    if (error) toast('Phase update failed: ' + error.message);
-    else { toast(`${c.full_name} rolled into ${nextPhase}!`); await fetchAll(); }
-  }
-  else if (act === 'decline-intake') {
-    const id = btn.dataset.id;
-    if (S.mode !== 'demo') await sb.from('intake_submissions').update({ status: 'declined' }).eq('id', id);
-    const r = S.intakes.find(x => x.id === id); if (r) r.status = 'declined';
-    toast('Application marked declined'); render();
-  }
-  else if (act === 'add-client') { S.editClient = null; render(); document.getElementById('client-modal')?.showModal(); }
-  else if (act === 'edit-client') { S.editClient = S.clients.find(c => c.id === btn.dataset.id); render(); document.getElementById('client-modal')?.showModal(); }
-  else if (act === 'close-modal') { document.getElementById('client-modal')?.close(); }
-  else if (act === 'copy-health') {
-    const info = `Endpoint: ${SUPABASE_URL}/rest/v1/rpc/sync_apple_health\nAPI Key: ${SUPABASE_KEY}\nToken: ${btn.dataset.token}`;
-    const ok = await copyTextWithFallback(info);
-    toast(ok ? 'Apple Health setup copied' : 'Copy failed');
-  }
-  else if (act === 'edit-ex-vid') {
-    const id = String(btn.dataset.id);
-    S.editVideoId = S.editVideoId === id ? null : id;
-    render();
-    if (S.editVideoId) {
-      const inp = document.querySelector(`[data-ex-vid-form="${CSS.escape(id)}"] input[name="video_url"]`);
-      inp?.focus();
-    }
-  }
-  else if (act === 'cancel-ex-vid') {
-    S.editVideoId = null;
-    render();
-  }
-  else if (act === 'reset-ex-vid') {
-    const id = String(btn.dataset.id);
-    if (S.mode !== 'demo') {
-      const { error } = await sb.from('program_exercises').update({ video_url: '' }).eq('id', id);
-      if (error) { toast('Reset failed: ' + error.message); return; }
-    }
-    const ex = S.data[S.selId]?.exercises.find(x => String(x.id) === id);
-    if (ex) ex.video_url = '';
-    S.editVideoId = null;
-    toast('Reset to curated form video');
-    render();
-  }
-  else if (act === 'jump-traj') {
-    S.tab = 'overview';
-    S.liftSel = btn.dataset.v || 'all';
-    render();
-  }
-  else if (act === 'promote-ex') {
-    if (!S.selId) return;
-    const dayName = String(btn.dataset.day || 'Day 1').trim();
-    const exName = String(btn.dataset.ex || '').trim();
-    const sets = Math.max(1, Math.min(15, Number(btn.dataset.sets) || 3));
-    const reps = Math.max(1, Math.min(100, Number(btn.dataset.reps) || 12));
-    const isBw = btn.dataset.bw === '1';
-    if (!exName) return;
-    const cur = S.data[S.selId]?.exercises || [];
-    if (cur.some(x => x.day_name.toLowerCase() === dayName.toLowerCase() && x.name.toLowerCase() === exName.toLowerCase())) {
-      toast(`${exName} is already on ${dayName}`);
-      render();
-      return;
-    }
-    const days = [...new Set(cur.map(x => x.day_name))];
-    const matchDay = days.find(d => d.toLowerCase() === dayName.toLowerCase()) || dayName;
-    const dayOrder = days.includes(matchDay) ? days.indexOf(matchDay) + 1 : days.length + 1;
-    const payload = {
-      client_id: S.selId,
-      day_name: matchDay,
-      day_order: dayOrder,
-      exercise_order: cur.filter(x => x.day_name === matchDay).length + 1,
-      name: exName,
-      sets,
-      target_reps: reps,
-      rep_label: String(reps),
-      rest_sec: 75,
-      is_bodyweight: isBw,
-      cue: '',
-      video_url: '',
-    };
-    if (S.mode === 'demo') {
-      S.data[S.selId].exercises.push({ id: 'd-' + Date.now(), ...payload });
-      toast(`Added ${exName} to ${matchDay} (demo)`);
-      render();
-      return;
-    }
-    const { error } = await sb.from('program_exercises').insert(payload);
-    if (error) toast('Add failed: ' + error.message);
-    else { toast(`Added ${exName} to ${matchDay}!`); await fetchAll(); }
-  }
-  else if (act === 'del-ex') {
-    const id = btn.dataset.id;
-    if (S.mode !== 'demo') await sb.from('program_exercises').delete().eq('id', id);
-    if (S.data[S.selId]) S.data[S.selId].exercises = S.data[S.selId].exercises.filter(x => x.id !== id);
-    if (S.editVideoId === String(id)) S.editVideoId = null;
-    toast('Exercise removed'); render();
-  }
-  else if (act === 'del-note') {
-    const id = btn.dataset.id;
-    if (S.mode !== 'demo') await sb.from('coach_notes').delete().eq('id', id);
-    if (S.data[S.selId]) S.data[S.selId].notes = S.data[S.selId].notes.filter(x => x.id !== id);
-    toast('Note removed'); render();
-  }
-  else if (act === 'save-tpl') {
-    const c = S.clients.find(x => x.id === S.selId);
-    const exs = S.data[S.selId]?.exercises || [];
-    if (!c || !exs.length) return;
-    const name = prompt('Template name:', `${c.phase} — ${c.split}`);
-    if (!name) return;
-    const clean = exs.map(({ day_name, day_order, exercise_order, name: n, sets, target_reps, rep_label, rest_sec, is_bodyweight, cue, video_url }) => ({
-      day_name, day_order, exercise_order, name: n, sets, target_reps, rep_label, rest_sec, is_bodyweight, cue,
-      video_url: isSearchVideoUrl(video_url) ? '' : String(video_url).trim(),
-    }));
-    if (S.mode === 'demo') { S.templates.unshift({ id: 'd-' + Date.now(), name, split: c.split, exercises: clean }); toast('Template saved (demo)'); render(); return; }
-    const { error } = await sb.from('program_templates').insert({ coach_id: S.user.id, name: name.trim(), split: c.split, exercises: clean });
-    if (error) toast('Save failed: ' + error.message);
-    else { toast(`Saved template "${name}"`); await fetchAll(); }
-  }
-  else if (act === 'apply-tpl') {
-    const pick = document.getElementById('tpl-pick')?.value;
-    if (!pick || !S.selId) return;
-    let source = [];
-    if (pick.startsWith('tpl:')) source = S.templates.find(t => t.id === pick.slice(4))?.exercises || [];
-    else if (pick.startsWith('cli:')) source = S.data[pick.slice(4)]?.exercises || [];
-    if (!source.length) return;
-    const rows = source.map(e => ({
-      client_id: S.selId, day_name: e.day_name, day_order: e.day_order, exercise_order: e.exercise_order,
-      name: e.name, sets: e.sets, target_reps: e.target_reps, rep_label: e.rep_label,
-      rest_sec: e.rest_sec, is_bodyweight: !!e.is_bodyweight, cue: e.cue || '',
-      video_url: isSearchVideoUrl(e.video_url) ? '' : String(e.video_url).trim(),
-    }));
-    if (S.mode === 'demo') {
-      S.data[S.selId].exercises = rows.map((r, i) => ({ id: 'd-' + Date.now() + '-' + i, ...r }));
-      toast(`Applied ${rows.length} exercises (demo)`); render(); return;
-    }
-    await sb.from('program_exercises').delete().eq('client_id', S.selId);
-    const { error } = await sb.from('program_exercises').insert(rows);
-    if (error) toast('Apply failed: ' + error.message);
-    else { toast(`Applied ${rows.length} exercises!`); await fetchAll(); }
-  }
-  else if (act === 'signout') {
-    if (S.mode !== 'demo' && sb) await sb.auth.signOut();
-    S.mode = 'auth'; S.user = null; S.view = 'overview'; S.selId = null; S.editVideoId = null; S.authMsg = ''; render();
-  }
-});
-
-document.addEventListener('change', e => {
-  if (e.target.id === 'coach-lift-jump') {
-    S.liftSel = e.target.value;
-    render();
-  }
-});
-
-document.addEventListener('submit', async e => {
-  if (e.target.id === 'auth-form') {
-    e.preventDefault();
-    const { email, password } = Object.fromEntries(new FormData(e.target));
-    S.authMsg = 'Signing in…'; S.authTone = ''; render();
-    const { data, error } = await sb.auth.signInWithPassword({ email: email.trim(), password });
-    if (error) { S.authMsg = error.message; S.authTone = 'bad'; render(); }
-    else { S.user = data.user; S.mode = 'app'; await fetchAll(); }
-  }
-  if (e.target.dataset.exVidForm) {
-    e.preventDefault();
-    const id = String(e.target.dataset.exVidForm);
-    const raw = e.target.elements.video_url.value.trim();
-    if (raw && !/^https?:\/\//i.test(raw)) {
-      toast('Video URL must start with https://');
-      return;
-    }
-    if (/youtube\.com\/results\b/i.test(raw)) {
-      toast('Paste a direct video URL (not a YouTube search link), or click Use Curated');
-      return;
-    }
-    if (S.mode !== 'demo') {
-      const { error } = await sb.from('program_exercises').update({ video_url: raw }).eq('id', id);
-      if (error) { toast('Save failed: ' + error.message); return; }
-    }
-    const ex = S.data[S.selId]?.exercises.find(x => String(x.id) === id);
-    if (ex) ex.video_url = raw;
-    S.editVideoId = null;
-    toast(raw ? 'Custom video URL saved' : 'Using curated form video');
-    render();
-  }
-  if (e.target.id === 'coach-chat-form') {
-    e.preventDefault();
-    const body = e.target.elements.body.value.trim();
-    if (!body || !S.selId) return;
-    if (S.mode === 'demo') {
-      S.data[S.selId].messages = (S.data[S.selId].messages || []).concat({ id: 'd-' + Date.now(), sender_role: 'coach', body, created_at: new Date().toISOString() });
-      render(); return;
-    }
-    const { error } = await sb.from('messages').insert({ client_id: S.selId, coach_id: S.user.id, sender_role: 'coach', body });
-    if (error) toast('Send failed: ' + error.message);
-    else await fetchAll();
-  }
-  if (e.target.id === 'note-form') {
-    e.preventDefault();
-    const message = e.target.elements.message.value.trim();
-    const alsoEmail = Boolean(e.target.elements.send_email?.checked);
-    const curClient = S.clients.find(x => x.id === S.selId);
-    if (!message || !S.selId) return;
-    if (S.mode === 'demo') {
-      S.data[S.selId].notes.forEach(n => n.pinned = false);
-      S.data[S.selId].notes.unshift({ id: 'd-' + Date.now(), message, pinned: true, created_at: new Date().toISOString() });
-      if (alsoEmail && curClient?.email) {
-        await sendCoachAutomation({ action: 'coach_send_email', template: 'checkin_reviewed', to: curClient.email, name: curClient.full_name, message, label: 'Check-In Feedback Email' }, '');
-      } else {
-        toast('Note pinned (demo)');
-      }
-      render(); return;
-    }
-    await sb.from('coach_notes').update({ pinned: false }).eq('client_id', S.selId);
-    const { error } = await sb.from('coach_notes').insert({ client_id: S.selId, coach_id: S.user.id, message, pinned: true });
-    if (error) toast('Failed: ' + error.message);
-    else {
-      if (alsoEmail && curClient?.email) {
-        await sendCoachAutomation({ action: 'coach_send_email', template: 'checkin_reviewed', to: curClient.email, name: curClient.full_name, message, label: 'Check-In Feedback Email' }, '');
-      } else {
-        toast('Pinned to client app');
-        await fetchAll();
-      }
-    }
-  }
-  if (e.target.id === 'ex-form') {
-    e.preventDefault();
-    const f = Object.fromEntries(new FormData(e.target));
-    const rawVid = f.video_url.trim();
-    if (/youtube\.com\/results\b/i.test(rawVid)) {
-      toast('Paste a direct video link (or leave blank to auto-use curated demo)');
-      return;
-    }
-    const cur = S.data[S.selId]?.exercises || [];
-    const days = [...new Set(cur.map(x => x.day_name))];
-    const dayOrder = days.includes(f.day_name) ? days.indexOf(f.day_name) + 1 : days.length + 1;
-    const payload = {
-      client_id: S.selId, day_name: f.day_name.trim(), day_order: dayOrder,
-      exercise_order: cur.filter(x => x.day_name === f.day_name.trim()).length + 1,
-      name: f.name.trim(), sets: Number(f.sets) || 3,
-      target_reps: /^\d+$/.test(f.rep_label.trim()) ? Number(f.rep_label.trim()) : null,
-      rep_label: f.rep_label.trim() || '10', rest_sec: Number(f.rest_sec) || 90,
-      is_bodyweight: f.is_bodyweight === 'true', cue: f.cue.trim(), video_url: rawVid,
-    };
-    if (S.mode === 'demo') {
-      S.data[S.selId].exercises.push({ id: 'd-' + Date.now(), ...payload });
-      toast('Exercise added (demo)'); render(); return;
-    }
-    const { error } = await sb.from('program_exercises').insert(payload);
-    if (error) toast('Failed: ' + error.message);
-    else { toast('Exercise added'); await fetchAll(); }
-  }
-  if (e.target.id === 'coach-supp-form') {
-    e.preventDefault();
-    if (!S.selId) return;
-    const f = Object.fromEntries(new FormData(e.target));
-    const cleanName = String(f.name || '').trim().slice(0, 80);
-    if (!cleanName) return;
-    const isImm = f.status === 'active';
-    const todayStr = ymd(new Date());
-    const payload = {
-      client_id: S.selId,
-      name: cleanName,
-      dosage: String(f.dosage || '').trim().slice(0, 40),
-      frequency: 'daily',
-      timing: f.timing || 'Morning',
-      status: isImm ? 'active' : 'recommended',
-      added_by: 'coach',
-      coach_note: String(f.coach_note || '').trim().slice(0, 240),
-      reminder_enabled: Boolean(f.reminder_time),
-      reminder_time: f.reminder_time || '08:30',
-      started_at: isImm ? todayStr : null,
-    };
-    if (S.mode === 'demo') {
-      S.data[S.selId].supplements = (S.data[S.selId].supplements || []).concat({ id: 'ds-' + Date.now(), ...payload });
-      e.target.reset();
-      toast(isImm ? `${cleanName} activated (demo)` : `Sent ${cleanName} recommendation (demo)`);
-      render(); return;
-    }
-    if (!S.suppTableReady) { toast('Please run the Supabase SQL migration first'); return; }
-    const { error } = await sb.from('client_supplements').insert(payload);
-    if (error) toast('Failed: ' + error.message);
-    else {
-      toast(isImm ? `${cleanName} activated` : `Recommended ${cleanName} to client`);
-      await fetchAll();
-    }
-  }
-  if (e.target.id === 'client-form') {
-    e.preventDefault();
-    const f = Object.fromEntries(new FormData(e.target));
-    const slug = f.full_name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'client-' + Date.now();
-    const payload = {
-      full_name: f.full_name.trim(), email: f.email.trim() || null,
-      plan_type: f.plan_type === 'monthly' ? 'monthly' : '8_week',
-      phase: f.phase.trim() || 'Phase 1', split: f.split.trim() || 'Full Body',
-      start_date: f.start_date || ymd(new Date()), weeks: Number(f.weeks) || 8,
-      targets: { weight: Number(f.weight) || null, calories: Number(f.calories) || null, protein: Number(f.protein) || null, water: Number(f.water) || null, steps: Number(f.steps) || null, sleep: Number(f.sleep) || null },
-      program_notes: f.program_notes.trim(),
-    };
-    document.getElementById('client-modal')?.close();
-    if (S.mode === 'demo') {
-      if (S.editClient?.id) Object.assign(S.editClient, payload);
-      else { const id = 'd-' + Date.now(); S.clients.push({ id, slug, health_sync_token: 'demo_tok', ...payload }); S.data[id] = { exercises: [], sets: [], checkins: [], measurements: [], notes: [], supplements: [], suppLogs: {} }; }
-      toast('Saved (demo)'); render(); return;
-    }
-    let error;
-    if (S.editClient?.id) ({ error } = await sb.from('clients').update(payload).eq('id', S.editClient.id));
-    else ({ error } = await sb.from('clients').insert({ coach_id: S.user.id, slug, ...payload }));
-    if (error) toast('Save failed: ' + error.message);
-    else { toast(S.editClient?.id ? 'Client updated' : 'Client added'); await fetchAll(); }
-  }
-});
-
-initAuth();
-})();
-</script>
+  </script>
 </body>
 </html>
